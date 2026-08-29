@@ -5,7 +5,7 @@ Ranked. Take the topmost unchecked item. Each item must be small enough to finis
 Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab only. OUT: Photos, Personal Vault, Office editing, offline/background sync, camera backup.
 
 ## Milestone 1 — skeleton runs in demo flavor
-- [x] M1.0 (7f5fb56) Theme: disable dynamic color; fixed light/dark palette with OneDrive-like primary blue (#0F6CBD), white surfaces, grey "size · date" secondary text; folder icon yellow (#FFB900-ish) and file icons by type as in docs/ux-reference/11-myfiles.png. Re-record Roborazzi screenshots.
+- [x] M1.0 (dab6c62) Theme: disable dynamic color; fixed light/dark palette with OneDrive-like primary blue (#0F6CBD), white surfaces, grey "size · date" secondary text; folder icon yellow (#FFB900-ish) and file icons by type as in docs/ux-reference/11-myfiles.png. Re-record Roborazzi screenshots.
 - [ ] M1.1 Welcome screen (docs/ux-reference/02-welcome.png): illustration placeholder, "Sign in" button; demo flavor's fake AuthRepository signs in immediately; Roborazzi test.
 - [ ] M1.2 Files ▸ My files list from `DriveItemsRepository` (demo JSON): rows = icon, name, "size · date", trailing overflow icon; Roborazzi test with the demo tree.
 - [ ] M1.3 Secondary tab row Home / My files / Shared / Vault / Offline with only My files functional; others show empty states from docs/ux-reference (17/18).
