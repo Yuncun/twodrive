@@ -8,7 +8,7 @@ A backlog item is done only when ALL of these pass locally, in this order, and t
 ./gradlew assembleDemoDebug
 ./gradlew testDemoDebugUnitTest
 ./gradlew verifyRoborazziDemoDebug      # record with recordRoborazziDemoDebug when a screen intentionally changed; commit the PNGs
-./gradlew pixel6api31aospDemoDebugAndroidTest   # Gradle-managed device smoke test; demo flavor = fake Graph, no sign-in
+./gradlew pixel4api30aospatdDemoDebugAndroidTest   # Gradle-managed device smoke test (same device CI uses); demo flavor = fake Graph, no sign-in
 ```
 
 Plus:
