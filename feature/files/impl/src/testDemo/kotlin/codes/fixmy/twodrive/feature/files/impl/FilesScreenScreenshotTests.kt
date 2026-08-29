@@ -18,6 +18,7 @@ package codes.fixmy.twodrive.feature.files.impl
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import codes.fixmy.twodrive.core.designsystem.component.TwoDriveBackground
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.screenshottesting.captureMultiDevice
@@ -79,12 +80,14 @@ class FilesScreenScreenshotTests {
     @androidx.compose.runtime.Composable
     private fun FilesScreenContent(uiState: FilesUiState) {
         TwoDriveTheme {
-            FilesScreen(
-                uiState = uiState,
-                onFolderClick = {},
-                onFileClick = {},
-                onSortOrderChange = {},
-            )
+            TwoDriveBackground {
+                FilesScreen(
+                    uiState = uiState,
+                    onFolderClick = {},
+                    onFileClick = {},
+                    onSortOrderChange = {},
+                )
+            }
         }
     }
 }

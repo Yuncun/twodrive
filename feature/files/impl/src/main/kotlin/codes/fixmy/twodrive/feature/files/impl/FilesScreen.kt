@@ -55,6 +55,7 @@ import codes.fixmy.twodrive.core.ui.DevicePreviews
 import codes.fixmy.twodrive.core.ui.DriveItemPreviewParameterProvider
 import codes.fixmy.twodrive.core.ui.formatFileSize
 import codes.fixmy.twodrive.core.ui.icon
+import codes.fixmy.twodrive.core.ui.iconTint
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -199,7 +200,7 @@ private fun DriveItemRow(
         Icon(
             imageVector = item.icon(),
             contentDescription = null,
-            tint = if (item.isFolder) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = item.iconTint(),
             modifier = Modifier
                 .padding(end = 16.dp)
                 .size(40.dp),

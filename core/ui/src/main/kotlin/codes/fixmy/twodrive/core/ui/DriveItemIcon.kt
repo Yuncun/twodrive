@@ -16,21 +16,59 @@
 
 package codes.fixmy.twodrive.core.ui
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import codes.fixmy.twodrive.core.designsystem.icon.TwoDriveIcons
+import codes.fixmy.twodrive.core.designsystem.theme.FileTypeColors
 import codes.fixmy.twodrive.core.model.data.DriveItem
 
 /**
- * Icon representing a file's kind, derived from its MIME type the way the OneDrive file list does.
+ * The kinds of item the file list draws differently: a yellow folder and one icon and brand color
+ * per document type, as in OneDrive's file list.
  */
-fun DriveItem.icon(): ImageVector {
-    if (isFolder) return TwoDriveIcons.Folder
-    val mime = mimeType ?: return TwoDriveIcons.File
+enum class DriveItemKind(val icon: ImageVector, val tint: Color) {
+    FOLDER(TwoDriveIcons.Folder, FileTypeColors.Folder),
+    DOCUMENT(TwoDriveIcons.Document, FileTypeColors.Word),
+    SPREADSHEET(TwoDriveIcons.Spreadsheet, FileTypeColors.Excel),
+    PRESENTATION(TwoDriveIcons.Presentation, FileTypeColors.PowerPoint),
+    PDF(TwoDriveIcons.Pdf, FileTypeColors.Pdf),
+    IMAGE(TwoDriveIcons.Image, FileTypeColors.Image),
+    VIDEO(TwoDriveIcons.Video, FileTypeColors.Video),
+    AUDIO(TwoDriveIcons.Audio, FileTypeColors.Audio),
+    TEXT(TwoDriveIcons.Text, FileTypeColors.Text),
+    OTHER(TwoDriveIcons.File, FileTypeColors.Generic),
+}
+
+/**
+ * Which [DriveItemKind] this item is, derived from its MIME type.
+ */
+fun DriveItem.kind(): DriveItemKind {
+    if (isFolder) return DriveItemKind.FOLDER
+    val mime = mimeType ?: return DriveItemKind.OTHER
     return when {
-        mime.startsWith("image/") -> TwoDriveIcons.Image
-        mime.startsWith("video/") -> TwoDriveIcons.Video
-        mime.startsWith("audio/") -> TwoDriveIcons.Audio
-        mime == "application/pdf" -> TwoDriveIcons.Pdf
-        else -> TwoDriveIcons.File
+        mime.startsWith("image/") -> DriveItemKind.IMAGE
+        mime.startsWith("video/") -> DriveItemKind.VIDEO
+        mime.startsWith("audio/") -> DriveItemKind.AUDIO
+        mime == "application/pdf" -> DriveItemKind.PDF
+        mime.contains("wordprocessingml") ||
+            mime == "application/msword" ||
+            mime == "application/vnd.oasis.opendocument.text" -> DriveItemKind.DOCUMENT
+
+        mime.contains("spreadsheetml") ||
+            mime == "application/vnd.ms-excel" ||
+            mime == "application/vnd.oasis.opendocument.spreadsheet" -> DriveItemKind.SPREADSHEET
+
+        mime.contains("presentationml") ||
+            mime == "application/vnd.ms-powerpoint" ||
+            mime == "application/vnd.oasis.opendocument.presentation" -> DriveItemKind.PRESENTATION
+
+        mime.startsWith("text/") -> DriveItemKind.TEXT
+        else -> DriveItemKind.OTHER
     }
 }
+
+/** Icon representing this item's kind in the file list. */
+fun DriveItem.icon(): ImageVector = kind().icon
+
+/** Tint for [icon]: yellow for folders, the document type's brand color for files. */
+fun DriveItem.iconTint(): Color = kind().tint

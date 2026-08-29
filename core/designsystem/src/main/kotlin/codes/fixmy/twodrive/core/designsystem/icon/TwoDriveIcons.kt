@@ -28,6 +28,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Audiotrack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Image
@@ -37,7 +38,10 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Slideshow
 import androidx.compose.material.icons.rounded.Sort
+import androidx.compose.material.icons.rounded.TableChart
+import androidx.compose.material.icons.rounded.TextSnippet
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.ViewDay
 import androidx.compose.material.icons.rounded.ViewList
@@ -51,6 +55,7 @@ object TwoDriveIcons {
     val Audio = Icons.Rounded.Audiotrack
     val Check = Icons.Rounded.Check
     val Close = Icons.Rounded.Close
+    val Document = Icons.Rounded.Description
     val File = Icons.AutoMirrored.Rounded.InsertDriveFile
     val Folder = Icons.Rounded.Folder
     val FolderBorder = Icons.Outlined.Folder
@@ -64,9 +69,12 @@ object TwoDriveIcons {
     val PeopleBorder = Icons.Outlined.People
     val Person = Icons.Rounded.Person
     val PersonBorder = Icons.Outlined.Person
+    val Presentation = Icons.Rounded.Slideshow
     val Search = Icons.Rounded.Search
     val Settings = Icons.Rounded.Settings
     val Sort = Icons.Rounded.Sort
+    val Spreadsheet = Icons.Rounded.TableChart
+    val Text = Icons.Rounded.TextSnippet
     val Video = Icons.Rounded.Videocam
     val ViewDay = Icons.Rounded.ViewDay
     val ViewList = Icons.Rounded.ViewList

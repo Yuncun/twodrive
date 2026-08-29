@@ -150,23 +150,7 @@ annotation class ThemePreviews
 @ThemePreviews
 @Composable
 fun BackgroundDefault() {
-    TwoDriveTheme(disableDynamicTheming = true) {
-        TwoDriveBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun BackgroundDynamic() {
-    TwoDriveTheme(disableDynamicTheming = false) {
-        TwoDriveBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun BackgroundAndroid() {
-    TwoDriveTheme(androidTheme = true) {
+    TwoDriveTheme {
         TwoDriveBackground(Modifier.size(100.dp), content = {})
     }
 }
@@ -174,23 +158,7 @@ fun BackgroundAndroid() {
 @ThemePreviews
 @Composable
 fun GradientBackgroundDefault() {
-    TwoDriveTheme(disableDynamicTheming = true) {
-        TwoDriveGradientBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun GradientBackgroundDynamic() {
-    TwoDriveTheme(disableDynamicTheming = false) {
-        TwoDriveGradientBackground(Modifier.size(100.dp), content = {})
-    }
-}
-
-@ThemePreviews
-@Composable
-fun GradientBackgroundAndroid() {
-    TwoDriveTheme(androidTheme = true) {
+    TwoDriveTheme {
         TwoDriveGradientBackground(Modifier.size(100.dp), content = {})
     }
 }
