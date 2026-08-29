@@ -1,0 +1,98 @@
+/*
+ * Copyright 2026 Eric Shen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package codes.fixmy.twodrive.feature.files.impl
+
+import codes.fixmy.twodrive.core.model.data.SortOrder
+import codes.fixmy.twodrive.core.model.data.UserData
+import codes.fixmy.twodrive.core.testing.data.driveItemsTestData
+import codes.fixmy.twodrive.core.testing.repository.TestDriveItemsRepository
+import codes.fixmy.twodrive.core.testing.repository.TestUserDataRepository
+import codes.fixmy.twodrive.core.testing.util.MainDispatcherRule
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+
+class FilesViewModelTest {
+
+    @get:Rule
+    val dispatcherRule = MainDispatcherRule()
+
+    private val driveItemsRepository = TestDriveItemsRepository()
+    private val userDataRepository = TestUserDataRepository()
+
+    private lateinit var viewModel: FilesViewModel
+
+    @Before
+    fun setup() {
+        viewModel = FilesViewModel(
+            driveItemsRepository = driveItemsRepository,
+            userDataRepository = userDataRepository,
+            folderId = null,
+        )
+    }
+
+    @Test
+    fun stateIsInitiallyLoadingAndSyncIsRequested() = runTest {
+        assertEquals(FilesUiState.Loading, viewModel.uiState.value)
+        assertEquals(1, driveItemsRepository.syncCount)
+    }
+
+    @Test
+    fun rootChildrenAreShownFoldersFirst() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING))
+
+        val state = assertIs<FilesUiState.Success>(viewModel.uiState.value)
+        assertEquals(listOf("Documents", "Beach sunset.jpg", "Resume 2026.docx"), state.items.map { it.name })
+    }
+
+    @Test
+    fun changingSortOrderReordersItems() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING))
+
+        viewModel.setSortOrder(SortOrder.SIZE_LARGEST_FIRST)
+
+        val state = assertIs<FilesUiState.Success>(viewModel.uiState.value)
+        assertEquals(SortOrder.SIZE_LARGEST_FIRST, state.sortOrder)
+        assertEquals(listOf("Documents", "Beach sunset.jpg", "Resume 2026.docx"), state.items.map { it.name })
+    }
+
+    @Test
+    fun subfolderShowsOnlyItsChildren() = runTest {
+        val subfolderViewModel = FilesViewModel(
+            driveItemsRepository = driveItemsRepository,
+            userDataRepository = userDataRepository,
+            folderId = "f-documents",
+        )
+        backgroundScope.launch(UnconfinedTestDispatcher()) { subfolderViewModel.uiState.collect() }
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING))
+
+        val state = assertIs<FilesUiState.Success>(subfolderViewModel.uiState.value)
+        assertEquals("Documents", state.folder?.name)
+        assertEquals(listOf("Apartment lease.pdf", "Meeting notes.txt"), state.items.map { it.name })
+    }
+}
