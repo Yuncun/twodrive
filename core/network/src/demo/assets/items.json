@@ -1,0 +1,299 @@
+{
+  "value": [
+    {
+      "id": "root",
+      "name": "root",
+      "size": 0,
+      "lastModifiedDateTime": "2026-08-20T09:12:00Z",
+      "webUrl": "https://onedrive.live.com/?id=root",
+      "parentReference": {
+        "driveId": "demo-drive"
+      },
+      "folder": {
+        "childCount": 6
+      },
+      "root": {}
+    },
+    {
+      "id": "f-documents",
+      "name": "Documents",
+      "size": 0,
+      "lastModifiedDateTime": "2026-08-18T14:03:00Z",
+      "webUrl": "https://onedrive.live.com/?id=f-documents",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "root"
+      },
+      "folder": {
+        "childCount": 5
+      }
+    },
+    {
+      "id": "f-pictures",
+      "name": "Pictures",
+      "size": 0,
+      "lastModifiedDateTime": "2026-08-19T20:41:00Z",
+      "webUrl": "https://onedrive.live.com/?id=f-pictures",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "root"
+      },
+      "folder": {
+        "childCount": 4
+      }
+    },
+    {
+      "id": "f-music",
+      "name": "Music",
+      "size": 0,
+      "lastModifiedDateTime": "2026-05-02T08:00:00Z",
+      "webUrl": "https://onedrive.live.com/?id=f-music",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "root"
+      },
+      "folder": {
+        "childCount": 2
+      }
+    },
+    {
+      "id": "f-vault",
+      "name": "Personal Vault",
+      "size": 0,
+      "lastModifiedDateTime": "2026-01-15T12:00:00Z",
+      "webUrl": "https://onedrive.live.com/?id=f-vault",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "root"
+      },
+      "folder": {
+        "childCount": 0
+      }
+    },
+    {
+      "id": "i-resume",
+      "name": "Resume 2026.docx",
+      "size": 48213,
+      "lastModifiedDateTime": "2026-08-20T09:12:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-resume",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "root"
+      },
+      "file": {
+        "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      }
+    },
+    {
+      "id": "i-budget",
+      "name": "Household budget.xlsx",
+      "size": 132770,
+      "lastModifiedDateTime": "2026-07-30T22:15:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-budget",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "root"
+      },
+      "file": {
+        "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      }
+    },
+    {
+      "id": "f-taxes",
+      "name": "Taxes",
+      "size": 0,
+      "lastModifiedDateTime": "2026-04-14T18:30:00Z",
+      "webUrl": "https://onedrive.live.com/?id=f-taxes",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-documents"
+      },
+      "folder": {
+        "childCount": 1
+      }
+    },
+    {
+      "id": "i-lease",
+      "name": "Apartment lease.pdf",
+      "size": 2301004,
+      "lastModifiedDateTime": "2026-03-01T16:20:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-lease",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-documents"
+      },
+      "file": {
+        "mimeType": "application/pdf"
+      }
+    },
+    {
+      "id": "i-notes",
+      "name": "Meeting notes.txt",
+      "size": 4112,
+      "lastModifiedDateTime": "2026-08-18T14:03:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-notes",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-documents"
+      },
+      "file": {
+        "mimeType": "text/plain"
+      }
+    },
+    {
+      "id": "i-deck",
+      "name": "Pitch deck.pptx",
+      "size": 9811222,
+      "lastModifiedDateTime": "2026-06-11T11:11:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-deck",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-documents"
+      },
+      "file": {
+        "mimeType": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      }
+    },
+    {
+      "id": "i-recipes",
+      "name": "Recipes.md",
+      "size": 8902,
+      "lastModifiedDateTime": "2026-02-02T02:02:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-recipes",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-documents"
+      },
+      "file": {
+        "mimeType": "text/markdown"
+      }
+    },
+    {
+      "id": "i-1040",
+      "name": "2025 return.pdf",
+      "size": 1204551,
+      "lastModifiedDateTime": "2026-04-14T18:30:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-1040",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-taxes"
+      },
+      "file": {
+        "mimeType": "application/pdf"
+      }
+    },
+    {
+      "id": "f-camera",
+      "name": "Camera Roll",
+      "size": 0,
+      "lastModifiedDateTime": "2026-08-19T20:41:00Z",
+      "webUrl": "https://onedrive.live.com/?id=f-camera",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-pictures"
+      },
+      "folder": {
+        "childCount": 2
+      }
+    },
+    {
+      "id": "i-beach",
+      "name": "Beach sunset.jpg",
+      "size": 3402118,
+      "lastModifiedDateTime": "2026-07-04T19:55:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-beach",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-pictures"
+      },
+      "file": {
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "i-logo",
+      "name": "Logo.png",
+      "size": 210450,
+      "lastModifiedDateTime": "2026-05-20T10:10:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-logo",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-pictures"
+      },
+      "file": {
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "id": "i-scan",
+      "name": "Whiteboard scan.heic",
+      "size": 1998301,
+      "lastModifiedDateTime": "2026-06-30T09:09:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-scan",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-pictures"
+      },
+      "file": {
+        "mimeType": "image/heic"
+      }
+    },
+    {
+      "id": "i-img1",
+      "name": "IMG_20260819_204100.jpg",
+      "size": 4100003,
+      "lastModifiedDateTime": "2026-08-19T20:41:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-img1",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-camera"
+      },
+      "file": {
+        "mimeType": "image/jpeg"
+      }
+    },
+    {
+      "id": "i-vid1",
+      "name": "VID_20260815_120000.mp4",
+      "size": 88120001,
+      "lastModifiedDateTime": "2026-08-15T12:00:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-vid1",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-camera"
+      },
+      "file": {
+        "mimeType": "video/mp4"
+      }
+    },
+    {
+      "id": "i-song",
+      "name": "Road trip mix.mp3",
+      "size": 7233010,
+      "lastModifiedDateTime": "2026-05-02T08:00:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-song",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-music"
+      },
+      "file": {
+        "mimeType": "audio/mpeg"
+      }
+    },
+    {
+      "id": "i-podcast",
+      "name": "Podcast episode 12.m4a",
+      "size": 41002300,
+      "lastModifiedDateTime": "2026-04-28T07:00:00Z",
+      "webUrl": "https://onedrive.live.com/?id=i-podcast",
+      "parentReference": {
+        "driveId": "demo-drive",
+        "id": "f-music"
+      },
+      "file": {
+        "mimeType": "audio/mp4"
+      }
+    }
+  ],
+  "@odata.deltaLink": "demo://delta/latest"
+}

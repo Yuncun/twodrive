@@ -1,0 +1,15 @@
+{
+  "client_id": "eed23e1d-ad50-46ab-936a-02ec40532b29",
+  "authorization_user_agent": "DEFAULT",
+  "redirect_uri": "msauth://codes.fixmy.twodrive/J9AaPozhP6djyGWJSSzVi2DZpoU%3D",
+  "account_mode": "SINGLE",
+  "broker_redirect_uri_registered": false,
+  "authorities": [
+    {
+      "type": "AAD",
+      "audience": {
+        "type": "PersonalMicrosoftAccount"
+      }
+    }
+  ]
+}

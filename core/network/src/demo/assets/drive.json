@@ -1,0 +1,10 @@
+{
+  "id": "demo-drive",
+  "driveType": "personal",
+  "quota": {
+    "used": 161600000000,
+    "total": 107374182400,
+    "remaining": 0,
+    "state": "exceeded"
+  }
+}

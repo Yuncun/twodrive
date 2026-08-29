@@ -1,0 +1,6 @@
+{
+  "id": "demo-user",
+  "displayName": "Demo User",
+  "mail": "demo@example.com",
+  "userPrincipalName": "demo@example.com"
+}
