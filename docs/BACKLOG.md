@@ -61,6 +61,12 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] O: M1.7 an empty section is a pale-blue (#EAF4FC) filled card, 379.4x63.2dp at the 16dp gutter, 8dp radius, 16dp inner padding, two lines of ~14sp text, no icon and no border — reuse this shape for empty folders and the offline empty state, and note the copy embeds "⋯" as an inline glyph in the sentence
 - [ ] O: M1.7 the search pill's contentDescription is "Search your photos" while its icon description and label both say "Search your files" — a OneDrive bug; TwoDrive's description must match its label
 
+- [ ] O: M1.4 the folder screen has no app bar title, no pivot tabs and no avatar: a 56dp toolbar holding only a back arrow ("Navigate Up") at x=0, then an 89.9dp band with the folder name centred at ~24-26sp bold, then the same pinned 48dp sort/view bar, list starting at y=241dp — docs/ux-reference/spec/folder.md
+- [ ] O: M1.4 there is no breadcrumb anywhere; nesting is conveyed only by the title and the back arrow, so the route needs the folder name as an argument to render before children load
+- [ ] O: M1.4 OneDrive scrolls the whole header away on the first swipe — toolbar and title both — leaving only the sort bar pinned under the status bar and no back affordance at all; use M3's exitUntilCollapsedScrollBehavior, which keeps a collapsed bar with the back arrow, and note the deliberate divergence
+- [ ] O: M1.4 the sort key is global, not per folder: a folder opens already sorted by whatever My files was set to
+- [ ] O: M1.2 list rows are not a uniform height — a folder row is 169px (64.4dp) and a file row 179px (68.2dp) on the same screen; pick one 68dp row for TwoDrive rather than reproducing the split
+
 ## Milestone 2 — real Graph (prod flavor)
 - [ ] M2.1 MSAL sign-in in prod flavor: `MsalAuthRepository` (single account, `consumers` authority, scopes User.Read Files.ReadWrite.All), silent token refresh, sign-out; OkHttp interceptor adds the bearer token; 401 → re-auth. Unit-test the interceptor with MockWebServer.
   - Redirect URI must follow the real package name: debug builds are `codes.fixmy.twodrive.debug`, release `codes.fixmy.twodrive`. Use `${applicationId}` as the `android:host` in the manifest's BrowserTabActivity filter and generate `redirect_uri` in msal_config from `BuildConfig.APPLICATION_ID` (or a `msal_config` per build type). Both hosts are registered in the Entra app with hash `J9AaPozhP6djyGWJSSzVi2DZpoU=`. Verify by installing prodDebug on an emulator: MSAL must not throw a redirect-URI mismatch.
@@ -92,9 +98,21 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] O: M3.2 the action set depends on the source list as well as the item: Home ▸ Recent files drops Delete, Move and Copy and offers Download and Comment instead, while My files offers the full set — model the actions per (item, source), not per item
 - [ ] O: M3.2 the sheet has no "Open" or "Open with" entry: tapping the row is the only way to open a file, so M3.1 must not rely on a sheet action
 
+- [ ] O: M3.3 there is no captured reference for the add menu: docs/ux-reference/21-add-items-menu.png is mis-named and actually shows the item bottom sheet for the folder "Email attachments" (a duplicate of 12-item-more-options.png). Rename or replace it, and design the add menu from M3 rather than from that file
+- [ ] O: M3.3/M3.6 on an over-quota account the "+" FAB never opens a menu — it replaces the screen with a full-bleed "Your OneDrive will be frozen" page (illustration, title, body naming the account, a "Learn more" link, and bottom-pinned "Upgrade" / "Go to OneDrive" buttons). TwoDrive should keep the user on the list and surface quota refusals as a snackbar or a disabled FAB instead — docs/ux-reference/spec/add-menu.md
+
 ## Milestone 4 — polish
 - [ ] M4.1 Search (`/me/drive/root/search(q=)`), search pill → search screen with recent queries.
 - [ ] M4.2 Shared tab (`/me/drive/sharedWithMe`) read-only list grouped by month (16-shared.png).
 - [ ] M4.3 Pull-to-refresh, list animations, dynamic color off (fixed blue), dark theme parity screenshots.
 - [ ] M4.4 Large-screen adaptive layout (list-detail) like NIA.
 - [ ] M4.5 Release build: R8 rules for MSAL/Room/Retrofit, signed release APK artifact in CI.
+- [ ] O: M4.1 search is a full-screen replacement, not an overlay: flat white bar (x=8dp, 395x56dp, no fill/outline/shadow), back arrow 48dp at x=8, hint "Folders, files", keyboard auto-opens with a Search IME action, and a "Clear Text" X appears at x=349dp once there is text — docs/ux-reference/spec/search.md
+- [ ] O: M4.1 OneDrive's pre-search body is completely blank: no recent searches, no suggestions, no typeahead, no filter chips. M4.1 asks for recent queries, so that is a deliberate improvement — record it rather than treating the blank screen as the target
+- [ ] O: M4.1 the bar changes shape on submit (flat full-width -> a shadowed pill inset to x=24dp, 363x56dp); keep one constant M3 SearchBar in TwoDrive instead
+- [ ] O: M4.1 the results screen is a pinned 48dp header row — "Results from all files" at the 16dp gutter plus a 48dp "View options" button at x=347dp — over a flat interleaved list of folders and files, with no sort control, no grouping and no parent-folder line on a row — docs/ux-reference/spec/search-results.md
+- [ ] O: M4.1 search results report folders as "0 KB" because the search response carries no folder size; decide whether TwoDrive hides the size for folder results rather than printing 0 KB
+- [ ] O: M4.1 search reuses the view menu but labels the modes "List / Grid" where My files says "List / Tile"; TwoDrive must use one ViewMode enum and one pair of labels everywhere
+- [ ] O: M4.1 the no-results state is an illustration block sitting ~40% down the page (192dp image, "Couldn't find anything" ~22sp bold, then "It can take a few minutes for new or edited items to appear in search results."), and the results header row is hidden while it shows — docs/ux-reference/24-search-no-results.png
+- [ ] O: M4.1 no loading indicator is shown between submit and results — the body stays blank, which reads as "no results"; TwoDrive should show a progress indicator or a shimmer list
+- [ ] O: M4.1 search is account-wide even when opened from inside a folder; there is no scope chip and no search-within-this-folder option
