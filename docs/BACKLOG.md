@@ -45,6 +45,16 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] O: M1.6 tile names use middle ellipsis ("animati…hillhop", "Email at…ments"), not tail ellipsis; use TextOverflow.MiddleEllipsis
 - [ ] O: M1.7 the search pill and the "+" FAB float over the content on every Files tab, not only Home, and never scroll away: pill bottom-left at x=33.5dp, y=819dp, 272×56dp, radius 28, pale blue #EAF4FC; FAB bottom-right at x=322dp, 56dp
 - [ ] O: M1.7 Personal Vault appears as an ordinary row in My files with the literal subtitle "Tap to set up" instead of "size · date"; decide whether TwoDrive lists it at all (Vault is out of scope) and what its row says
+- [ ] O: M1.1 welcome layout: illustration ~200x124dp centred, headline "Protect your files and access them anywhere" ~24sp bold centred in a ~312dp column, then a bottom-anchored stack — Sign in filled 379x48dp with a 4dp radius (not the M3 pill), 8dp gap, then the secondary buttons TwoDrive drops — docs/ux-reference/spec/welcome.md
+- [ ] O: M1.3 the app bar's title slot holds a two-segment "Photos | Files" pill (155x36dp; selected segment = white chip with a thin outline and a bold label, unselected = grey label on a light-grey track), not a text title; TwoDrive has no Photos mode, so decide what occupies that slot
+- [ ] O: M1.3 the account avatar is a 56dp IconButton at x=4.2dp in the navigation slot and its only job is to open the drawer; the pivot bar is a separate 60.2dp ScrollableTabRow below the 56dp app bar
+- [ ] O: M1.7 Files ▸ Home is exactly two sections and does not scroll on this account: "Recent files" and "Offline files"; a section header is 56dp tall with a ~22sp bold title at the 16dp gutter and an optional right-aligned blue "See all" TextButton — docs/ux-reference/spec/files-home.md
+- [ ] O: M1.7 Recent files shows 6 rows, not 5 — align the M1.7 "top 5 by lastModified" wording with what OneDrive actually renders
+- [ ] O: M1.7 Home rows are 68.2dp tall (taller than the 64dp My files row) because they carry a 40dp image thumbnail with 4dp rounded corners; video adds a 16dp white play badge centred on the thumbnail and a document adds a 16dp type badge at its bottom-left
+- [ ] O: M1.7 a video subtitle carries a leading m:ss duration joined by the same separator: "0:12 · 28 MB · Jun 14"
+- [ ] O: M1.7 the modified date drops the year inside the current year ("Jun 18", "May 7") and keeps it otherwise ("Jan 18, 2024") — the concrete rule behind the existing "use a localized formatter" review item
+- [ ] O: M1.7 an empty section is a pale-blue (#EAF4FC) filled card, 379.4x63.2dp at the 16dp gutter, 8dp radius, 16dp inner padding, two lines of ~14sp text, no icon and no border — reuse this shape for empty folders and the offline empty state, and note the copy embeds "⋯" as an inline glyph in the sentence
+- [ ] O: M1.7 the search pill's contentDescription is "Search your photos" while its icon description and label both say "Search your files" — a OneDrive bug; TwoDrive's description must match its label
 
 ## Milestone 2 — real Graph (prod flavor)
 - [ ] M2.1 MSAL sign-in in prod flavor: `MsalAuthRepository` (single account, `consumers` authority, scopes User.Read Files.ReadWrite.All), silent token refresh, sign-out; OkHttp interceptor adds the bearer token; 401 → re-auth. Unit-test the interceptor with MockWebServer.
@@ -58,6 +68,10 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] M2.4 Account drawer (19-account-drawer.png): avatar, email, storage bar from `/me/drive` quota, Sign out. Handle 507/quota-full state visibly.
 - [ ] R: M2.4 tapping the account icon signs the user out on the spot (onActionClick = onSignOut in TwoDriveApp.kt); it should open the drawer, and the top bar's onNavigationClick is an empty stub
 - [ ] M2.5 Error handling: 429 Retry-After backoff, offline snackbar, empty folder state.
+- [ ] O: M2.4 drawer metrics: a 305dp modal sheet with rounded right corners; account-switcher header of 96dp tiles with 56dp avatars (a 2dp blue ring on the current one) over a 1dp tab-style blue indicator; a non-clickable email row; then 48.4dp link rows with 24dp icons at x=16dp and labels at x=56dp and no dividers between them — docs/ux-reference/spec/account-drawer.md
+- [ ] O: M2.4 the quota block is a fixed footer that never scrolls: 24dp icon + "Microsoft storage" + "100.3 GB used of 100 GB (100%)" + a determinate bar + a full-width 273x52dp filled "View Plan" button. Over quota the icon, the used amount (bold) and the bar all turn red-orange #D83B01 and that is the only signal the account is full — no dialog and no snackbar anywhere else
+- [ ] O: M2.4 Sign out is an ordinary drawer row: same 24dp grey icon, same 56dp label, no red tint and no separator above it
+- [ ] O: M2.4 the drawer reserves a banner slot between the email row and the link list (24dp icon + title + body + a small outlined button); TwoDrive should use it for offline and sync-error notices rather than inventing a new surface
 
 ## Milestone 3 — file actions
 - [ ] M3.1 Open file: download to cache with progress, then `ACTION_VIEW` via FileProvider (system viewer).
@@ -68,6 +82,10 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] M3.6 Upload from "+" menu: system file picker, `createUploadSession` chunked upload for >4 MB, WorkManager, progress notification.
 - [ ] M3.7 Share link: `createLink` (view/edit toggle), copy + system share sheet.
 - [ ] M3.8 Details screen (name, size, dates, path, webUrl "Open in OneDrive").
+- [ ] O: M3.2 the item sheet is content-height (skipPartiallyExpanded), never a half peek: 36.6x3.8dp drag handle, a centred 72dp thumbnail, centred name (~16sp) and "size · date" (~14sp grey), an 80dp row of action tiles, then 48.4dp rows with 24dp icons at 16dp and labels at 56dp — docs/ux-reference/spec/item-bottom-sheet.md
+- [ ] O: M3.2 Delete is an action tile beside Share, not a list row, and carries no destructive styling; the tiles are grey 8dp-radius surfaces 80dp tall that split the width — two tiles for a folder (Share, Delete), three for a file (Share, Delete, Download)
+- [ ] O: M3.2 the action set depends on the source list as well as the item: Home ▸ Recent files drops Delete, Move and Copy and offers Download and Comment instead, while My files offers the full set — model the actions per (item, source), not per item
+- [ ] O: M3.2 the sheet has no "Open" or "Open with" entry: tapping the row is the only way to open a file, so M3.1 must not rely on a sheet action
 
 ## Milestone 4 — polish
 - [ ] M4.1 Search (`/me/drive/root/search(q=)`), search pill → search screen with recent queries.
