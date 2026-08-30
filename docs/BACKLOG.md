@@ -7,7 +7,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 ## Milestone 1 — skeleton runs in demo flavor
 - [x] M1.0 (dab6c62) Theme: disable dynamic color; fixed light/dark palette with OneDrive-like primary blue (#0F6CBD), white surfaces, grey "size · date" secondary text; folder icon yellow (#FFB900-ish) and file icons by type as in docs/ux-reference/11-myfiles.png. Re-record Roborazzi screenshots.
 - [x] M1.1 (ef743a1) Welcome screen (docs/ux-reference/02-welcome.png): illustration placeholder, "Sign in" button; demo flavor's fake AuthRepository signs in immediately; Roborazzi test.
-- [ ] R: M1.1 a grey tagline ("Your OneDrive files, in a third-party app built on Microsoft Graph.") sits under the headline; 02-welcome.png has the headline alone with no subheading
+- [x] R: M1.1 (e11134e) a grey tagline ("Your OneDrive files, in a third-party app built on Microsoft Graph.") sits under the headline; 02-welcome.png has the headline alone with no subheading
 - [ ] R: M1.1 the headline is headlineMedium at regular weight and renders as one thin line; 02-welcome.png is bold and wraps to two centred lines
 - [ ] R: M1.1 02-welcome.png has an outlined "Create new account" button under "Sign in" and a "Skip to my photos" text button; TwoDrive shows only "Sign in" — record the decision in AGENTS.md (Photos is out of scope, account creation is not)
 - [ ] R: M1.1 sign-in failures show raw exception text: MainActivityViewModel.signIn() puts e.message on the screen and MsalAuthRepository builds it as hardcoded English carrying the MSAL error code ("Sign-in failed: invalid_grant") — map failures to string resources
