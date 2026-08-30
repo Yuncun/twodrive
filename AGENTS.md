@@ -91,9 +91,7 @@ and, for UI changes, the Gradle-managed device smoke test above. CI (`.github/wo
 - The project uses git and is hosted in https://github.com/Yuncun/twodrive.
 - Commit messages follow Conventional Commits.
 
-## Device testing (real Microsoft account)
+## Device testing
 
-- Demo flavor never needs an account. Prod flavor signs in with MSAL; the registered redirect URIs cover `codes.fixmy.twodrive` and `codes.fixmy.twodrive.debug`.
-- A physical Pixel 8a (`adb` serial `44271JEKB17967`) with Microsoft Authenticator is the test device. `tools/device/msa-signin.sh` installs nothing; it drives the prod sign-in and approves the Authenticator number-match on the same phone. It needs `TWODRIVE_DEVICE_PIN` (the phone's screen-lock password) in the environment — a local secret, never committed, never logged.
-- `tools/device/tap.py <serial> <label>` taps a UI element by its text/content-desc via uiautomator. Prefer the `mobile-mcp` MCP server when available.
-- Never touch other OneDrive builds on that phone (`com.microsoft.skydrive.test`, `.ai`).
+- The demo flavor never needs a Microsoft account; CI runs only demo-flavor checks.
+- Prod-flavor tests against a real account need a phone you own with Microsoft Authenticator. Keep the scripts and secrets for that in an untracked `.harness/` directory (gitignored); nothing in this repo assumes a particular device, account, or agent tool.
