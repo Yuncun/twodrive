@@ -32,6 +32,8 @@ dependencies {
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.robolectric)
     testImplementation(projects.core.testing)
+    // The demo-flavour tests read the bundled demo drive through DemoGraphNetworkDataSource.
+    testDemoImplementation(libs.kotlinx.serialization.json)
     testDemoImplementation(projects.core.screenshotTesting)
 
     androidTestImplementation(libs.bundles.androidx.compose.ui.test)

@@ -225,16 +225,21 @@ private fun DriveItemRow(
     }
 }
 
+/**
+ * The secondary line of a row: OneDrive puts the size first and the date second, e.g.
+ * "9.2 MB · Jul 12, 2024" (docs/ux-reference/11-myfiles.png).
+ */
 @Composable
 private fun DriveItem.subtitle(): String {
     val date = lastModified.toLocalDateTime(TimeZone.currentSystemDefault()).date
     val dateText = "${date.month.name.take(3).lowercase().replaceFirstChar(Char::titlecase)} ${date.dayOfMonth}, ${date.year}"
-    return if (isFolder) {
+    val sizeText = if (isFolder) {
         val count = childCount ?: 0
-        "$dateText · ${pluralStringResource(R.plurals.feature_files_impl_item_count, count, count)}"
+        pluralStringResource(R.plurals.feature_files_impl_item_count, count, count)
     } else {
-        "$dateText · ${formatFileSize(size)}"
+        formatFileSize(size)
     }
+    return "$sizeText · $dateText"
 }
 
 private fun SortOrder.labelRes(): Int = when (this) {

@@ -22,7 +22,6 @@ import codes.fixmy.twodrive.core.designsystem.component.TwoDriveBackground
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.screenshottesting.captureMultiDevice
-import codes.fixmy.twodrive.core.testing.data.driveItemsTestData
 import dagger.hilt.android.testing.HiltTestApplication
 import org.junit.Before
 import org.junit.Rule
@@ -54,7 +53,7 @@ class FilesScreenScreenshotTests {
             FilesScreenContent(
                 FilesUiState.Success(
                     folder = null,
-                    items = driveItemsTestData.filter { it.parentId == "root" },
+                    items = demoDriveChildren(),
                     sortOrder = SortOrder.NAME_ASCENDING,
                 ),
             )
