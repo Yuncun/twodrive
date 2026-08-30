@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright 2026 Eric Shen
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="240dp"
+    android:height="150dp"
+    android:viewportWidth="240"
+    android:viewportHeight="150">
+
+    <!-- Desktop monitor behind everything. -->
+    <path
+        android:fillColor="#F3F2F1"
+        android:pathData="M88,6 H218 A10,10 0 0 1 228,16 V100 A10,10 0 0 1 218,110 H88 A10,10 0 0 1 78,100 V16 A10,10 0 0 1 88,6 Z" />
+
+    <!-- Laptop screen and base in front of it, on the left. -->
+    <path
+        android:fillColor="#E1DFDD"
+        android:pathData="M26,58 H114 A8,8 0 0 1 122,66 V124 A8,8 0 0 1 114,132 H26 A8,8 0 0 1 18,124 V66 A8,8 0 0 1 26,58 Z" />
+    <path
+        android:fillColor="#D2D0CE"
+        android:pathData="M14,132 H126 A6,6 0 0 1 132,138 V138 A6,6 0 0 1 126,144 H14 A6,6 0 0 1 8,138 V138 A6,6 0 0 1 14,132 Z" />
+
+    <!-- The files themselves: two gradient cards spanning both devices. -->
+    <path android:pathData="M68,64 H156 A10,10 0 0 1 166,74 V114 A10,10 0 0 1 156,124 H68 A10,10 0 0 1 58,114 V74 A10,10 0 0 1 68,64 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="166"
+                android:endY="124"
+                android:startX="58"
+                android:startY="64"
+                android:type="linear">
+                <item
+                    android:color="#0A518D"
+                    android:offset="0" />
+                <item
+                    android:color="#2886DE"
+                    android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:pathData="M168,56 H210 A10,10 0 0 1 220,66 V114 A10,10 0 0 1 210,124 H168 A10,10 0 0 1 158,114 V66 A10,10 0 0 1 168,56 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="220"
+                android:endY="124"
+                android:startX="158"
+                android:startY="56"
+                android:type="linear">
+                <item
+                    android:color="#038387"
+                    android:offset="0" />
+                <item
+                    android:color="#9CC9F3"
+                    android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Accent bubble, as in the reference illustration. -->
+    <path
+        android:fillColor="#9CC9F3"
+        android:pathData="M150,28 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0 Z" />
+</vector>

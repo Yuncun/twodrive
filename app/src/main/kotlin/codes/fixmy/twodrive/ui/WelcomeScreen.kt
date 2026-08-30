@@ -16,19 +16,24 @@
 
 package codes.fixmy.twodrive.ui
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,8 +43,15 @@ import codes.fixmy.twodrive.core.designsystem.component.TwoDriveBackground
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveButton
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 
+/**
+ * First screen of a signed-out app, following docs/ux-reference/02-welcome.png: an illustration
+ * and headline in the middle of the screen, and the sign-in button pinned to the bottom.
+ *
+ * In the demo flavor the fake [codes.fixmy.twodrive.core.auth.AuthRepository] signs in
+ * immediately, so tapping the button goes straight to the Files tab with no account.
+ */
 @Composable
-fun SignInScreen(
+fun WelcomeScreen(
     error: String?,
     onSignInClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -49,44 +61,70 @@ fun SignInScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .safeDrawingPadding()
-                .padding(32.dp),
+                .padding(horizontal = 24.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
         ) {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.displaySmall,
+            Spacer(Modifier.weight(1f))
+            Image(
+                painter = painterResource(R.drawable.illustration_welcome),
+                contentDescription = null,
+                modifier = Modifier.width(WelcomeIllustrationWidth),
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(40.dp))
             Text(
-                text = stringResource(R.string.sign_in_tagline),
-                style = MaterialTheme.typography.bodyLarge,
+                text = stringResource(R.string.welcome_headline),
+                style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
             )
-            Spacer(Modifier.height(32.dp))
-            TwoDriveButton(
-                onClick = onSignInClick,
-                modifier = Modifier.testTag("signIn:button"),
-            ) {
-                Text(stringResource(R.string.sign_in_button))
-            }
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = stringResource(R.string.welcome_tagline),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.weight(1f))
             if (error != null) {
-                Spacer(Modifier.height(16.dp))
                 Text(
                     text = error,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+            }
+            TwoDriveButton(
+                onClick = onSignInClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = SignInButtonHeight)
+                    .testTag("welcome:signIn"),
+                shape = RoundedCornerShape(4.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.welcome_sign_in_button),
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
         }
     }
 }
 
+private val WelcomeIllustrationWidth = 240.dp
+private val SignInButtonHeight = 56.dp
+
 @Preview
 @Composable
-private fun SignInScreenPreview() {
+private fun WelcomeScreenPreview() {
     TwoDriveTheme {
-        SignInScreen(error = null, onSignInClick = {})
+        WelcomeScreen(error = null, onSignInClick = {})
+    }
+}
+
+@Preview
+@Composable
+private fun WelcomeScreenErrorPreview() {
+    TwoDriveTheme {
+        WelcomeScreen(error = "Sign-in was cancelled.", onSignInClick = {})
     }
 }

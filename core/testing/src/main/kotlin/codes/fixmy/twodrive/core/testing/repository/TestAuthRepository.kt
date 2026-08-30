@@ -17,6 +17,7 @@
 package codes.fixmy.twodrive.core.testing.repository
 
 import android.app.Activity
+import codes.fixmy.twodrive.core.auth.AuthException
 import codes.fixmy.twodrive.core.auth.AuthRepository
 import codes.fixmy.twodrive.core.auth.AuthState
 import codes.fixmy.twodrive.core.model.data.UserProfile
@@ -29,7 +30,14 @@ class TestAuthRepository : AuthRepository {
 
     override val authState: Flow<AuthState> = state
 
+    /**
+     * When set, [signIn] throws this instead of signing in, so callers can be tested against a
+     * failed or cancelled sign-in.
+     */
+    var signInException: AuthException? = null
+
     override suspend fun signIn(activity: Activity) {
+        signInException?.let { throw it }
         state.value = AuthState.SignedIn(testProfile)
     }
 

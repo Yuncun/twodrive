@@ -26,8 +26,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import codes.fixmy.twodrive.core.data.util.NetworkMonitor
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
-import codes.fixmy.twodrive.ui.SignInScreen
 import codes.fixmy.twodrive.ui.TwoDriveApp
+import codes.fixmy.twodrive.ui.WelcomeScreen
 import codes.fixmy.twodrive.ui.rememberTwoDriveAppState
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
             TwoDriveTheme {
                 when (val state = uiState) {
                     MainActivityUiState.Loading -> Unit
-                    is MainActivityUiState.SignedOut -> SignInScreen(
+                    is MainActivityUiState.SignedOut -> WelcomeScreen(
                         error = state.error,
                         onSignInClick = { viewModel.signIn(this) },
                     )

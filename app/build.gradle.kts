@@ -22,6 +22,7 @@ plugins {
     alias(libs.plugins.twodrive.android.application.flavors)
     alias(libs.plugins.twodrive.hilt)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -109,7 +110,9 @@ dependencies {
 
     testImplementation(libs.hilt.android.testing)
     testImplementation(libs.kotlin.test)
+    testImplementation(libs.robolectric)
     testImplementation(projects.core.testing)
+    testDemoImplementation(projects.core.screenshotTesting)
 
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(libs.androidx.test.espresso.core)

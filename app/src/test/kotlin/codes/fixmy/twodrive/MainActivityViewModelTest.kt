@@ -16,6 +16,8 @@
 
 package codes.fixmy.twodrive
 
+import android.app.Activity
+import codes.fixmy.twodrive.core.auth.AuthException
 import codes.fixmy.twodrive.core.auth.AuthState
 import codes.fixmy.twodrive.core.testing.repository.TestAuthRepository
 import codes.fixmy.twodrive.core.testing.util.MainDispatcherRule
@@ -59,5 +61,29 @@ class MainActivityViewModelTest {
         val state = assertIs<MainActivityUiState.SignedIn>(viewModel.uiState.value)
         assertEquals("test@example.com", state.profile.email)
         assertEquals(false, state.shouldKeepSplashScreen())
+    }
+
+    @Test
+    fun signInFromWelcomeScreenSignsIn() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        authRepository.setAuthState(AuthState.SignedOut)
+
+        viewModel.signIn(Activity())
+
+        assertIs<MainActivityUiState.SignedIn>(viewModel.uiState.value)
+    }
+
+    @Test
+    fun failedSignInIsReportedOnTheWelcomeScreen() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        authRepository.setAuthState(AuthState.SignedOut)
+        authRepository.signInException = AuthException("Sign-in was cancelled.")
+
+        viewModel.signIn(Activity())
+
+        assertEquals(
+            MainActivityUiState.SignedOut(error = "Sign-in was cancelled."),
+            viewModel.uiState.value,
+        )
     }
 }
