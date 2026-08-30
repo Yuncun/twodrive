@@ -18,6 +18,9 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] R: M1.2 the date is built by hand from the English month enum and always carries the year; use a localized formatter and drop the year for the current year ("Feb 4")
 - [ ] R: M1.2 trailing icon is ⋮ MoreVert, not clickable and contentDescription null; OneDrive uses ⋯ and it opens the item sheet — make it an IconButton with a description
 - [ ] R: M1.2 item icon is 40dp; docs/ux-reference/README.md specifies a 48dp icon/thumbnail
+- [ ] R: M1.2 the screenshot test and FilesScreenTest declare SortOrder.NAME_ASCENDING but demoDriveChildren() hands back the demo assets in file order (Documents, Pictures, Music, Personal Vault, Resume 2026.docx, Household budget.xlsx); FilesViewModel sorts before it renders, so the three checked-in FilesScreenRoot PNGs show an order the app never draws — sort in the helper
+- [ ] R: M1.2 every folder in core/network/src/demo/assets/items.json has "size": 0, so the folder-size row the item above asks for cannot be shown from the demo drive; give the demo folders the recursive size Graph returns
+- [ ] R: M1.2 the row name is maxLines = 1 with the default Clip overflow, so a long name is cut mid-letter instead of ellipsized; the subtitle has no maxLines at all, so a long one wraps and makes that row taller than its neighbours
 - [ ] M1.3 Secondary tab row Home / My files / Shared / Vault / Offline with only My files functional; others show empty states from docs/ux-reference (17/18).
 - [ ] M1.4 Folder navigation: tapping a folder pushes a screen titled with the folder name, back arrow, same list; navigation is type-safe.
 - [ ] M1.5 Sort chip + menu (13-sort-menu.png): Name / Modified / File size, A→Z / Z→A; persisted in DataStore; unit test for ordering.
@@ -32,6 +35,8 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] R: M1.0 no dark-theme screenshots: dab6c62 shipped DarkColorScheme and deleted captureMultiTheme, and captureForDevice still takes darkMode but nothing passes true, so all 9 PNGs are light
 - [ ] R: core:database is the only module with no tests; add DAO tests for getRootChildren()'s is_root subquery, upsertDriveItems and deleteDriveItems
 - [ ] R: docs the backlog cites 19-account-drawer.png (M2.4) and 16-shared.png (M4.2), and docs/ux-reference/README.md cites 20-myfiles-scrolled.png; none of the three are committed — capture them or mark them private
+- [ ] R: docs the Definition of Done asks for the backlog tick "with the commit hash, in the same commit", which no commit can satisfy; M1.1 and M1.2 each needed a follow-up docs commit (58e4718, d28fd07) — reword it so the tick commit may follow the code commit
+- [ ] R: 49f29af committed tools/device scripts carrying the personal sign-in address and the test phone's adb serial 44271JEKB17967; e7b8dea took them out of the tree, but the repo is public and both stay in its history — decide whether that is acceptable or rewrite those commits
 - [ ] O: M1.2 list row metrics from the emulator: row pitch 64dp, leading icon 40dp at x=16dp, name and subtitle both left-aligned at x=68.6dp, trailing "⋯" a 48dp IconButton at x=353dp, and no divider between rows — docs/ux-reference/spec/my-files-list.md
 - [ ] O: M1.2 docs/ux-reference/README.md says the row icon/thumbnail is 48dp; the measured value is 40dp (105px ÷ 2.625). Correct the README so the "icon is 40dp" review item is not actioned the wrong way
 - [ ] O: M1.2 a shared item shows a 16dp two-person badge inline at the start of the subtitle row, pushing "size · date" to x=88.8dp; model `isShared` on DriveItem and render the badge
