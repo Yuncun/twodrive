@@ -17,6 +17,9 @@
 package codes.fixmy.twodrive.ui
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -53,6 +56,26 @@ class WelcomeScreenTest {
         composeTestRule.onNodeWithTag("welcome:signIn").performClick()
 
         assertEquals(1, clicks)
+    }
+
+    /**
+     * docs/ux-reference/02-welcome.png carries the headline alone: no subheading or tagline sits
+     * between it and the bottom-anchored button stack.
+     */
+    @Test
+    fun headlineIsTheOnlyTextBesidesTheButton() {
+        composeTestRule.setContent {
+            WelcomeScreen(error = null, onSignInClick = {})
+        }
+
+        val texts = composeTestRule
+            .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
+            .fetchSemanticsNodes()
+            .flatMap { node ->
+                node.config.getOrNull(SemanticsProperties.Text).orEmpty().map { it.text }
+            }
+
+        assertEquals(listOf(headline, signInLabel), texts)
     }
 
     @Test
