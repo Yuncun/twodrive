@@ -7,6 +7,11 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 ## Milestone 1 — skeleton runs in demo flavor
 - [x] M1.0 (dab6c62) Theme: disable dynamic color; fixed light/dark palette with OneDrive-like primary blue (#0F6CBD), white surfaces, grey "size · date" secondary text; folder icon yellow (#FFB900-ish) and file icons by type as in docs/ux-reference/11-myfiles.png. Re-record Roborazzi screenshots.
 - [x] M1.1 (ef743a1) Welcome screen (docs/ux-reference/02-welcome.png): illustration placeholder, "Sign in" button; demo flavor's fake AuthRepository signs in immediately; Roborazzi test.
+- [ ] R: M1.1 a grey tagline ("Your OneDrive files, in a third-party app built on Microsoft Graph.") sits under the headline; 02-welcome.png has the headline alone with no subheading
+- [ ] R: M1.1 the headline is headlineMedium at regular weight and renders as one thin line; 02-welcome.png is bold and wraps to two centred lines
+- [ ] R: M1.1 02-welcome.png has an outlined "Create new account" button under "Sign in" and a "Skip to my photos" text button; TwoDrive shows only "Sign in" — record the decision in AGENTS.md (Photos is out of scope, account creation is not)
+- [ ] R: M1.1 sign-in failures show raw exception text: MainActivityViewModel.signIn() puts e.message on the screen and MsalAuthRepository builds it as hardcoded English carrying the MSAL error code ("Sign-in failed: invalid_grant") — map failures to string resources
+- [ ] R: M1.1 the sign-in error Text has no live-region semantics, so TalkBack never announces it when it appears after a failed tap on Sign in
 - [ ] M1.2 Files ▸ My files list from `DriveItemsRepository` (demo JSON): rows = icon, name, "size · date", trailing overflow icon; Roborazzi test with the demo tree.
 - [ ] R: M1.2 row subtitle is "date · size"; OneDrive is "size · date" ("9.2 MB · Jul 12, 2024" in 11-myfiles.png) — FilesScreen.kt subtitle()
 - [ ] R: M1.2 folder rows show "N items"; OneDrive shows the folder's size ("hackathon 294.6 MB · Jul 25, 2018")
@@ -23,6 +28,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] R: M1.5 FilesViewModelTest.changingSortOrderReordersItems asserts nothing — NAME_ASCENDING and SIZE_LARGEST_FIRST give the same order for driveItemsTestData; add data that separates them
 - [ ] M1.6 View options List / Tile (14-view-options.png); tile view shows thumbnails (Coil) for images; persisted.
 - [ ] M1.7 Files ▸ Home: "Recent files" (top 5 by lastModified) with "See all"; search pill + FAB placeholders laid out as in 10-files-root.png.
+- [ ] R: DefaultTestDevices.PHONE is 640x360dp landscape, so no screenshot in the repo captures a portrait phone; the welcome screen's centred illustration and bottom-pinned button are only verified on foldable and tablet
 - [ ] R: M1.0 no dark-theme screenshots: dab6c62 shipped DarkColorScheme and deleted captureMultiTheme, and captureForDevice still takes darkMode but nothing passes true, so all 9 PNGs are light
 - [ ] R: core:database is the only module with no tests; add DAO tests for getRootChildren()'s is_root subquery, upsertDriveItems and deleteDriveItems
 - [ ] R: docs the backlog cites 19-account-drawer.png (M2.4) and 16-shared.png (M4.2), and docs/ux-reference/README.md cites 20-myfiles-scrolled.png; none of the three are committed — capture them or mark them private
