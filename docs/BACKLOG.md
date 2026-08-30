@@ -12,8 +12,8 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] R: M1.1 02-welcome.png has an outlined "Create new account" button under "Sign in" and a "Skip to my photos" text button; TwoDrive shows only "Sign in" — record the decision in AGENTS.md (Photos is out of scope, account creation is not)
 - [ ] R: M1.1 sign-in failures show raw exception text: MainActivityViewModel.signIn() puts e.message on the screen and MsalAuthRepository builds it as hardcoded English carrying the MSAL error code ("Sign-in failed: invalid_grant") — map failures to string resources
 - [ ] R: M1.1 the sign-in error Text has no live-region semantics, so TalkBack never announces it when it appears after a failed tap on Sign in
-- [ ] M1.2 Files ▸ My files list from `DriveItemsRepository` (demo JSON): rows = icon, name, "size · date", trailing overflow icon; Roborazzi test with the demo tree.
-- [ ] R: M1.2 row subtitle is "date · size"; OneDrive is "size · date" ("9.2 MB · Jul 12, 2024" in 11-myfiles.png) — FilesScreen.kt subtitle()
+- [x] M1.2 (1f53e4a) Files ▸ My files list from `DriveItemsRepository` (demo JSON): rows = icon, name, "size · date", trailing overflow icon; Roborazzi test with the demo tree.
+- [x] R: M1.2 (1f53e4a) row subtitle is "date · size"; OneDrive is "size · date" ("9.2 MB · Jul 12, 2024" in 11-myfiles.png) — FilesScreen.kt subtitle()
 - [ ] R: M1.2 folder rows show "N items"; OneDrive shows the folder's size ("hackathon 294.6 MB · Jul 25, 2018")
 - [ ] R: M1.2 the date is built by hand from the English month enum and always carries the year; use a localized formatter and drop the year for the current year ("Feb 4")
 - [ ] R: M1.2 trailing icon is ⋮ MoreVert, not clickable and contentDescription null; OneDrive uses ⋯ and it opens the item sheet — make it an IconButton with a description
