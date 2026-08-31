@@ -25,7 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -67,14 +67,14 @@ fun WelcomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .safeDrawingPadding()
-                .padding(horizontal = 24.dp, vertical = 24.dp),
+                .padding(horizontal = 16.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.weight(1f))
             Image(
                 painter = painterResource(R.drawable.illustration_welcome),
                 contentDescription = null,
-                modifier = Modifier.width(WelcomeIllustrationWidth),
+                modifier = Modifier.size(WelcomeIllustrationWidth, WelcomeIllustrationHeight),
             )
             Spacer(Modifier.height(40.dp))
             Text(
@@ -126,9 +126,10 @@ private fun AuthError.messageRes() = when (this) {
     AuthError.UNKNOWN -> R.string.welcome_sign_in_error_unknown
 }
 
-private val WelcomeIllustrationWidth = 240.dp
+private val WelcomeIllustrationWidth = 200.dp
+private val WelcomeIllustrationHeight = 124.dp
 private val WelcomeHeadlineMaxWidth = 312.dp
-private val SignInButtonHeight = 56.dp
+private val SignInButtonHeight = 48.dp
 
 @Preview
 @Composable
