@@ -352,7 +352,7 @@ private fun DriveItemRow(
             tint = item.iconTint(),
             modifier = Modifier
                 .padding(end = 16.dp)
-                .size(48.dp),
+                .size(40.dp),
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(

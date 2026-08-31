@@ -8,7 +8,7 @@ TwoDrive copies these screens as closely as Material 3 + Compose allows. Match l
 | 03-signin.png … 05-number.png | Microsoft sign-in | Provided by MSAL; nothing to build |
 | (not committed: private) | Photos tab (out of scope) | Top bar = round avatar left, segmented pill control "Photos | Files" (selected segment white on grey); below it a 5-tab icon row |
 | 10-files-root.png | Files ▸ Home | Sections "Recent files" (See all), "Offline files"; pill search bar bottom-left, blue FAB "+" bottom-right |
-| 11-myfiles.png, 20-myfiles-scrolled.png | Files ▸ My files | Secondary tab row Home / My files / Shared / Vault / Offline; sort chip "↓ Name ⌄" left, view-options icon right; rows = 48dp folder/thumbnail, name, "size · date", trailing "⋯" |
+| 11-myfiles.png, 20-myfiles-scrolled.png | Files ▸ My files | Secondary tab row Home / My files / Shared / Vault / Offline; sort chip "↓ Name ⌄" left, view-options icon right; rows = 40dp folder/thumbnail, name, "size · date", trailing "⋯" |
 | 12-item-more-options.png | Item bottom sheet | Big icon + name + "size · date"; two tiles Share / Delete; rows Make available offline (switch), Rename, Move, Details |
 | 13-sort-menu.png | Sort menu | Name / Modified / File size, then A to Z / Z to A, checkmarks |
 | 14-view-options.png | View as | List / Tile |
