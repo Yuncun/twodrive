@@ -62,6 +62,26 @@ class FilesScreenScreenshotTests {
     }
 
     @Test
+    fun filesScreen_vaultTab() {
+        composeTestRule.captureMultiDevice("FilesScreenVaultTab") {
+            FilesScreenContent(
+                FilesUiState.Success(folder = null, items = demoDriveChildren(), sortOrder = SortOrder.NAME_ASCENDING),
+                selectedTab = FilesTab.VAULT,
+            )
+        }
+    }
+
+    @Test
+    fun filesScreen_offlineTab() {
+        composeTestRule.captureMultiDevice("FilesScreenOfflineTab") {
+            FilesScreenContent(
+                FilesUiState.Success(folder = null, items = demoDriveChildren(), sortOrder = SortOrder.NAME_ASCENDING),
+                selectedTab = FilesTab.OFFLINE,
+            )
+        }
+    }
+
+    @Test
     fun filesScreen_loading() {
         composeTestRule.captureMultiDevice("FilesScreenLoading") {
             FilesScreenContent(FilesUiState.Loading)
@@ -78,11 +98,17 @@ class FilesScreenScreenshotTests {
     }
 
     @androidx.compose.runtime.Composable
-    private fun FilesScreenContent(uiState: FilesUiState) {
+    private fun FilesScreenContent(
+        uiState: FilesUiState,
+        selectedTab: FilesTab = FilesTab.MY_FILES,
+    ) {
         TwoDriveTheme {
             TwoDriveBackground {
                 FilesScreen(
                     uiState = uiState,
+                    selectedTab = selectedTab,
+                    showTabRow = true,
+                    onTabClick = {},
                     onFolderClick = {},
                     onFileClick = {},
                     onMoreClick = {},

@@ -25,4 +25,17 @@
     <string name="feature_files_impl_sort_modified_newest">Date modified (newest first)</string>
     <string name="feature_files_impl_sort_modified_oldest">Date modified (oldest first)</string>
     <string name="feature_files_impl_sort_size">Size (largest first)</string>
+    <string name="feature_files_impl_tab_home">Home</string>
+    <string name="feature_files_impl_tab_my_files">My files</string>
+    <string name="feature_files_impl_tab_shared">Shared</string>
+    <string name="feature_files_impl_tab_vault">Vault</string>
+    <string name="feature_files_impl_tab_offline">Offline</string>
+    <string name="feature_files_impl_empty_home_title">No recent files</string>
+    <string name="feature_files_impl_empty_home_caption">Files you open will show up here.</string>
+    <string name="feature_files_impl_empty_shared_title">Nothing shared yet</string>
+    <string name="feature_files_impl_empty_shared_caption">Files people share with you will show up here.</string>
+    <string name="feature_files_impl_empty_vault_title">Personal Vault</string>
+    <string name="feature_files_impl_empty_vault_caption">Personal Vault is not available in TwoDrive.</string>
+    <string name="feature_files_impl_empty_offline_title">Access offline files anywhere</string>
+    <string name="feature_files_impl_empty_offline_caption">Tap the ⋯ icon by any file and select “Make available offline” to access it offline.</string>
 </resources>

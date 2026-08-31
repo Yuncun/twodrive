@@ -17,6 +17,10 @@
 package codes.fixmy.twodrive.feature.files.impl
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -24,6 +28,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import kotlinx.datetime.LocalDate
@@ -53,12 +58,16 @@ class FilesScreenTest {
 
     private fun setContent() {
         composeTestRule.setContent {
+            var selectedTab by remember { mutableStateOf(FilesTab.MY_FILES) }
             FilesScreen(
                 uiState = FilesUiState.Success(
                     folder = null,
                     items = demoDriveChildren(),
                     sortOrder = SortOrder.NAME_ASCENDING,
                 ),
+                selectedTab = selectedTab,
+                showTabRow = true,
+                onTabClick = { selectedTab = it },
                 onFolderClick = folderClicks::add,
                 onFileClick = {},
                 onMoreClick = {},
@@ -93,6 +102,17 @@ class FilesScreenTest {
         setContent()
 
         composeTestRule.onNodeWithContentDescription("More options for Documents").assertIsDisplayed()
+    }
+
+    @Test
+    fun tappingATabShowsItsEmptyState() {
+        setContent()
+
+        // The last tab starts off-screen on a narrow test display.
+        composeTestRule.onNodeWithText("Offline").performScrollTo().performClick()
+
+        composeTestRule.onNodeWithText("Access offline files anywhere").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Documents").assertDoesNotExist()
     }
 
     @Test

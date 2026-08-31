@@ -58,6 +58,15 @@ class FilesViewModelTest {
     }
 
     @Test
+    fun myFilesIsTheLandingTabAndSelectionSticks() = runTest {
+        assertEquals(FilesTab.MY_FILES, viewModel.selectedTab.value)
+
+        viewModel.selectTab(FilesTab.OFFLINE)
+
+        assertEquals(FilesTab.OFFLINE, viewModel.selectedTab.value)
+    }
+
+    @Test
     fun rootChildrenAreShownFoldersFirst() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
         driveItemsRepository.sendDriveItems(driveItemsTestData)

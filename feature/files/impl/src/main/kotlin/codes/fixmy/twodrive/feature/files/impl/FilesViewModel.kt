@@ -28,8 +28,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -42,6 +44,11 @@ class FilesViewModel @AssistedInject constructor(
     private val userDataRepository: UserDataRepository,
     @Assisted val folderId: String?,
 ) : ViewModel() {
+
+    private val _selectedTab = MutableStateFlow(FilesTab.MY_FILES)
+
+    /** The selected pivot tab. OneDrive lands on My files (docs/ux-reference/spec/my-files-list.md). */
+    val selectedTab: StateFlow<FilesTab> = _selectedTab.asStateFlow()
 
     val uiState: StateFlow<FilesUiState> = combine(
         folderId?.let(driveItemsRepository::getDriveItem) ?: flowOf(null),
@@ -74,6 +81,10 @@ class FilesViewModel @AssistedInject constructor(
 
     fun setSortOrder(sortOrder: SortOrder) {
         viewModelScope.launch { userDataRepository.setSortOrder(sortOrder) }
+    }
+
+    fun selectTab(tab: FilesTab) {
+        _selectedTab.value = tab
     }
 
     @AssistedFactory
