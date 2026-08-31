@@ -17,9 +17,11 @@
 package codes.fixmy.twodrive.ui
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -88,5 +90,27 @@ class WelcomeScreenTest {
         val cancelled =
             composeTestRule.activity.getString(R.string.welcome_sign_in_error_cancelled)
         composeTestRule.onNodeWithText(cancelled).assertIsDisplayed()
+    }
+
+    /**
+     * The error appears without a focus change, so it must be a polite live region for
+     * TalkBack to announce it.
+     */
+    @Test
+    fun signInErrorIsAPoliteLiveRegion() {
+        composeTestRule.setContent {
+            WelcomeScreen(error = AuthError.CANCELLED, onSignInClick = {})
+        }
+
+        val cancelled =
+            composeTestRule.activity.getString(R.string.welcome_sign_in_error_cancelled)
+        composeTestRule
+            .onNodeWithText(cancelled)
+            .assert(
+                SemanticsMatcher.expectValue(
+                    SemanticsProperties.LiveRegion,
+                    LiveRegionMode.Polite,
+                ),
+            )
     }
 }
