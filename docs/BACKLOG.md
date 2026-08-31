@@ -14,13 +14,13 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [x] R: M1.1 the sign-in error Text has no live-region semantics, so TalkBack never announces it when it appears after a failed tap on Sign in
 - [x] M1.2 (1f53e4a) Files ▸ My files list from `DriveItemsRepository` (demo JSON): rows = icon, name, "size · date", trailing overflow icon; Roborazzi test with the demo tree.
 - [x] R: M1.2 (1f53e4a) row subtitle is "date · size"; OneDrive is "size · date" ("9.2 MB · Jul 12, 2024" in 11-myfiles.png) — FilesScreen.kt subtitle()
-- [ ] R: M1.2 folder rows show "N items"; OneDrive shows the folder's size ("hackathon 294.6 MB · Jul 25, 2018")
-- [ ] R: M1.2 the date is built by hand from the English month enum and always carries the year; use a localized formatter and drop the year for the current year ("Feb 4")
-- [ ] R: M1.2 trailing icon is ⋮ MoreVert, not clickable and contentDescription null; OneDrive uses ⋯ and it opens the item sheet — make it an IconButton with a description
-- [ ] R: M1.2 item icon is 40dp; docs/ux-reference/README.md specifies a 48dp icon/thumbnail
-- [ ] R: M1.2 the screenshot test and FilesScreenTest declare SortOrder.NAME_ASCENDING but demoDriveChildren() hands back the demo assets in file order (Documents, Pictures, Music, Personal Vault, Resume 2026.docx, Household budget.xlsx); FilesViewModel sorts before it renders, so the three checked-in FilesScreenRoot PNGs show an order the app never draws — sort in the helper
-- [ ] R: M1.2 every folder in core/network/src/demo/assets/items.json has "size": 0, so the folder-size row the item above asks for cannot be shown from the demo drive; give the demo folders the recursive size Graph returns
-- [ ] R: M1.2 the row name is maxLines = 1 with the default Clip overflow, so a long name is cut mid-letter instead of ellipsized; the subtitle has no maxLines at all, so a long one wraps and makes that row taller than its neighbours
+- [x] R: M1.2 folder rows show "N items"; OneDrive shows the folder's size ("hackathon 294.6 MB · Jul 25, 2018")
+- [x] R: M1.2 the date is built by hand from the English month enum and always carries the year; use a localized formatter and drop the year for the current year ("Feb 4")
+- [x] R: M1.2 trailing icon is ⋮ MoreVert, not clickable and contentDescription null; OneDrive uses ⋯ and it opens the item sheet — make it an IconButton with a description
+- [x] R: M1.2 item icon is 40dp; docs/ux-reference/README.md specifies a 48dp icon/thumbnail
+- [x] R: M1.2 the screenshot test and FilesScreenTest declare SortOrder.NAME_ASCENDING but demoDriveChildren() hands back the demo assets in file order (Documents, Pictures, Music, Personal Vault, Resume 2026.docx, Household budget.xlsx); FilesViewModel sorts before it renders, so the three checked-in FilesScreenRoot PNGs show an order the app never draws — sort in the helper
+- [x] R: M1.2 every folder in core/network/src/demo/assets/items.json has "size": 0, so the folder-size row the item above asks for cannot be shown from the demo drive; give the demo folders the recursive size Graph returns
+- [x] R: M1.2 the row name is maxLines = 1 with the default Clip overflow, so a long name is cut mid-letter instead of ellipsized; the subtitle has no maxLines at all, so a long one wraps and makes that row taller than its neighbours
 - [ ] M1.3 Secondary tab row Home / My files / Shared / Vault / Offline with only My files functional; others show empty states from docs/ux-reference (17/18).
 - [ ] M1.4 Folder navigation: tapping a folder pushes a screen titled with the folder name, back arrow, same list; navigation is type-safe.
 - [ ] M1.5 Sort chip + menu (13-sort-menu.png): Name / Modified / File size, A→Z / Z→A; persisted in DataStore; unit test for ordering.
