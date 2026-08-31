@@ -74,7 +74,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] Docs and repo hygiene
   - R: docs the backlog cites 19-account-drawer.png (M2.4) and 16-shared.png (M4.2), and docs/ux-reference/README.md cites 20-myfiles-scrolled.png; none of the three are committed — capture them or mark them private
   - R: docs the Definition of Done asks for the backlog tick "with the commit hash, in the same commit", which no commit can satisfy; M1.1 and M1.2 each needed a follow-up docs commit (58e4718, d28fd07) — reword it so the tick commit may follow the code commit
-  - R: 49f29af committed tools/device scripts carrying the personal sign-in address and the test phone's adb serial 44271JEKB17967; e7b8dea took them out of the tree, but the repo is public and both stay in its history — decide whether that is acceptable or rewrite those commits
+  - R: 49f29af committed tools/device scripts carrying the personal sign-in address and the test phone's adb serial 44271JEKB17967; e7b8dea took them out of the tree, but the repo is public and both stay in its history — decided 2026-08-30: acceptable, keep history as is (no rewrite)
 
 ## Milestone 2 — real Graph (prod flavor)
 - [ ] M2.1 MSAL sign-in in prod flavor: `MsalAuthRepository` (single account, `consumers` authority, scopes User.Read Files.ReadWrite.All), silent token refresh, sign-out; OkHttp interceptor adds the bearer token; 401 → re-auth. Unit-test the interceptor with MockWebServer.
