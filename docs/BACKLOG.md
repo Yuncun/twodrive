@@ -32,7 +32,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - O: M1.4 there is no breadcrumb anywhere; nesting is conveyed only by the title and the back arrow, so the route needs the folder name as an argument to render before children load
   - O: M1.4 OneDrive scrolls the whole header away on the first swipe — toolbar and title both — leaving only the sort bar pinned under the status bar and no back affordance at all; use M3's exitUntilCollapsedScrollBehavior, which keeps a collapsed bar with the back arrow, and note the deliberate divergence
   - O: M1.4 the sort key is global, not per folder: a folder opens already sorted by whatever My files was set to
-- [ ] M1.5 Sort chip + menu (13-sort-menu.png): Name / Modified / File size, A→Z / Z→A; persisted in DataStore; unit test for ordering.
+- [x] M1.5 Sort chip + menu (13-sort-menu.png): Name / Modified / File size, A→Z / Z→A; persisted in DataStore; unit test for ordering.
   spec details:
   - R: M1.5 sort control is a plain label + icon button; OneDrive has a chip "↓ Name ⌄" at the left and a view-options icon at the right (11-myfiles.png)
   - R: M1.5 sort menu is a flat 5-entry DropdownMenu; 13-sort-menu.png is Name / Modified / File size, then A to Z / Z to A, with checkmarks
