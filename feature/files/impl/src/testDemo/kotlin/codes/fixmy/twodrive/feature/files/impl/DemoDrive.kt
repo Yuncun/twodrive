@@ -19,6 +19,8 @@ package codes.fixmy.twodrive.feature.files.impl
 import codes.fixmy.twodrive.core.data.model.asEntity
 import codes.fixmy.twodrive.core.database.model.asExternalModel
 import codes.fixmy.twodrive.core.model.data.DriveItem
+import codes.fixmy.twodrive.core.model.data.SortOrder
+import codes.fixmy.twodrive.core.model.data.sortedBy
 import codes.fixmy.twodrive.core.network.demo.DemoGraphNetworkDataSource
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -27,11 +29,17 @@ import kotlinx.serialization.json.Json
 /**
  * The children of [folderId] in the drive the demo flavor ships (core/network demo assets), read
  * through the same data source the running demo app uses so the screenshots show real demo data
- * rather than a second, hand-written copy of it.
+ * rather than a second, hand-written copy of it, and sorted by [sortOrder] the same way
+ * [FilesViewModel] sorts before rendering.
  */
-internal fun demoDriveChildren(folderId: String? = null): List<DriveItem> = runBlocking {
+internal fun demoDriveChildren(
+    folderId: String? = null,
+    sortOrder: SortOrder = SortOrder.NAME_ASCENDING,
+): List<DriveItem> = runBlocking {
     DemoGraphNetworkDataSource(
         ioDispatcher = UnconfinedTestDispatcher(),
         networkJson = Json { ignoreUnknownKeys = true },
-    ).getChildren(folderId).value.map { it.asEntity().asExternalModel() }
+    ).getChildren(folderId).value
+        .map { it.asEntity().asExternalModel() }
+        .sortedBy(sortOrder)
 }

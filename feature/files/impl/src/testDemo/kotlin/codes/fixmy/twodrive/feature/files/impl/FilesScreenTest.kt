@@ -18,9 +18,12 @@ package codes.fixmy.twodrive.feature.files.impl
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import org.junit.Before
 import org.junit.Rule
@@ -64,6 +67,9 @@ class FilesScreenTest {
     @Test
     fun fileRowShowsSizeThenModifiedDate() {
         setContent()
+
+        // Files sort after folders, so the first file row can start below the fold.
+        composeTestRule.onNodeWithTag("files:list").performScrollToNode(hasText("Resume 2026.docx"))
 
         composeTestRule.onNodeWithText("Resume 2026.docx").assertIsDisplayed()
         composeTestRule.onNodeWithText("48.2 KB · Aug 20, 2026").assertIsDisplayed()
