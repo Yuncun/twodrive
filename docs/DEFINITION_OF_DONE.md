@@ -15,5 +15,5 @@ Plus:
 - New behaviour has a unit test (repository/ViewModel) and, for a new or changed screen, a Roborazzi screenshot test.
 - The demo flavor works without network or a Microsoft account. Anything that needs the real Graph API lives behind an interface with a demo implementation.
 - No TODO stubs, no hardcoded IDs outside `msal_config.json`, no new top-level module without a matching `feature/<name>/{api,impl}` or `core/<name>` convention.
-- `docs/BACKLOG.md`: the item is ticked `[x]` with the commit hash, in the same commit.
+- `docs/BACKLOG.md`: the item is ticked `[x]` with the commit hash of the code change. The tick may be its own docs commit after the code commit lands (the hash does not exist until the code is committed).
 - If an item cannot be completed as written, do not tick it: add a sub-bullet "BLOCKED: <reason>" and move to the next item. Never ask a human; leave a note.
