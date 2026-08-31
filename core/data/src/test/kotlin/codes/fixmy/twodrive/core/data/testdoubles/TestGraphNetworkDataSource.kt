@@ -33,6 +33,7 @@ class TestGraphNetworkDataSource : GraphNetworkDataSource {
     val pages = mutableMapOf<String?, NetworkDriveItemPage>()
     val requestedLinks = mutableListOf<String?>()
     var failDeltaWith: Int? = null
+    var failDeltaWithException: Exception? = null
 
     override suspend fun getMe(): NetworkUser = NetworkUser(id = "u", userPrincipalName = "test@example.com")
 
@@ -42,6 +43,10 @@ class TestGraphNetworkDataSource : GraphNetworkDataSource {
 
     override suspend fun getDelta(deltaLink: String?): NetworkDriveItemPage {
         requestedLinks += deltaLink
+        failDeltaWithException?.let { e ->
+            failDeltaWithException = null
+            throw e
+        }
         failDeltaWith?.let { code ->
             failDeltaWith = null
             throw HttpException(Response.error<Any>(code, "".toResponseBody("text/plain".toMediaType())))

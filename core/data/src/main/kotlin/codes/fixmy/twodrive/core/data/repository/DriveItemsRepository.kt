@@ -32,7 +32,8 @@ interface DriveItemsRepository {
     fun getDriveItem(id: String): Flow<DriveItem?>
 
     /**
-     * Pulls changes from Graph into the local cache. Returns true when the sync completed.
+     * Pulls changes from Graph into the local cache. Returns true when the sync completed and
+     * false when it failed (e.g. no network); it never throws.
      */
     suspend fun sync(): Boolean
 }

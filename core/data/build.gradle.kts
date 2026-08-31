@@ -23,6 +23,8 @@ plugins {
 android {
     namespace = "codes.fixmy.twodrive.core.data"
     testOptions.unitTests.isIncludeAndroidResources = true
+    // sync() logs failures with android.util.Log; let it no-op in JVM unit tests.
+    testOptions.unitTests.isReturnDefaultValues = true
 }
 
 dependencies {

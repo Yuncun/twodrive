@@ -16,6 +16,7 @@
 
 package codes.fixmy.twodrive.core.data.repository
 
+import android.util.Log
 import androidx.tracing.trace
 import codes.fixmy.twodrive.core.data.model.asEntity
 import codes.fixmy.twodrive.core.database.dao.DriveItemDao
@@ -25,6 +26,7 @@ import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
@@ -49,20 +51,22 @@ internal class OfflineFirstDriveItemsRepository @Inject constructor(
         driveItemDao.getDriveItem(id).map { it?.asExternalModel() }
 
     override suspend fun sync(): Boolean = trace("DriveItems.sync") {
-        val deltaLink = preferences.getDeltaLink()
-        try {
-            applyDelta(deltaLink)
-        } catch (e: HttpException) {
-            // Graph replies 410 Gone when a delta token has expired: drop the cache and start over.
-            if (e.code() == HTTP_GONE && deltaLink != null) {
-                preferences.setDeltaLink(null)
-                driveItemDao.deleteAll()
-                applyDelta(null)
-            } else {
-                throw e
+        suspendRunCatching {
+            val deltaLink = preferences.getDeltaLink()
+            try {
+                applyDelta(deltaLink)
+            } catch (e: HttpException) {
+                // Graph replies 410 Gone when a delta token has expired: drop the cache and
+                // start over.
+                if (e.code() == HTTP_GONE && deltaLink != null) {
+                    preferences.setDeltaLink(null)
+                    driveItemDao.deleteAll()
+                    applyDelta(null)
+                } else {
+                    throw e
+                }
             }
-        }
-        true
+        }.isSuccess
     }
 
     private suspend fun applyDelta(startLink: String?) {
@@ -83,4 +87,21 @@ internal class OfflineFirstDriveItemsRepository @Inject constructor(
         if (deleted.isNotEmpty()) driveItemDao.deleteDriveItems(deleted.map { it.id })
         if (live.isNotEmpty()) driveItemDao.upsertDriveItems(live.map { it.asEntity() })
     }
+}
+
+/**
+ * Like [runCatching], but re-throws cancellation so a cancelled coroutine is not mistaken for
+ * a failed sync (the NiA sync pattern).
+ */
+private suspend fun <T> suspendRunCatching(block: suspend () -> T): Result<T> = try {
+    Result.success(block())
+} catch (cancellationException: CancellationException) {
+    throw cancellationException
+} catch (exception: Exception) {
+    Log.i(
+        "DriveItemsSync",
+        "Failed to sync the drive delta feed. Returning a failure result",
+        exception,
+    )
+    Result.failure(exception)
 }

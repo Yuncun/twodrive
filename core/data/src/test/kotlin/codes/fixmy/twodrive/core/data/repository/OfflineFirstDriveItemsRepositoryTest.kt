@@ -35,7 +35,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import java.io.IOException
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class OfflineFirstDriveItemsRepositoryTest {
@@ -116,6 +118,26 @@ class OfflineFirstDriveItemsRepositoryTest {
         assertEquals(listOf(null, "delta-1", null), network.requestedLinks)
         assertEquals(listOf("fresh.txt"), subject.getChildren(null).first().map { it.name })
         assertEquals("delta-9", preferences.getDeltaLink())
+    }
+
+    @Test
+    fun syncReturnsFalseInsteadOfThrowingWhenTheNetworkIsDown() = testScope.runTest {
+        network.pages[null] = NetworkDriveItemPage(value = listOf(root()), deltaLink = "delta-1")
+        network.failDeltaWithException = IOException("no network")
+
+        assertFalse(subject.sync())
+
+        // The failed attempt must not consume the stored position; a retry starts clean.
+        assertEquals(null, preferences.getDeltaLink())
+        assertTrue(subject.sync())
+        assertEquals("delta-1", preferences.getDeltaLink())
+    }
+
+    @Test
+    fun syncReturnsFalseOnAServerErrorItCannotRecoverFrom() = testScope.runTest {
+        network.failDeltaWith = 500
+
+        assertFalse(subject.sync())
     }
 
     private fun root() = NetworkDriveItem(
