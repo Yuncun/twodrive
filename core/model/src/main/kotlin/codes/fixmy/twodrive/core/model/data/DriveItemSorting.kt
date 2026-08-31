@@ -27,6 +27,7 @@ fun List<DriveItem>.sortedBy(sortOrder: SortOrder): List<DriveItem> {
         SortOrder.MODIFIED_NEWEST_FIRST -> compareByDescending(DriveItem::lastModified)
         SortOrder.MODIFIED_OLDEST_FIRST -> compareBy(DriveItem::lastModified)
         SortOrder.SIZE_LARGEST_FIRST -> compareByDescending(DriveItem::size)
+        SortOrder.SIZE_SMALLEST_FIRST -> compareBy(DriveItem::size)
     }
     return sortedWith(compareByDescending(DriveItem::isFolder).then(comparator))
 }

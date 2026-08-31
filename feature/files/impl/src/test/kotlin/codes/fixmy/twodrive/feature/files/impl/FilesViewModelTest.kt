@@ -73,7 +73,10 @@ class FilesViewModelTest {
         userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING))
 
         val state = assertIs<FilesUiState.Success>(viewModel.uiState.value)
-        assertEquals(listOf("Documents", "Beach sunset.jpg", "Resume 2026.docx"), state.items.map { it.name })
+        assertEquals(
+            listOf("Documents", "Beach sunset.jpg", "Resume 2026.docx", "Video tour.mp4"),
+            state.items.map { it.name },
+        )
     }
 
     @Test
@@ -86,7 +89,10 @@ class FilesViewModelTest {
 
         val state = assertIs<FilesUiState.Success>(viewModel.uiState.value)
         assertEquals(SortOrder.SIZE_LARGEST_FIRST, state.sortOrder)
-        assertEquals(listOf("Documents", "Beach sunset.jpg", "Resume 2026.docx"), state.items.map { it.name })
+        assertEquals(
+            listOf("Documents", "Video tour.mp4", "Beach sunset.jpg", "Resume 2026.docx"),
+            state.items.map { it.name },
+        )
     }
 
     @Test

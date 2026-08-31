@@ -65,6 +65,16 @@ val driveItemsTestData: List<DriveItem> = listOf(
         webUrl = null,
     ),
     DriveItem(
+        id = "i-video",
+        name = "Video tour.mp4",
+        isFolder = false,
+        size = 88_120_001,
+        lastModified = Instant.parse("2026-05-15T12:00:00Z"),
+        mimeType = "video/mp4",
+        parentId = "root",
+        webUrl = null,
+    ),
+    DriveItem(
         id = "i-lease",
         name = "Apartment lease.pdf",
         isFolder = false,

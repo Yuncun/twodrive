@@ -50,6 +50,24 @@ class DriveItemSortingTest {
         assertEquals(listOf(newBig, oldSmall), sorted)
     }
 
+    @Test
+    fun sizeSmallestFirst() {
+        val sorted = listOf(newBig, oldSmall).sortedBy(SortOrder.SIZE_SMALLEST_FIRST)
+        assertEquals(listOf(oldSmall, newBig), sorted)
+    }
+
+    @Test
+    fun modifiedOldestFirst() {
+        val sorted = listOf(newBig, oldSmall).sortedBy(SortOrder.MODIFIED_OLDEST_FIRST)
+        assertEquals(listOf(oldSmall, newBig), sorted)
+    }
+
+    @Test
+    fun nameDescending() {
+        val sorted = listOf(oldSmall, newBig).sortedBy(SortOrder.NAME_DESCENDING)
+        assertEquals(listOf(newBig, oldSmall), sorted)
+    }
+
     private fun item(name: String, isFolder: Boolean = false, modified: String, size: Long) = DriveItem(
         id = name,
         name = name,
