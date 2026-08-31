@@ -22,6 +22,7 @@ import codes.fixmy.twodrive.core.testing.data.driveItemsTestData
 import codes.fixmy.twodrive.core.testing.repository.TestDriveItemsRepository
 import codes.fixmy.twodrive.core.testing.repository.TestUserDataRepository
 import codes.fixmy.twodrive.core.testing.util.MainDispatcherRule
+import codes.fixmy.twodrive.core.testing.util.TestSyncManager
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -39,6 +40,7 @@ class FilesViewModelTest {
 
     private val driveItemsRepository = TestDriveItemsRepository()
     private val userDataRepository = TestUserDataRepository()
+    private val syncManager = TestSyncManager()
 
     private lateinit var viewModel: FilesViewModel
 
@@ -47,6 +49,7 @@ class FilesViewModelTest {
         viewModel = FilesViewModel(
             driveItemsRepository = driveItemsRepository,
             userDataRepository = userDataRepository,
+            syncManager = syncManager,
             folderId = null,
         )
     }
@@ -54,7 +57,8 @@ class FilesViewModelTest {
     @Test
     fun stateIsInitiallyLoadingAndSyncIsRequested() = runTest {
         assertEquals(FilesUiState.Loading, viewModel.uiState.value)
-        assertEquals(1, driveItemsRepository.syncCount)
+        assertEquals(1, syncManager.requestSyncCount)
+        assertEquals(0, driveItemsRepository.syncCount)
     }
 
     @Test
@@ -100,6 +104,7 @@ class FilesViewModelTest {
         val subfolderViewModel = FilesViewModel(
             driveItemsRepository = driveItemsRepository,
             userDataRepository = userDataRepository,
+            syncManager = syncManager,
             folderId = "f-documents",
         )
         backgroundScope.launch(UnconfinedTestDispatcher()) { subfolderViewModel.uiState.collect() }

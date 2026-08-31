@@ -21,7 +21,9 @@ import codes.fixmy.twodrive.core.data.repository.OfflineFirstDriveItemsRepositor
 import codes.fixmy.twodrive.core.data.repository.OfflineFirstUserDataRepository
 import codes.fixmy.twodrive.core.data.repository.UserDataRepository
 import codes.fixmy.twodrive.core.data.util.ConnectivityManagerNetworkMonitor
+import codes.fixmy.twodrive.core.data.util.InProcessSyncManager
 import codes.fixmy.twodrive.core.data.util.NetworkMonitor
+import codes.fixmy.twodrive.core.data.util.SyncManager
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -45,4 +47,9 @@ abstract class DataModule {
     internal abstract fun bindsNetworkMonitor(
         networkMonitor: ConnectivityManagerNetworkMonitor,
     ): NetworkMonitor
+
+    @Binds
+    internal abstract fun bindsSyncManager(
+        syncManager: InProcessSyncManager,
+    ): SyncManager
 }

@@ -22,6 +22,7 @@ import codes.fixmy.twodrive.core.common.result.Result
 import codes.fixmy.twodrive.core.common.result.asResult
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.data.repository.UserDataRepository
+import codes.fixmy.twodrive.core.data.util.SyncManager
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.sortedBy
 import dagger.assisted.Assisted
@@ -42,6 +43,7 @@ import kotlinx.coroutines.launch
 class FilesViewModel @AssistedInject constructor(
     private val driveItemsRepository: DriveItemsRepository,
     private val userDataRepository: UserDataRepository,
+    syncManager: SyncManager,
     @Assisted val folderId: String?,
 ) : ViewModel() {
 
@@ -76,7 +78,8 @@ class FilesViewModel @AssistedInject constructor(
         )
 
     init {
-        viewModelScope.launch { driveItemsRepository.sync() }
+        // At most one sync per process; opening more screens must not re-walk the delta feed.
+        syncManager.requestSync()
     }
 
     fun setSortOrder(sortOrder: SortOrder) {
