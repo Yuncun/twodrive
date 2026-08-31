@@ -50,6 +50,7 @@ class FilesScreenTest {
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     private val folderClicks = mutableListOf<String>()
+    private val sortChanges = mutableListOf<SortOrder>()
 
     @Before
     fun setTimeZone() {
@@ -70,7 +71,7 @@ class FilesScreenTest {
                 onFolderClick = { folderClicks.add(it.id) },
                 onFileClick = {},
                 onMoreClick = {},
-                onSortOrderChange = {},
+                onSortOrderChange = sortChanges::add,
                 // Fixed so the year-dropping date format renders the same on any test day.
                 today = LocalDate(2026, 8, 30),
             )
@@ -101,6 +102,38 @@ class FilesScreenTest {
         setContent()
 
         composeTestRule.onNodeWithContentDescription("More options for Documents").assertIsDisplayed()
+    }
+
+    @Test
+    fun sortChipOpensTheTwoGroupMenu() {
+        setContent()
+
+        composeTestRule.onNodeWithTag("files:sort").performClick()
+
+        composeTestRule.onNodeWithText("Modified").assertIsDisplayed()
+        composeTestRule.onNodeWithText("File size").assertIsDisplayed()
+        composeTestRule.onNodeWithText("A to Z").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Z to A").assertIsDisplayed()
+    }
+
+    @Test
+    fun choosingADirectionKeepsTheKey() {
+        setContent()
+
+        composeTestRule.onNodeWithTag("files:sort").performClick()
+        composeTestRule.onNodeWithText("Z to A").performClick()
+
+        assertEquals(listOf(SortOrder.NAME_DESCENDING), sortChanges)
+    }
+
+    @Test
+    fun choosingAKeyKeepsTheDirection() {
+        setContent()
+
+        composeTestRule.onNodeWithTag("files:sort").performClick()
+        composeTestRule.onNodeWithText("File size").performClick()
+
+        assertEquals(listOf(SortOrder.SIZE_LARGEST_FIRST), sortChanges)
     }
 
     @Test

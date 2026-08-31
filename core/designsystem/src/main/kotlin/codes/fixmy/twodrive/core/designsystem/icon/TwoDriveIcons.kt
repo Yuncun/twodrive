@@ -27,6 +27,8 @@ import androidx.compose.material.icons.outlined.OfflinePin
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Audiotrack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
@@ -34,6 +36,8 @@ import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.MoreVert
@@ -44,9 +48,9 @@ import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Slideshow
-import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material.icons.rounded.TableChart
 import androidx.compose.material.icons.rounded.TextSnippet
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.ViewDay
 import androidx.compose.material.icons.rounded.ViewList
@@ -57,6 +61,8 @@ import androidx.compose.material.icons.rounded.ViewList
 object TwoDriveIcons {
     val Add = Icons.Rounded.Add
     val ArrowBack = Icons.AutoMirrored.Rounded.ArrowBack
+    val ArrowDownward = Icons.Rounded.ArrowDownward
+    val ArrowUpward = Icons.Rounded.ArrowUpward
     val Audio = Icons.Rounded.Audiotrack
     val Check = Icons.Rounded.Check
     val Close = Icons.Rounded.Close
@@ -68,6 +74,8 @@ object TwoDriveIcons {
     val HomeBorder = Icons.Outlined.Home
     val Image = Icons.Rounded.Image
     val ImageBorder = Icons.Outlined.Image
+    val KeyboardArrowDown = Icons.Rounded.KeyboardArrowDown
+    val KeyboardArrowUp = Icons.Rounded.KeyboardArrowUp
     val Lock = Icons.Rounded.Lock
     val LockBorder = Icons.Outlined.Lock
     val MoreHoriz = Icons.Rounded.MoreHoriz
@@ -82,9 +90,9 @@ object TwoDriveIcons {
     val Presentation = Icons.Rounded.Slideshow
     val Search = Icons.Rounded.Search
     val Settings = Icons.Rounded.Settings
-    val Sort = Icons.Rounded.Sort
     val Spreadsheet = Icons.Rounded.TableChart
     val Text = Icons.Rounded.TextSnippet
+    val Tune = Icons.Rounded.Tune
     val Video = Icons.Rounded.Videocam
     val ViewDay = Icons.Rounded.ViewDay
     val ViewList = Icons.Rounded.ViewList

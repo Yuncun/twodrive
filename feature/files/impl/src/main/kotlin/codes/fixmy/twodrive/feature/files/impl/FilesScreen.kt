@@ -28,11 +28,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -51,6 +55,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -269,15 +275,19 @@ private fun MyFilesTab(
                     .padding(16.dp),
             )
 
-            is FilesUiState.Success -> FilesList(
-                items = uiState.items,
-                sortOrder = uiState.sortOrder,
-                today = today,
-                onFolderClick = onFolderClick,
-                onFileClick = onFileClick,
-                onMoreClick = onMoreClick,
-                onSortOrderChange = onSortOrderChange,
-            )
+            is FilesUiState.Success -> Column {
+                SortViewBar(
+                    sortOrder = uiState.sortOrder,
+                    onSortOrderChange = onSortOrderChange,
+                )
+                FilesList(
+                    items = uiState.items,
+                    today = today,
+                    onFolderClick = onFolderClick,
+                    onFileClick = onFileClick,
+                    onMoreClick = onMoreClick,
+                )
+            }
         }
     }
 }
@@ -326,12 +336,10 @@ private fun FilesTabEmptyState(
 @Composable
 private fun FilesList(
     items: List<DriveItem>,
-    sortOrder: SortOrder,
     today: LocalDate,
     onFolderClick: (DriveItem) -> Unit,
     onFileClick: (DriveItem) -> Unit,
     onMoreClick: (DriveItem) -> Unit,
-    onSortOrderChange: (SortOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -339,9 +347,6 @@ private fun FilesList(
             .fillMaxSize()
             .testTag("files:list"),
     ) {
-        item {
-            SortHeader(sortOrder = sortOrder, onSortOrderChange = onSortOrderChange)
-        }
         if (items.isEmpty()) {
             item {
                 Text(
@@ -364,43 +369,148 @@ private fun FilesList(
     }
 }
 
+/**
+ * The bar pinned between the header and the list: the sort chip at the left, the view-options
+ * button at the right, and a hairline divider under both (docs/ux-reference/spec/my-files-list.md).
+ */
 @Composable
-private fun SortHeader(
+private fun SortViewBar(
+    sortOrder: SortOrder,
+    onSortOrderChange: (SortOrder) -> Unit,
+) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SortChip(sortOrder = sortOrder, onSortOrderChange = onSortOrderChange)
+            Spacer(modifier = Modifier.weight(1f))
+            // Opens the view-options menu once M1.6 builds it.
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = TwoDriveIcons.Tune,
+                    contentDescription = stringResource(R.string.feature_files_impl_view_options),
+                )
+            }
+        }
+        HorizontalDivider()
+    }
+}
+
+@Composable
+private fun SortChip(
     sortOrder: SortOrder,
     onSortOrderChange: (SortOrder) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = stringResource(sortOrder.labelRes()),
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.weight(1f),
-        )
-        Box {
-            IconButton(onClick = { expanded = true }, modifier = Modifier.testTag("files:sort")) {
+    val keyLabel = stringResource(sortOrder.key().labelRes())
+    val chipDescription = stringResource(R.string.feature_files_impl_sort_by, keyLabel)
+    Box {
+        AssistChip(
+            onClick = { expanded = true },
+            label = { Text(keyLabel) },
+            leadingIcon = {
                 Icon(
-                    imageVector = TwoDriveIcons.Sort,
-                    contentDescription = stringResource(R.string.feature_files_impl_sort),
+                    imageVector = if (sortOrder.isFirstDirection()) {
+                        TwoDriveIcons.ArrowDownward
+                    } else {
+                        TwoDriveIcons.ArrowUpward
+                    },
+                    contentDescription = null,
+                    modifier = Modifier.size(AssistChipDefaults.IconSize),
                 )
-            }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                SortOrder.entries.forEach { order ->
-                    DropdownMenuItem(
-                        text = { Text(stringResource(order.labelRes())) },
-                        onClick = {
-                            expanded = false
-                            onSortOrderChange(order)
-                        },
-                    )
-                }
-            }
-        }
+            },
+            trailingIcon = {
+                Icon(
+                    imageVector = if (expanded) TwoDriveIcons.KeyboardArrowUp else TwoDriveIcons.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(AssistChipDefaults.IconSize),
+                )
+            },
+            border = null,
+            modifier = Modifier
+                .testTag("files:sort")
+                .semantics { contentDescription = chipDescription },
+        )
+        SortMenu(
+            expanded = expanded,
+            sortOrder = sortOrder,
+            onDismissRequest = { expanded = false },
+            onSortOrderChange = onSortOrderChange,
+        )
     }
+}
+
+/**
+ * OneDrive's two-group sort menu: a key group and a direction group, one checkmark in each,
+ * separated by a hairline (docs/ux-reference/spec/sort-menu.md, 13-sort-menu.png).
+ */
+@Composable
+private fun SortMenu(
+    expanded: Boolean,
+    sortOrder: SortOrder,
+    onDismissRequest: () -> Unit,
+    onSortOrderChange: (SortOrder) -> Unit,
+) {
+    val key = sortOrder.key()
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        modifier = Modifier.width(246.dp),
+    ) {
+        SortKey.entries.forEach { menuKey ->
+            SortMenuItem(
+                labelRes = menuKey.labelRes(),
+                checked = menuKey == key,
+                onClick = {
+                    onDismissRequest()
+                    onSortOrderChange(menuKey.orderFor(first = sortOrder.isFirstDirection()))
+                },
+            )
+        }
+        HorizontalDivider()
+        SortMenuItem(
+            labelRes = key.firstDirectionLabelRes(),
+            checked = sortOrder.isFirstDirection(),
+            onClick = {
+                onDismissRequest()
+                onSortOrderChange(key.orderFor(first = true))
+            },
+        )
+        SortMenuItem(
+            labelRes = key.secondDirectionLabelRes(),
+            checked = !sortOrder.isFirstDirection(),
+            onClick = {
+                onDismissRequest()
+                onSortOrderChange(key.orderFor(first = false))
+            },
+        )
+    }
+}
+
+@Composable
+private fun SortMenuItem(
+    @StringRes labelRes: Int,
+    checked: Boolean,
+    onClick: () -> Unit,
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(labelRes)) },
+        leadingIcon = {
+            if (checked) {
+                Icon(
+                    imageVector = TwoDriveIcons.Check,
+                    contentDescription = null,
+                )
+            } else {
+                // Reserve the leading slot so labels stay aligned (docs/ux-reference/spec/sort-menu.md).
+                Spacer(modifier = Modifier.size(24.dp))
+            }
+        },
+        onClick = onClick,
+    )
 }
 
 @Composable
@@ -482,12 +592,57 @@ private fun FilesTab.unselectedIcon(): ImageVector = when (this) {
     FilesTab.OFFLINE -> TwoDriveIcons.OfflinePinBorder
 }
 
-private fun SortOrder.labelRes(): Int = when (this) {
-    SortOrder.NAME_ASCENDING -> R.string.feature_files_impl_sort_name_ascending
-    SortOrder.NAME_DESCENDING -> R.string.feature_files_impl_sort_name_descending
-    SortOrder.MODIFIED_NEWEST_FIRST -> R.string.feature_files_impl_sort_modified_newest
-    SortOrder.MODIFIED_OLDEST_FIRST -> R.string.feature_files_impl_sort_modified_oldest
-    SortOrder.SIZE_LARGEST_FIRST -> R.string.feature_files_impl_sort_size
+/**
+ * The sort menu's key group. Each key pairs with two directions; the first direction is the one
+ * OneDrive leads with — A to Z, newest first, largest first. Only Name's labels were observed
+ * (docs/ux-reference/spec/sort-menu.md); Modified and File size follow the same pattern.
+ */
+private enum class SortKey {
+    NAME,
+    MODIFIED,
+    SIZE,
+}
+
+private fun SortOrder.key(): SortKey = when (this) {
+    SortOrder.NAME_ASCENDING, SortOrder.NAME_DESCENDING -> SortKey.NAME
+    SortOrder.MODIFIED_NEWEST_FIRST, SortOrder.MODIFIED_OLDEST_FIRST -> SortKey.MODIFIED
+    SortOrder.SIZE_LARGEST_FIRST, SortOrder.SIZE_SMALLEST_FIRST -> SortKey.SIZE
+}
+
+private fun SortOrder.isFirstDirection(): Boolean = when (this) {
+    SortOrder.NAME_ASCENDING,
+    SortOrder.MODIFIED_NEWEST_FIRST,
+    SortOrder.SIZE_LARGEST_FIRST,
+    -> true
+
+    SortOrder.NAME_DESCENDING,
+    SortOrder.MODIFIED_OLDEST_FIRST,
+    SortOrder.SIZE_SMALLEST_FIRST,
+    -> false
+}
+
+private fun SortKey.orderFor(first: Boolean): SortOrder = when (this) {
+    SortKey.NAME -> if (first) SortOrder.NAME_ASCENDING else SortOrder.NAME_DESCENDING
+    SortKey.MODIFIED -> if (first) SortOrder.MODIFIED_NEWEST_FIRST else SortOrder.MODIFIED_OLDEST_FIRST
+    SortKey.SIZE -> if (first) SortOrder.SIZE_LARGEST_FIRST else SortOrder.SIZE_SMALLEST_FIRST
+}
+
+private fun SortKey.labelRes(): Int = when (this) {
+    SortKey.NAME -> R.string.feature_files_impl_sort_key_name
+    SortKey.MODIFIED -> R.string.feature_files_impl_sort_key_modified
+    SortKey.SIZE -> R.string.feature_files_impl_sort_key_size
+}
+
+private fun SortKey.firstDirectionLabelRes(): Int = when (this) {
+    SortKey.NAME -> R.string.feature_files_impl_sort_a_to_z
+    SortKey.MODIFIED -> R.string.feature_files_impl_sort_newest_first
+    SortKey.SIZE -> R.string.feature_files_impl_sort_largest_first
+}
+
+private fun SortKey.secondDirectionLabelRes(): Int = when (this) {
+    SortKey.NAME -> R.string.feature_files_impl_sort_z_to_a
+    SortKey.MODIFIED -> R.string.feature_files_impl_sort_oldest_first
+    SortKey.SIZE -> R.string.feature_files_impl_sort_smallest_first
 }
 
 @DevicePreviews
