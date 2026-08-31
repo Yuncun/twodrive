@@ -89,6 +89,7 @@ and, for UI changes, the Gradle-managed device smoke test above. CI (`.github/wo
 ## Deliberate UX divergences
 
 - Welcome screen: `docs/ux-reference/02-welcome.png` also has an outlined "Create new account" button and a "Skip to my photos" text button. TwoDrive v1 deliberately ships only **Sign in** — account creation is not a v1 feature, and the Photos tab is out of v1 scope.
+- Personal Vault: OneDrive's My files list gives the "Personal Vault" row a special "Tap to set up" subtitle. Vault is out of the frozen scope, so TwoDrive has no set-up flow: the demo drive's "Personal Vault" folder renders as an ordinary folder row ("size · date"), and the Vault pivot keeps its empty state.
 
 ## Version control and code location
 
