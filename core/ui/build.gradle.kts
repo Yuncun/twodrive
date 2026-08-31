@@ -21,6 +21,7 @@ plugins {
 
 android {
     namespace = "codes.fixmy.twodrive.core.ui"
+    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
@@ -32,4 +33,5 @@ dependencies {
     implementation(libs.coil.kt.compose)
 
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
 }
