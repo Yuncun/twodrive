@@ -33,8 +33,10 @@ fun EntryProviderScope<NavKey>.filesEntry(
     entry<FilesNavKey> { key ->
         val folderId = key.folderId
         FilesScreen(
-            onFolderClick = navigator::navigateToFolder,
+            folderName = key.folderName,
+            onFolderClick = { folder -> navigator.navigateToFolder(folder.id, folder.name) },
             onFileClick = onFileClick,
+            onBackClick = navigator::goBack,
             viewModel = hiltViewModel<FilesViewModel, FilesViewModel.Factory>(
                 key = folderId ?: "root",
             ) { factory ->

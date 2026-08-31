@@ -32,10 +32,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +46,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -73,35 +78,48 @@ import kotlinx.datetime.todayIn
 
 @Composable
 fun FilesScreen(
-    onFolderClick: (String) -> Unit,
+    folderName: String?,
+    onFolderClick: (DriveItem) -> Unit,
     onFileClick: (DriveItem) -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FilesViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
-    FilesScreen(
-        uiState = uiState,
-        selectedTab = selectedTab,
+    if (viewModel.folderId == null) {
         // The pivot row belongs to the drive root; pushed folders show only their list.
-        showTabRow = viewModel.folderId == null,
-        onTabClick = viewModel::selectTab,
-        onFolderClick = onFolderClick,
-        onFileClick = onFileClick,
-        // Will open the item bottom sheet once that screen exists.
-        onMoreClick = {},
-        onSortOrderChange = viewModel::setSortOrder,
-        modifier = modifier,
-    )
+        val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
+        FilesScreen(
+            uiState = uiState,
+            selectedTab = selectedTab,
+            onTabClick = viewModel::selectTab,
+            onFolderClick = onFolderClick,
+            onFileClick = onFileClick,
+            // Will open the item bottom sheet once that screen exists.
+            onMoreClick = {},
+            onSortOrderChange = viewModel::setSortOrder,
+            modifier = modifier,
+        )
+    } else {
+        FolderScreen(
+            folderName = folderName.orEmpty(),
+            uiState = uiState,
+            onBackClick = onBackClick,
+            onFolderClick = onFolderClick,
+            onFileClick = onFileClick,
+            onMoreClick = {},
+            onSortOrderChange = viewModel::setSortOrder,
+            modifier = modifier,
+        )
+    }
 }
 
 @Composable
 internal fun FilesScreen(
     uiState: FilesUiState,
     selectedTab: FilesTab,
-    showTabRow: Boolean,
     onTabClick: (FilesTab) -> Unit,
-    onFolderClick: (String) -> Unit,
+    onFolderClick: (DriveItem) -> Unit,
     onFileClick: (DriveItem) -> Unit,
     onMoreClick: (DriveItem) -> Unit,
     onSortOrderChange: (SortOrder) -> Unit,
@@ -109,9 +127,7 @@ internal fun FilesScreen(
     today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        if (showTabRow) {
-            FilesTabRow(selectedTab = selectedTab, onTabClick = onTabClick)
-        }
+        FilesTabRow(selectedTab = selectedTab, onTabClick = onTabClick)
         when (selectedTab) {
             FilesTab.MY_FILES -> MyFilesTab(
                 uiState = uiState,
@@ -149,6 +165,61 @@ internal fun FilesScreen(
     }
 }
 
+/**
+ * A pushed folder: a large title over the same list, per docs/ux-reference/spec/folder.md.
+ * OneDrive scrolls the whole header away, back arrow included; M3's large top app bar instead
+ * docks into a collapsed bar that keeps the title and the back arrow — a deliberate divergence
+ * the spec recommends.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun FolderScreen(
+    folderName: String,
+    uiState: FilesUiState,
+    onBackClick: () -> Unit,
+    onFolderClick: (DriveItem) -> Unit,
+    onFileClick: (DriveItem) -> Unit,
+    onMoreClick: (DriveItem) -> Unit,
+    onSortOrderChange: (SortOrder) -> Unit,
+    modifier: Modifier = Modifier,
+    today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
+) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+    ) {
+        LargeTopAppBar(
+            title = {
+                Text(
+                    text = folderName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = TwoDriveIcons.ArrowBack,
+                        contentDescription = stringResource(R.string.feature_files_impl_navigate_up),
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.largeTopAppBarColors(containerColor = Color.Transparent),
+            scrollBehavior = scrollBehavior,
+        )
+        MyFilesTab(
+            uiState = uiState,
+            today = today,
+            onFolderClick = onFolderClick,
+            onFileClick = onFileClick,
+            onMoreClick = onMoreClick,
+            onSortOrderChange = onSortOrderChange,
+        )
+    }
+}
+
 @Composable
 private fun FilesTabRow(
     selectedTab: FilesTab,
@@ -178,7 +249,7 @@ private fun FilesTabRow(
 private fun MyFilesTab(
     uiState: FilesUiState,
     today: LocalDate,
-    onFolderClick: (String) -> Unit,
+    onFolderClick: (DriveItem) -> Unit,
     onFileClick: (DriveItem) -> Unit,
     onMoreClick: (DriveItem) -> Unit,
     onSortOrderChange: (SortOrder) -> Unit,
@@ -257,7 +328,7 @@ private fun FilesList(
     items: List<DriveItem>,
     sortOrder: SortOrder,
     today: LocalDate,
-    onFolderClick: (String) -> Unit,
+    onFolderClick: (DriveItem) -> Unit,
     onFileClick: (DriveItem) -> Unit,
     onMoreClick: (DriveItem) -> Unit,
     onSortOrderChange: (SortOrder) -> Unit,
@@ -286,7 +357,7 @@ private fun FilesList(
             DriveItemRow(
                 item = item,
                 today = today,
-                onClick = { if (item.isFolder) onFolderClick(item.id) else onFileClick(item) },
+                onClick = { if (item.isFolder) onFolderClick(item) else onFileClick(item) },
                 onMoreClick = { onMoreClick(item) },
             )
         }
@@ -429,7 +500,6 @@ fun FilesScreenPreview(
         FilesScreen(
             uiState = FilesUiState.Success(folder = null, items = items, sortOrder = SortOrder.NAME_ASCENDING),
             selectedTab = FilesTab.MY_FILES,
-            showTabRow = true,
             onTabClick = {},
             onFolderClick = {},
             onFileClick = {},

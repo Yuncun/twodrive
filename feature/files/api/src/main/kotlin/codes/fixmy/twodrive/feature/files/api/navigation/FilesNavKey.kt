@@ -22,11 +22,12 @@ import kotlinx.serialization.Serializable
 
 /**
  * The Files tab. A null [folderId] is the drive root; any other value is a folder pushed on top of
- * the Files sub stack.
+ * the Files sub stack. [folderName] rides along so the folder screen can draw its title before the
+ * children load (docs/ux-reference/spec/folder.md).
  */
 @Serializable
-data class FilesNavKey(val folderId: String? = null) : NavKey
+data class FilesNavKey(val folderId: String? = null, val folderName: String? = null) : NavKey
 
-fun Navigator.navigateToFolder(folderId: String) {
-    navigate(FilesNavKey(folderId))
+fun Navigator.navigateToFolder(folderId: String, folderName: String) {
+    navigate(FilesNavKey(folderId, folderName))
 }

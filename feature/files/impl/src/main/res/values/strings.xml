@@ -20,6 +20,7 @@
     <string name="feature_files_impl_empty_folder">This folder is empty</string>
     <string name="feature_files_impl_sort">Sort</string>
     <string name="feature_files_impl_more_options">More options for %1$s</string>
+    <string name="feature_files_impl_navigate_up">Navigate up</string>
     <string name="feature_files_impl_sort_name_ascending">Name (A to Z)</string>
     <string name="feature_files_impl_sort_name_descending">Name (Z to A)</string>
     <string name="feature_files_impl_sort_modified_newest">Date modified (newest first)</string>

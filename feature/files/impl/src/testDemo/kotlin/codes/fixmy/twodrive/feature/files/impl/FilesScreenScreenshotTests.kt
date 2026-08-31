@@ -22,6 +22,8 @@ import codes.fixmy.twodrive.core.designsystem.component.TwoDriveBackground
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.screenshottesting.captureMultiDevice
+import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils.matchesCheck
+import com.google.android.apps.common.testing.accessibility.framework.checks.SpeakableTextPresentCheck
 import dagger.hilt.android.testing.HiltTestApplication
 import kotlinx.datetime.LocalDate
 import org.junit.Before
@@ -82,6 +84,37 @@ class FilesScreenScreenshotTests {
     }
 
     @Test
+    fun folderScreen() {
+        composeTestRule.captureMultiDevice(
+            "FolderScreen",
+            // The landscape phone canvas clips the last row to a sliver with its text outside the
+            // visible bounds, which ATF reports as an unlabelled item; scroll clipping is not an
+            // accessibility defect, so that check is suppressed for this capture.
+            accessibilitySuppressions = matchesCheck(SpeakableTextPresentCheck::class.java),
+        ) {
+            TwoDriveTheme {
+                TwoDriveBackground {
+                    FolderScreen(
+                        folderName = "Documents",
+                        uiState = FilesUiState.Success(
+                            folder = null,
+                            items = demoDriveChildren("f-documents"),
+                            sortOrder = SortOrder.NAME_ASCENDING,
+                        ),
+                        onBackClick = {},
+                        onFolderClick = {},
+                        onFileClick = {},
+                        onMoreClick = {},
+                        onSortOrderChange = {},
+                        // Fixed so the year-dropping date format keeps the goldens stable over time.
+                        today = LocalDate(2026, 8, 30),
+                    )
+                }
+            }
+        }
+    }
+
+    @Test
     fun filesScreen_loading() {
         composeTestRule.captureMultiDevice("FilesScreenLoading") {
             FilesScreenContent(FilesUiState.Loading)
@@ -107,7 +140,6 @@ class FilesScreenScreenshotTests {
                 FilesScreen(
                     uiState = uiState,
                     selectedTab = selectedTab,
-                    showTabRow = true,
                     onTabClick = {},
                     onFolderClick = {},
                     onFileClick = {},
