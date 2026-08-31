@@ -81,10 +81,10 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - Redirect URI must follow the real package name: debug builds are `codes.fixmy.twodrive.debug`, release `codes.fixmy.twodrive`. Use `${applicationId}` as the `android:host` in the manifest's BrowserTabActivity filter and generate `redirect_uri` in msal_config from `BuildConfig.APPLICATION_ID` (or a `msal_config` per build type). Both hosts are registered in the Entra app with hash `J9AaPozhP6djyGWJSSzVi2DZpoU=`. Verify by installing prodDebug on an emulator: MSAL must not throw a redirect-URI mismatch.
 - [ ] M2.2 `/me/drive/root/delta` sync into Room with delta token in DataStore; `DriveItemsRepository` is offline-first (Room is the source of truth); unit tests with MockWebServer JSON fixtures copied from real Graph responses (docs/graph-fixtures/).
   spec details:
-  - R: M2.2 a failed sync crashes the app: FilesViewModel.init launches sync() with no catch and OfflineFirstDriveItemsRepository.sync() rethrows, so an uncaught IOException reaches the default handler when the app starts offline
-  - R: M2.2 every FilesViewModel re-runs a full delta sync in init, so opening each folder re-syncs the whole drive; sync once (NiA's SyncManager/WorkManager)
-  - R: M2.2 sync() returns a Boolean that is always true and signals failure by throwing instead; return false on failure like NiA's Syncable, or return Unit
-  - R: M2.2 deleting a folder leaves its descendants in Room: apply() deletes only the ids named in the delta page and there is no cascade — verify what Graph sends for a deleted folder and sweep orphans
+  - R: M2.2 a failed sync crashes the app: FilesViewModel.init launches sync() with no catch and OfflineFirstDriveItemsRepository.sync() rethrows, so an uncaught IOException reaches the default handler when the app starts offline (fixed 2026-08-31: 46cde96/894709f)
+  - R: M2.2 every FilesViewModel re-runs a full delta sync in init, so opening each folder re-syncs the whole drive; sync once (NiA's SyncManager/WorkManager) (fixed 2026-08-31: 894709f in-process SyncManager; M2.2 may swap in WorkManager)
+  - R: M2.2 sync() returns a Boolean that is always true and signals failure by throwing instead; return false on failure like NiA's Syncable, or return Unit (fixed 2026-08-31: 46cde96 returns false)
+  - R: M2.2 deleting a folder leaves its descendants in Room: apply() deletes only the ids named in the delta page and there is no cascade — verify what Graph sends for a deleted folder and sweep orphans (fixed 2026-08-31: b3940d9 recursive-CTE sweep; Graph delta sends the folder only, per v1.0 docs)
 - [ ] M2.3 Thumbnails via `/items/{id}/thumbnails` (Coil, memory+disk cache); paging of children (`@odata.nextLink`).
 - [ ] M2.4 Account drawer (19-account-drawer.png): avatar, email, storage bar from `/me/drive` quota, Sign out. Handle 507/quota-full state visibly.
   spec details:
