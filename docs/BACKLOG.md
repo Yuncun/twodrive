@@ -58,7 +58,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - O: M1.7 an empty section is a pale-blue (#EAF4FC) filled card, 379.4x63.2dp at the 16dp gutter, 8dp radius, 16dp inner padding, two lines of ~14sp text, no icon and no border — reuse this shape for empty folders and the offline empty state, and note the copy embeds "⋯" as an inline glyph in the sentence
   - O: M1.7 the search pill's contentDescription is "Search your photos" while its icon description and label both say "Search your files" — a OneDrive bug; TwoDrive's description must match its label
 - [x] O: M1.7 the modified date drops the year inside the current year ("Jun 18", "May 7") and keeps it otherwise ("Jan 18, 2024") — the concrete rule behind the existing "use a localized formatter" review item (already fixed in 29b122e)
-- [ ] Welcome screen: match the observed layout metrics
+- [x] Welcome screen: match the observed layout metrics
   - O: M1.1 welcome layout: illustration ~200x124dp centred, headline "Protect your files and access them anywhere" ~24sp bold centred in a ~312dp column, then a bottom-anchored stack — Sign in filled 379x48dp with a 4dp radius (not the M3 pill), 8dp gap, then the secondary buttons TwoDrive drops — docs/ux-reference/spec/welcome.md
 - [ ] My files list rows: match the observed OneDrive metrics and copy
   - O: M1.2 list row metrics from the emulator: row pitch 64dp, leading icon 40dp at x=16dp, name and subtitle both left-aligned at x=68.6dp, trailing "⋯" a 48dp IconButton at x=353dp, and no divider between rows — docs/ux-reference/spec/my-files-list.md
@@ -69,11 +69,11 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [ ] Screenshot coverage: add a portrait phone device and dark-theme captures
   - R: DefaultTestDevices.PHONE is 640x360dp landscape, so no screenshot in the repo captures a portrait phone; the welcome screen's centred illustration and bottom-pinned button are only verified on foldable and tablet
   - R: M1.0 no dark-theme screenshots: dab6c62 shipped DarkColorScheme and deleted captureMultiTheme, and captureForDevice still takes darkMode but nothing passes true, so all 9 PNGs are light
-- [ ] core:database tests
+- [x] core:database tests
   - R: core:database is the only module with no tests; add DAO tests for getRootChildren()'s is_root subquery, upsertDriveItems and deleteDriveItems
 - [ ] Docs and repo hygiene
   - R: docs the backlog cites 19-account-drawer.png (M2.4) and 16-shared.png (M4.2), and docs/ux-reference/README.md cites 20-myfiles-scrolled.png; none of the three are committed — capture them or mark them private
-  - R: docs the Definition of Done asks for the backlog tick "with the commit hash, in the same commit", which no commit can satisfy; M1.1 and M1.2 each needed a follow-up docs commit (58e4718, d28fd07) — reword it so the tick commit may follow the code commit
+  - R: docs the Definition of Done asks for the backlog tick "with the commit hash, in the same commit", which no commit can satisfy; M1.1 and M1.2 each needed a follow-up docs commit (58e4718, d28fd07) — reword it so the tick commit may follow the code commit (done 2026-08-31: DEFINITION_OF_DONE.md reworded)
   - R: 49f29af committed tools/device scripts carrying the personal sign-in address and the test phone's adb serial 44271JEKB17967; e7b8dea took them out of the tree, but the repo is public and both stay in its history — decided 2026-08-30: acceptable, keep history as is (no rewrite)
 
 ## Milestone 2 — real Graph (prod flavor)
