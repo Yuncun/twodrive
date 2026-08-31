@@ -23,6 +23,7 @@ import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.screenshottesting.captureMultiDevice
 import dagger.hilt.android.testing.HiltTestApplication
+import kotlinx.datetime.LocalDate
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -84,7 +85,10 @@ class FilesScreenScreenshotTests {
                     uiState = uiState,
                     onFolderClick = {},
                     onFileClick = {},
+                    onMoreClick = {},
                     onSortOrderChange = {},
+                    // Fixed so the year-dropping date format keeps the goldens stable over time.
+                    today = LocalDate(2026, 8, 30),
                 )
             }
         }

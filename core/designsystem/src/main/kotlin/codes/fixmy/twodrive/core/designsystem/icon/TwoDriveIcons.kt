@@ -32,6 +32,7 @@ import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.Person
@@ -63,6 +64,7 @@ object TwoDriveIcons {
     val HomeBorder = Icons.Outlined.Home
     val Image = Icons.Rounded.Image
     val ImageBorder = Icons.Outlined.Image
+    val MoreHoriz = Icons.Rounded.MoreHoriz
     val MoreVert = Icons.Rounded.MoreVert
     val Pdf = Icons.Rounded.PictureAsPdf
     val People = Icons.Rounded.People

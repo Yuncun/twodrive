@@ -40,8 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -54,10 +54,13 @@ import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.ui.DevicePreviews
 import codes.fixmy.twodrive.core.ui.DriveItemPreviewParameterProvider
 import codes.fixmy.twodrive.core.ui.formatFileSize
+import codes.fixmy.twodrive.core.ui.formatModifiedDate
 import codes.fixmy.twodrive.core.ui.icon
 import codes.fixmy.twodrive.core.ui.iconTint
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
 
 @Composable
 fun FilesScreen(
@@ -71,6 +74,8 @@ fun FilesScreen(
         uiState = uiState,
         onFolderClick = onFolderClick,
         onFileClick = onFileClick,
+        // Will open the item bottom sheet once that screen exists.
+        onMoreClick = {},
         onSortOrderChange = viewModel::setSortOrder,
         modifier = modifier,
     )
@@ -81,8 +86,10 @@ internal fun FilesScreen(
     uiState: FilesUiState,
     onFolderClick: (String) -> Unit,
     onFileClick: (DriveItem) -> Unit,
+    onMoreClick: (DriveItem) -> Unit,
     onSortOrderChange: (SortOrder) -> Unit,
     modifier: Modifier = Modifier,
+    today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         when (uiState) {
@@ -101,8 +108,10 @@ internal fun FilesScreen(
             is FilesUiState.Success -> FilesList(
                 items = uiState.items,
                 sortOrder = uiState.sortOrder,
+                today = today,
                 onFolderClick = onFolderClick,
                 onFileClick = onFileClick,
+                onMoreClick = onMoreClick,
                 onSortOrderChange = onSortOrderChange,
             )
         }
@@ -113,8 +122,10 @@ internal fun FilesScreen(
 private fun FilesList(
     items: List<DriveItem>,
     sortOrder: SortOrder,
+    today: LocalDate,
     onFolderClick: (String) -> Unit,
     onFileClick: (DriveItem) -> Unit,
+    onMoreClick: (DriveItem) -> Unit,
     onSortOrderChange: (SortOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -140,7 +151,9 @@ private fun FilesList(
         items(items = items, key = DriveItem::id) { item ->
             DriveItemRow(
                 item = item,
+                today = today,
                 onClick = { if (item.isFolder) onFolderClick(item.id) else onFileClick(item) },
+                onMoreClick = { onMoreClick(item) },
             )
         }
     }
@@ -188,7 +201,9 @@ private fun SortHeader(
 @Composable
 private fun DriveItemRow(
     item: DriveItem,
+    today: LocalDate,
     onClick: () -> Unit,
+    onMoreClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -203,44 +218,40 @@ private fun DriveItemRow(
             tint = item.iconTint(),
             modifier = Modifier
                 .padding(end = 16.dp)
-                .size(40.dp),
+                .size(48.dp),
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = item.name,
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = item.subtitle(),
+                text = item.subtitle(today),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
-        Icon(
-            imageVector = TwoDriveIcons.MoreVert,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        IconButton(onClick = onMoreClick) {
+            Icon(
+                imageVector = TwoDriveIcons.MoreHoriz,
+                contentDescription = stringResource(R.string.feature_files_impl_more_options, item.name),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
 /**
  * The secondary line of a row: OneDrive puts the size first and the date second, e.g.
- * "9.2 MB · Jul 12, 2024" (docs/ux-reference/11-myfiles.png).
+ * "9.2 MB · Jul 12, 2024", and folders show their recursive size just like files
+ * (docs/ux-reference/11-myfiles.png).
  */
-@Composable
-private fun DriveItem.subtitle(): String {
-    val date = lastModified.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    val dateText = "${date.month.name.take(3).lowercase().replaceFirstChar(Char::titlecase)} ${date.dayOfMonth}, ${date.year}"
-    val sizeText = if (isFolder) {
-        val count = childCount ?: 0
-        pluralStringResource(R.plurals.feature_files_impl_item_count, count, count)
-    } else {
-        formatFileSize(size)
-    }
-    return "$sizeText · $dateText"
-}
+private fun DriveItem.subtitle(today: LocalDate): String =
+    "${formatFileSize(size)} · ${formatModifiedDate(lastModified, today = today)}"
 
 private fun SortOrder.labelRes(): Int = when (this) {
     SortOrder.NAME_ASCENDING -> R.string.feature_files_impl_sort_name_ascending
@@ -261,6 +272,7 @@ fun FilesScreenPreview(
             uiState = FilesUiState.Success(folder = null, items = items, sortOrder = SortOrder.NAME_ASCENDING),
             onFolderClick = {},
             onFileClick = {},
+            onMoreClick = {},
             onSortOrderChange = {},
         )
     }
