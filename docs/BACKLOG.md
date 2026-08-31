@@ -41,7 +41,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - R: M1.5 FilesViewModelTest.changingSortOrderReordersItems asserts nothing — NAME_ASCENDING and SIZE_LARGEST_FIRST give the same order for driveItemsTestData; add data that separates them
   - O: M1.5 the sort menu is an anchored DropdownMenu ~246dp wide, left-aligned to the 16dp gutter under the chip, with a hairline divider between the key group and the direction group and a 24dp leading check slot reserved on unchecked rows; opening it flips the chip chevron ⌄→⌃ — docs/ux-reference/spec/sort-menu.md
   - O: M1.5 the direction labels "A to Z / Z to A" were only observed for the Name key; decide and document what TwoDrive shows for Modified and File size (e.g. "Newest first / Oldest first", "Largest / Smallest") — this is the same gap the "SortOrder has no SIZE_SMALLEST_FIRST" review item points at
-- [ ] M1.6 View options List / Tile (14-view-options.png); tile view shows thumbnails (Coil) for images; persisted.
+- [x] M1.6 View options List / Tile (14-view-options.png); tile view shows thumbnails (Coil) for images; persisted.
   spec details:
   - O: M1.6 the "View as:" menu has a non-clickable header row "View as:" above the two options, a leading checkmark on the selected one, and a trailing glyph per row (List = stacked lines, Tile = 2×2 grid) tinted primary blue when selected and grey when not — docs/ux-reference/spec/view-menu.md
   - O: M1.6 tile grid metrics: 3 fixed columns, 18dp content inset, 101dp tile width, 137dp column pitch, 195dp row pitch, thumbnail 101×58dp; name, date and "⋯" are all centered under the thumbnail — docs/ux-reference/spec/my-files-tile.md
