@@ -19,6 +19,7 @@ package codes.fixmy.twodrive
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import codes.fixmy.twodrive.core.auth.AuthError
 import codes.fixmy.twodrive.core.auth.AuthException
 import codes.fixmy.twodrive.core.auth.AuthRepository
 import codes.fixmy.twodrive.core.auth.AuthState
@@ -37,7 +38,7 @@ class MainActivityViewModel @Inject constructor(
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-    private val signInError = MutableStateFlow<String?>(null)
+    private val signInError = MutableStateFlow<AuthError?>(null)
 
     val uiState: StateFlow<MainActivityUiState> = combine(
         authRepository.authState,
@@ -60,7 +61,7 @@ class MainActivityViewModel @Inject constructor(
             try {
                 authRepository.signIn(activity)
             } catch (e: AuthException) {
-                signInError.value = e.message
+                signInError.value = e.error
             }
         }
     }
@@ -73,7 +74,7 @@ class MainActivityViewModel @Inject constructor(
 sealed interface MainActivityUiState {
     data object Loading : MainActivityUiState
 
-    data class SignedOut(val error: String?) : MainActivityUiState
+    data class SignedOut(val error: AuthError?) : MainActivityUiState
 
     data class SignedIn(val profile: UserProfile) : MainActivityUiState
 

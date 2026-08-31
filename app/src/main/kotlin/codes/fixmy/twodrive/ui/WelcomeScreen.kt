@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import codes.fixmy.twodrive.R
+import codes.fixmy.twodrive.core.auth.AuthError
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveBackground
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveButton
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
@@ -54,7 +55,7 @@ import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
  */
 @Composable
 fun WelcomeScreen(
-    error: String?,
+    error: AuthError?,
     onSignInClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -83,7 +84,7 @@ fun WelcomeScreen(
             Spacer(Modifier.weight(1f))
             if (error != null) {
                 Text(
-                    text = error,
+                    text = stringResource(error.messageRes()),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
@@ -107,6 +108,17 @@ fun WelcomeScreen(
     }
 }
 
+/**
+ * The user-facing message for a failed sign-in. Provider error text never reaches the
+ * screen; only these localised strings do.
+ */
+private fun AuthError.messageRes() = when (this) {
+    AuthError.CANCELLED -> R.string.welcome_sign_in_error_cancelled
+    AuthError.NO_NETWORK -> R.string.welcome_sign_in_error_no_network
+    AuthError.SERVICE -> R.string.welcome_sign_in_error_service
+    AuthError.UNKNOWN -> R.string.welcome_sign_in_error_unknown
+}
+
 private val WelcomeIllustrationWidth = 240.dp
 private val WelcomeHeadlineMaxWidth = 312.dp
 private val SignInButtonHeight = 56.dp
@@ -123,6 +135,6 @@ private fun WelcomeScreenPreview() {
 @Composable
 private fun WelcomeScreenErrorPreview() {
     TwoDriveTheme {
-        WelcomeScreen(error = "Sign-in was cancelled.", onSignInClick = {})
+        WelcomeScreen(error = AuthError.CANCELLED, onSignInClick = {})
     }
 }

@@ -26,6 +26,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import codes.fixmy.twodrive.R
+import codes.fixmy.twodrive.core.auth.AuthError
 import dagger.hilt.android.testing.HiltTestApplication
 import org.junit.Rule
 import org.junit.Test
@@ -79,11 +80,13 @@ class WelcomeScreenTest {
     }
 
     @Test
-    fun signInErrorIsShown() {
+    fun signInErrorIsShownAsItsStringResource() {
         composeTestRule.setContent {
-            WelcomeScreen(error = "Sign-in was cancelled.", onSignInClick = {})
+            WelcomeScreen(error = AuthError.CANCELLED, onSignInClick = {})
         }
 
-        composeTestRule.onNodeWithText("Sign-in was cancelled.").assertIsDisplayed()
+        val cancelled =
+            composeTestRule.activity.getString(R.string.welcome_sign_in_error_cancelled)
+        composeTestRule.onNodeWithText(cancelled).assertIsDisplayed()
     }
 }

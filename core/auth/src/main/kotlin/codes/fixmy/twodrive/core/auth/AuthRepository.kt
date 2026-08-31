@@ -35,4 +35,23 @@ interface AuthRepository {
     suspend fun signOut()
 }
 
-class AuthException(message: String, cause: Throwable? = null) : Exception(message, cause)
+/**
+ * A failed auth operation. [error] is what the UI may show, mapped to a localised message
+ * there; [message] and [cause] carry the provider detail for logs only and must never
+ * reach the screen.
+ */
+class AuthException(
+    val error: AuthError,
+    message: String,
+    cause: Throwable? = null,
+) : Exception(message, cause)
+
+/**
+ * The kinds of auth failure the UI distinguishes.
+ */
+enum class AuthError {
+    CANCELLED,
+    NO_NETWORK,
+    SERVICE,
+    UNKNOWN,
+}

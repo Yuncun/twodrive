@@ -19,6 +19,7 @@ package codes.fixmy.twodrive.core.auth.msal
 import android.app.Activity
 import android.content.Context
 import codes.fixmy.twodrive.core.auth.AccessTokenProvider
+import codes.fixmy.twodrive.core.auth.AuthError
 import codes.fixmy.twodrive.core.auth.AuthException
 import codes.fixmy.twodrive.core.auth.AuthRepository
 import codes.fixmy.twodrive.core.auth.AuthState
@@ -37,7 +38,10 @@ import com.microsoft.identity.client.ISingleAccountPublicClientApplication
 import com.microsoft.identity.client.PublicClientApplication
 import com.microsoft.identity.client.SignInParameters
 import com.microsoft.identity.client.SilentAuthenticationCallback
+import com.microsoft.identity.client.exception.MsalClientException
 import com.microsoft.identity.client.exception.MsalException
+import com.microsoft.identity.client.exception.MsalServiceException
+import com.microsoft.identity.client.exception.MsalUserCancelException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -91,11 +95,17 @@ class MsalAuthRepository @Inject constructor(
 
                         override fun onError(exception: MsalException) =
                             continuation.resumeWithException(
-                                AuthException("Sign-in failed: ${exception.errorCode}", exception),
+                                AuthException(
+                                    exception.toAuthError(),
+                                    "Sign-in failed: ${exception.errorCode}",
+                                    exception,
+                                ),
                             )
 
                         override fun onCancel() =
-                            continuation.resumeWithException(AuthException("Sign-in cancelled"))
+                            continuation.resumeWithException(
+                                AuthException(AuthError.CANCELLED, "Sign-in cancelled"),
+                            )
                     },
                 )
                 .build()
@@ -125,7 +135,11 @@ class MsalAuthRepository @Inject constructor(
 
                         override fun onError(exception: MsalException) =
                             continuation.resumeWithException(
-                                AuthException("Token refresh failed: ${exception.errorCode}", exception),
+                                AuthException(
+                                    exception.toAuthError(),
+                                    "Token refresh failed: ${exception.errorCode}",
+                                    exception,
+                                ),
                             )
                     },
                 )
@@ -145,11 +159,24 @@ class MsalAuthRepository @Inject constructor(
 
                     override fun onError(exception: MsalException) =
                         continuation.resumeWithException(
-                            AuthException("MSAL initialisation failed", exception),
+                            AuthException(
+                                exception.toAuthError(),
+                                "MSAL initialisation failed",
+                                exception,
+                            ),
                         )
                 },
             )
         }
+
+    private fun MsalException.toAuthError() = when {
+        this is MsalUserCancelException -> AuthError.CANCELLED
+        this is MsalClientException && errorCode == MsalClientException.DEVICE_NETWORK_NOT_AVAILABLE ->
+            AuthError.NO_NETWORK
+
+        this is MsalServiceException -> AuthError.SERVICE
+        else -> AuthError.UNKNOWN
+    }
 
     private fun ISingleAccountPublicClientApplication.currentAccount(): IAccount? =
         currentAccount?.currentAccount

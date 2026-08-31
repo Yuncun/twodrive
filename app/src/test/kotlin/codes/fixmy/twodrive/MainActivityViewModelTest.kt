@@ -17,6 +17,7 @@
 package codes.fixmy.twodrive
 
 import android.app.Activity
+import codes.fixmy.twodrive.core.auth.AuthError
 import codes.fixmy.twodrive.core.auth.AuthException
 import codes.fixmy.twodrive.core.auth.AuthState
 import codes.fixmy.twodrive.core.testing.repository.TestAuthRepository
@@ -77,13 +78,47 @@ class MainActivityViewModelTest {
     fun failedSignInIsReportedOnTheWelcomeScreen() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
         authRepository.setAuthState(AuthState.SignedOut)
-        authRepository.signInException = AuthException("Sign-in was cancelled.")
+        authRepository.signInException =
+            AuthException(AuthError.CANCELLED, "Sign-in cancelled")
 
         viewModel.signIn(Activity())
 
         assertEquals(
-            MainActivityUiState.SignedOut(error = "Sign-in was cancelled."),
+            MainActivityUiState.SignedOut(error = AuthError.CANCELLED),
             viewModel.uiState.value,
         )
+    }
+
+    /**
+     * Only the typed [AuthError] reaches the UI state; the exception message is provider
+     * detail (e.g. an MSAL error code) that must never reach the screen.
+     */
+    @Test
+    fun failedSignInReportsTheTypedErrorNotTheExceptionMessage() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        authRepository.setAuthState(AuthState.SignedOut)
+        authRepository.signInException =
+            AuthException(AuthError.SERVICE, "Sign-in failed: invalid_grant")
+
+        viewModel.signIn(Activity())
+
+        assertEquals(
+            MainActivityUiState.SignedOut(error = AuthError.SERVICE),
+            viewModel.uiState.value,
+        )
+    }
+
+    @Test
+    fun retryingSignInClearsTheEarlierError() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        authRepository.setAuthState(AuthState.SignedOut)
+        authRepository.signInException =
+            AuthException(AuthError.NO_NETWORK, "Sign-in failed: device_network_not_available")
+        viewModel.signIn(Activity())
+
+        authRepository.signInException = null
+        viewModel.signIn(Activity())
+
+        assertIs<MainActivityUiState.SignedIn>(viewModel.uiState.value)
     }
 }

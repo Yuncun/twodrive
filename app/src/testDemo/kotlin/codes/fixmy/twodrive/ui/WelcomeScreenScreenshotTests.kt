@@ -19,6 +19,7 @@ package codes.fixmy.twodrive.ui
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import codes.fixmy.twodrive.core.auth.AuthError
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 import codes.fixmy.twodrive.core.screenshottesting.captureMultiDevice
 import dagger.hilt.android.testing.HiltTestApplication
@@ -49,12 +50,12 @@ class WelcomeScreenScreenshotTests {
     @Test
     fun welcomeScreen_signInFailed() {
         composeTestRule.captureMultiDevice("WelcomeScreenError") {
-            WelcomeScreenContent(error = "Sign-in was cancelled.")
+            WelcomeScreenContent(error = AuthError.CANCELLED)
         }
     }
 
     @Composable
-    private fun WelcomeScreenContent(error: String?) {
+    private fun WelcomeScreenContent(error: AuthError?) {
         TwoDriveTheme {
             WelcomeScreen(error = error, onSignInClick = {})
         }
