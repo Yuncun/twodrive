@@ -26,6 +26,9 @@
       },
       "folder": {
         "childCount": 5
+      },
+      "shared": {
+        "scope": "users"
       }
     },
     {
@@ -96,6 +99,9 @@
       },
       "file": {
         "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      },
+      "shared": {
+        "scope": "users"
       }
     },
     {

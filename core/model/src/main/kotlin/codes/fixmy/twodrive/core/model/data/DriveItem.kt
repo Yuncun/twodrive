@@ -33,4 +33,5 @@ data class DriveItem(
     val webUrl: String?,
     val thumbnailUrl: String? = null,
     val childCount: Int? = null,
+    val isShared: Boolean = false,
 )

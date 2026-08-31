@@ -32,4 +32,5 @@ fun NetworkDriveItem.asEntity() = DriveItemEntity(
     webUrl = webUrl,
     thumbnailUrl = null,
     childCount = folder?.childCount,
+    isShared = isShared,
 )

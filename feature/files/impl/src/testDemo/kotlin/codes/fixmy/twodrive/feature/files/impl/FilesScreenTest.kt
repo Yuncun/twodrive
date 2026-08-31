@@ -21,9 +21,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -90,7 +92,7 @@ class FilesScreenTest {
         composeTestRule.onNodeWithTag("files:list").performScrollToNode(hasText("Resume 2026.docx"))
 
         composeTestRule.onNodeWithText("Resume 2026.docx").assertIsDisplayed()
-        composeTestRule.onNodeWithText("48.2 KB · Aug 20").assertIsDisplayed()
+        composeTestRule.onNodeWithText("48 KB\u00A0·\u00A0Aug 20").assertIsDisplayed()
     }
 
     @Test
@@ -98,7 +100,15 @@ class FilesScreenTest {
         setContent()
 
         composeTestRule.onNodeWithText("Documents").assertIsDisplayed()
-        composeTestRule.onNodeWithText("13.3 MB · Aug 18").assertIsDisplayed()
+        composeTestRule.onNodeWithText("13.3 MB\u00A0·\u00A0Aug 18").assertIsDisplayed()
+    }
+
+    @Test
+    fun sharedItemsShowTheSharedBadge() {
+        setContent()
+
+        // The demo drive marks Documents and Household budget.xlsx shared.
+        composeTestRule.onAllNodesWithContentDescription("Shared").assertCountEquals(2)
     }
 
     @Test
@@ -158,7 +168,7 @@ class FilesScreenTest {
         // Documents: list view would say "13.3 MB · Aug 18"; the tile shows the date alone
         // and badges the item count inside the thumbnail.
         composeTestRule.onNodeWithText("Aug 18").assertIsDisplayed()
-        composeTestRule.onNodeWithText("13.3 MB · Aug 18").assertDoesNotExist()
+        composeTestRule.onNodeWithText("13.3 MB\u00A0·\u00A0Aug 18").assertDoesNotExist()
         composeTestRule.onNodeWithText("5").assertIsDisplayed()
     }
 

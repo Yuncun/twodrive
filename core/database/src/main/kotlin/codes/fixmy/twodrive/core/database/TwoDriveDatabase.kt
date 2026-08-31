@@ -16,6 +16,7 @@
 
 package codes.fixmy.twodrive.core.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -27,7 +28,10 @@ import codes.fixmy.twodrive.core.database.util.InstantConverter
     entities = [
         DriveItemEntity::class,
     ],
-    version = 1,
+    version = 2,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+    ],
     exportSchema = true,
 )
 @TypeConverters(

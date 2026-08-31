@@ -52,6 +52,8 @@ data class DriveItemEntity(
     val thumbnailUrl: String?,
     @ColumnInfo(name = "child_count")
     val childCount: Int?,
+    @ColumnInfo(name = "is_shared", defaultValue = "0")
+    val isShared: Boolean,
 )
 
 fun DriveItemEntity.asExternalModel() = DriveItem(
@@ -66,4 +68,5 @@ fun DriveItemEntity.asExternalModel() = DriveItem(
     webUrl = webUrl,
     thumbnailUrl = thumbnailUrl,
     childCount = childCount,
+    isShared = isShared,
 )

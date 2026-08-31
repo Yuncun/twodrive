@@ -22,24 +22,30 @@ import kotlin.test.assertEquals
 
 class FileSizeTest {
     @Test
-    fun bytesBelowOneThousandAreShownAsBytes() {
-        assertEquals("999 B", formatFileSize(999, Locale.US))
+    fun kilobytesAreTheFloorUnit() {
+        assertEquals("0 KB", formatFileSize(0, Locale.US))
+        assertEquals("0 KB", formatFileSize(499, Locale.US))
+        assertEquals("1 KB", formatFileSize(999, Locale.US))
     }
 
     @Test
-    fun kilobytesKeepOneDecimal() {
-        assertEquals("48.2 KB", formatFileSize(48_213, Locale.US))
-    }
-
-    @Test
-    fun hundredsDropTheDecimal() {
+    fun kilobytesNeverCarryDecimals() {
+        assertEquals("48 KB", formatFileSize(48_213, Locale.US))
         assertEquals("133 KB", formatFileSize(132_770, Locale.US))
+        assertEquals("181 KB", formatFileSize(181_000, Locale.US))
     }
 
     @Test
-    fun megabytesAndGigabytes() {
+    fun megabytesAndUpKeepOneDecimal() {
+        assertEquals("1.2 MB", formatFileSize(1_200_000, Locale.US))
         assertEquals("3.4 MB", formatFileSize(3_402_118, Locale.US))
-        assertEquals("88.1 MB", formatFileSize(88_120_001, Locale.US))
+        assertEquals("294.6 MB", formatFileSize(294_600_000, Locale.US))
+        assertEquals("1.4 GB", formatFileSize(1_400_000_000, Locale.US))
+    }
+
+    @Test
+    fun wholeMegabytesAndUpDropTheZeroDecimal() {
+        assertEquals("450 MB", formatFileSize(450_000_000, Locale.US))
         assertEquals("100 GB", formatFileSize(100_000_000_000, Locale.US))
     }
 }

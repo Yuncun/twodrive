@@ -24,8 +24,8 @@ import kotlinx.serialization.json.JsonObject
  * Network representation of a Microsoft Graph
  * [driveItem](https://learn.microsoft.com/graph/api/resources/driveitem).
  *
- * Facets (`file`, `folder`, `root`, `deleted`) are present only when they apply, which is how
- * Graph tells a file from a folder.
+ * Facets (`file`, `folder`, `root`, `deleted`, `shared`) are present only when they apply, which
+ * is how Graph tells a file from a folder, or a shared item from a private one.
  */
 @Serializable
 data class NetworkDriveItem(
@@ -38,11 +38,13 @@ data class NetworkDriveItem(
     val folder: NetworkFolderFacet? = null,
     val root: JsonObject? = null,
     val deleted: NetworkDeletedFacet? = null,
+    val shared: NetworkSharedFacet? = null,
     val parentReference: NetworkParentReference? = null,
 ) {
     val isFolder: Boolean get() = folder != null
     val isRoot: Boolean get() = root != null
     val isDeleted: Boolean get() = deleted != null
+    val isShared: Boolean get() = shared != null
 }
 
 @Serializable
@@ -58,6 +60,11 @@ data class NetworkFolderFacet(
 @Serializable
 data class NetworkDeletedFacet(
     val state: String? = null,
+)
+
+@Serializable
+data class NetworkSharedFacet(
+    val scope: String? = null,
 )
 
 @Serializable

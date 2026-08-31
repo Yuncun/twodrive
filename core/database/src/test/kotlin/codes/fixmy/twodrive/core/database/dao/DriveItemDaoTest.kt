@@ -168,4 +168,5 @@ private fun testDriveItem(
     webUrl = null,
     thumbnailUrl = null,
     childCount = if (isFolder) 1 else null,
+    isShared = false,
 )

@@ -735,6 +735,11 @@ private fun SortMenuItem(
     )
 }
 
+/**
+ * One list row, on the observed OneDrive metrics: a uniform 68dp row (OneDrive splits 64/68 by
+ * kind; TwoDrive picks one), 40dp icon at x=16, text at x=68, the ⋯ button 10dp off the right
+ * edge, no divider (docs/ux-reference/spec/my-files-list.md).
+ */
 @Composable
 private fun DriveItemRow(
     item: DriveItem,
@@ -745,8 +750,9 @@ private fun DriveItemRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(68.dp)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(start = 16.dp, end = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -754,7 +760,7 @@ private fun DriveItemRow(
             contentDescription = null,
             tint = item.iconTint(),
             modifier = Modifier
-                .padding(end = 16.dp)
+                .padding(end = 12.dp)
                 .size(40.dp),
         )
         Column(modifier = Modifier.weight(1f)) {
@@ -764,13 +770,25 @@ private fun DriveItemRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(
-                text = item.subtitle(today),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (item.isShared) {
+                    Icon(
+                        imageVector = TwoDriveIcons.People,
+                        contentDescription = stringResource(R.string.feature_files_impl_shared),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(16.dp),
+                    )
+                }
+                Text(
+                    text = item.subtitle(today),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
         IconButton(onClick = onMoreClick) {
             Icon(
@@ -784,11 +802,12 @@ private fun DriveItemRow(
 
 /**
  * The secondary line of a row: OneDrive puts the size first and the date second, e.g.
- * "9.2 MB · Jul 12, 2024", and folders show their recursive size just like files
+ * "9.2 MB · Jul 12, 2024" with a non-breaking space on each side of the dot, and folders show
+ * their recursive size just like files
  * (docs/ux-reference/11-myfiles.png).
  */
 private fun DriveItem.subtitle(today: LocalDate): String =
-    "${formatFileSize(size)} · ${formatModifiedDate(lastModified, today = today)}"
+    "${formatFileSize(size)}\u00A0·\u00A0${formatModifiedDate(lastModified, today = today)}"
 
 private fun FilesTab.labelRes(): Int = when (this) {
     FilesTab.HOME -> R.string.feature_files_impl_tab_home
