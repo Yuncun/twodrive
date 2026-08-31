@@ -86,6 +86,10 @@ and, for UI changes, the Gradle-managed device smoke test above. CI (`.github/wo
 - A debug keystore is committed in `keystore/` so the MSAL redirect URI (signature-hash based) is identical on every machine and in CI.
 - MSAL is a `prodImplementation` dependency only; the `demo` flavor never links it.
 
+## Deliberate UX divergences
+
+- Welcome screen: `docs/ux-reference/02-welcome.png` also has an outlined "Create new account" button and a "Skip to my photos" text button. TwoDrive v1 deliberately ships only **Sign in** — account creation is not a v1 feature, and the Photos tab is out of v1 scope.
+
 ## Version control and code location
 
 - The project uses git and is hosted in https://github.com/Yuncun/twodrive.
