@@ -20,8 +20,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -35,13 +35,15 @@ import androidx.compose.ui.unit.dp
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 
 /**
- * TwoDrive tab. Wraps Material 3 [Tab] and shifts text label down.
+ * TwoDrive tab. Wraps Material 3 [Tab] in OneDrive's pivot style: an optional icon above the
+ * label, blue when selected and grey otherwise (docs/ux-reference/11-myfiles.png).
  *
  * @param selected Whether this tab is selected or not.
  * @param onClick The callback to be invoked when this tab is selected.
  * @param modifier Modifier to be applied to the tab.
  * @param enabled Controls the enabled state of the tab. When `false`, this tab will not be
  * clickable and will appear disabled to accessibility services.
+ * @param icon Optional icon shown above the label.
  * @param text The text label content.
  */
 @Composable
@@ -50,6 +52,7 @@ fun TwoDriveTab(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    icon: @Composable (() -> Unit)? = null,
     text: @Composable () -> Unit,
 ) {
     Tab(
@@ -57,12 +60,21 @@ fun TwoDriveTab(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        icon = icon,
+        selectedContentColor = MaterialTheme.colorScheme.primary,
+        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         text = {
             val style = MaterialTheme.typography.labelLarge.copy(textAlign = TextAlign.Center)
             ProvideTextStyle(
                 value = style,
                 content = {
-                    Box(modifier = Modifier.padding(top = TwoDriveTabDefaults.TabTopPadding)) {
+                    // Icon-over-label tabs already space the label; text-only tabs shift it down.
+                    val padding = if (icon == null) {
+                        Modifier.padding(top = TwoDriveTabDefaults.TabTopPadding)
+                    } else {
+                        Modifier
+                    }
+                    Box(modifier = padding) {
                         text()
                     }
                 },
@@ -72,12 +84,13 @@ fun TwoDriveTab(
 }
 
 /**
- * TwoDrive tab row. Wraps Material 3 [TabRow].
+ * TwoDrive tab row. Wraps Material 3 [ScrollableTabRow] in OneDrive's pivot style: left-aligned
+ * scrollable tabs with a 3 dp blue indicator under the selected one
+ * (docs/ux-reference/spec/files-home.md).
  *
  * @param selectedTabIndex The index of the currently selected tab.
  * @param modifier Modifier to be applied to the tab row.
- * @param tabs The tabs inside this tab row. Typically this will be multiple [TwoDriveTab]s. Each element
- * inside this lambda will be measured and placed evenly across the row, each taking up equal space.
+ * @param tabs The tabs inside this tab row. Typically this will be multiple [TwoDriveTab]s.
  */
 @Composable
 fun TwoDriveTabRow(
@@ -85,16 +98,17 @@ fun TwoDriveTabRow(
     modifier: Modifier = Modifier,
     tabs: @Composable () -> Unit,
 ) {
-    TabRow(
+    ScrollableTabRow(
         selectedTabIndex = selectedTabIndex,
         modifier = modifier,
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
+        edgePadding = 0.dp,
         indicator = { tabPositions ->
             TabRowDefaults.SecondaryIndicator(
                 modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                height = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface,
+                height = 3.dp,
+                color = MaterialTheme.colorScheme.primary,
             )
         },
         tabs = tabs,

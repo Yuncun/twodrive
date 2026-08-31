@@ -22,6 +22,8 @@ import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.OfflinePin
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.Add
@@ -32,8 +34,10 @@ import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.OfflinePin
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PictureAsPdf
@@ -64,8 +68,12 @@ object TwoDriveIcons {
     val HomeBorder = Icons.Outlined.Home
     val Image = Icons.Rounded.Image
     val ImageBorder = Icons.Outlined.Image
+    val Lock = Icons.Rounded.Lock
+    val LockBorder = Icons.Outlined.Lock
     val MoreHoriz = Icons.Rounded.MoreHoriz
     val MoreVert = Icons.Rounded.MoreVert
+    val OfflinePin = Icons.Rounded.OfflinePin
+    val OfflinePinBorder = Icons.Outlined.OfflinePin
     val Pdf = Icons.Rounded.PictureAsPdf
     val People = Icons.Rounded.People
     val PeopleBorder = Icons.Outlined.People
