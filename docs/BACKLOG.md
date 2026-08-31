@@ -47,7 +47,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - O: M1.6 tile grid metrics: 3 fixed columns, 18dp content inset, 101dp tile width, 137dp column pitch, 195dp row pitch, thumbnail 101×58dp; name, date and "⋯" are all centered under the thumbnail — docs/ux-reference/spec/my-files-tile.md
   - O: M1.6 tile subtitle is the date alone (no size) and the folder badge is an item count ("2", "14") drawn bottom-left inside the thumbnail — the opposite of list view, where a folder shows a size and never a count
   - O: M1.6 tile names use middle ellipsis ("animati…hillhop", "Email at…ments"), not tail ellipsis; use TextOverflow.MiddleEllipsis
-- [ ] M1.7 Files ▸ Home: "Recent files" (top 5 by lastModified) with "See all"; search pill + FAB placeholders laid out as in 10-files-root.png.
+- [x] M1.7 Files ▸ Home: "Recent files" (top 6 by lastModified — observed count, was written as 5) with "See all"; search pill + FAB placeholders laid out as in 10-files-root.png.
   spec details:
   - O: M1.7 the search pill and the "+" FAB float over the content on every Files tab, not only Home, and never scroll away: pill bottom-left at x=33.5dp, y=819dp, 272×56dp, radius 28, pale blue #EAF4FC; FAB bottom-right at x=322dp, 56dp
   - O: M1.7 Personal Vault appears as an ordinary row in My files with the literal subtitle "Tap to set up" instead of "size · date"; decide whether TwoDrive lists it at all (Vault is out of scope) and what its row says
