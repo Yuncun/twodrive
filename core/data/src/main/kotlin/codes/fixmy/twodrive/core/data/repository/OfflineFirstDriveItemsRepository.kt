@@ -50,6 +50,9 @@ internal class OfflineFirstDriveItemsRepository @Inject constructor(
     override fun getDriveItem(id: String): Flow<DriveItem?> =
         driveItemDao.getDriveItem(id).map { it?.asExternalModel() }
 
+    override fun getRecentFiles(limit: Int): Flow<List<DriveItem>> =
+        driveItemDao.getRecentFiles(limit).map { entities -> entities.map { it.asExternalModel() } }
+
     override suspend fun sync(): Boolean = trace("DriveItems.sync") {
         suspendRunCatching {
             val deltaLink = preferences.getDeltaLink()

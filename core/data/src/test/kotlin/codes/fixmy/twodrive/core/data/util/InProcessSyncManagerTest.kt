@@ -92,6 +92,8 @@ private class RecordingDriveItemsRepository : DriveItemsRepository {
 
     override fun getDriveItem(id: String): Flow<DriveItem?> = flowOf(null)
 
+    override fun getRecentFiles(limit: Int): Flow<List<DriveItem>> = flowOf(emptyList())
+
     override suspend fun sync(): Boolean {
         syncCount++
         gate?.await()

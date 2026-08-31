@@ -41,6 +41,10 @@ class TestDriveItemsRepository : DriveItemsRepository {
     override fun getDriveItem(id: String): Flow<DriveItem?> =
         driveItemsFlow.map { items -> items.firstOrNull { it.id == id } }
 
+    override fun getRecentFiles(limit: Int): Flow<List<DriveItem>> = driveItemsFlow.map { items ->
+        items.filterNot { it.isFolder }.sortedByDescending { it.lastModified }.take(limit)
+    }
+
     override suspend fun sync(): Boolean {
         syncCount++
         return true

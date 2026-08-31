@@ -41,6 +41,10 @@ class TestDriveItemDao : DriveItemDao {
         all.values.filter { it.parentId == rootId && rootId != null }
     }
 
+    override fun getRecentFiles(limit: Int): Flow<List<DriveItemEntity>> = entities.map { all ->
+        all.values.filterNot { it.isFolder }.sortedByDescending { it.lastModified }.take(limit)
+    }
+
     override suspend fun upsertDriveItems(entities: List<DriveItemEntity>) =
         this.entities.update { it + entities.associateBy(DriveItemEntity::id) }
 

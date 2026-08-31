@@ -44,6 +44,17 @@ interface DriveItemDao {
     )
     fun getRootChildren(): Flow<List<DriveItemEntity>>
 
+    /** The newest files anywhere in the drive, newest first. Folders are not recent files. */
+    @Query(
+        """
+        SELECT * FROM drive_items
+        WHERE is_folder = 0
+        ORDER BY last_modified DESC
+        LIMIT :limit
+        """,
+    )
+    fun getRecentFiles(limit: Int): Flow<List<DriveItemEntity>>
+
     @Upsert
     suspend fun upsertDriveItems(entities: List<DriveItemEntity>)
 

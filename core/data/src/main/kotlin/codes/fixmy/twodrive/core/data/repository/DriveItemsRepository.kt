@@ -32,6 +32,12 @@ interface DriveItemsRepository {
     fun getDriveItem(id: String): Flow<DriveItem?>
 
     /**
+     * The newest [limit] files anywhere in the drive, newest first, for Files ▸ Home's
+     * "Recent files" section. Folders are never recent files.
+     */
+    fun getRecentFiles(limit: Int): Flow<List<DriveItem>>
+
+    /**
      * Pulls changes from Graph into the local cache. Returns true when the sync completed and
      * false when it failed (e.g. no network); it never throws.
      */

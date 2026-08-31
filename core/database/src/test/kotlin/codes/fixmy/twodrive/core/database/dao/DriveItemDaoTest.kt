@@ -85,6 +85,46 @@ class DriveItemDaoTest {
     }
 
     @Test
+    fun getRecentFilesIsNewestFirstSkipsFoldersAndHonoursTheLimit() = runTest {
+        dao.upsertDriveItems(
+            listOf(
+                testDriveItem(id = "root", parentId = null, isRoot = true, isFolder = true),
+                // The folder is the newest row of all and must still not be a recent file.
+                testDriveItem(
+                    id = "folder-new",
+                    parentId = "root",
+                    isFolder = true,
+                    lastModified = Instant.parse("2026-08-30T09:00:00Z"),
+                ),
+                testDriveItem(
+                    id = "file-old",
+                    parentId = "root",
+                    lastModified = Instant.parse("2026-01-01T00:00:00Z"),
+                ),
+                testDriveItem(
+                    id = "file-mid",
+                    parentId = "folder-new",
+                    lastModified = Instant.parse("2026-05-05T05:00:00Z"),
+                ),
+                testDriveItem(
+                    id = "file-new",
+                    parentId = "folder-new",
+                    lastModified = Instant.parse("2026-08-20T09:12:00Z"),
+                ),
+            ),
+        )
+
+        assertEquals(
+            listOf("file-new", "file-mid", "file-old"),
+            dao.getRecentFiles(limit = 5).first().map { it.id },
+        )
+        assertEquals(
+            listOf("file-new", "file-mid"),
+            dao.getRecentFiles(limit = 2).first().map { it.id },
+        )
+    }
+
+    @Test
     fun upsertReplacesAnExistingRowById() = runTest {
         dao.upsertDriveItems(testDriveTree)
 
@@ -156,13 +196,14 @@ private fun testDriveItem(
     name: String = id,
     isRoot: Boolean = false,
     isFolder: Boolean = false,
+    lastModified: Instant = Instant.parse("2026-02-04T12:00:00Z"),
 ) = DriveItemEntity(
     id = id,
     name = name,
     isFolder = isFolder,
     isRoot = isRoot,
     size = 1_024,
-    lastModified = Instant.parse("2026-02-04T12:00:00Z"),
+    lastModified = lastModified,
     mimeType = if (isFolder) null else "application/octet-stream",
     parentId = parentId,
     webUrl = null,
