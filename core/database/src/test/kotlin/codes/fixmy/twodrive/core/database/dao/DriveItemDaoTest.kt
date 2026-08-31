@@ -112,6 +112,26 @@ class DriveItemDaoTest {
     }
 
     @Test
+    fun deleteDriveItemsSweepsDescendantsOfADeletedFolder() = runTest {
+        dao.upsertDriveItems(testDriveTree)
+        // Nest one level deeper: Documents > Archive > old-notes.txt.
+        dao.upsertDriveItems(
+            listOf(
+                testDriveItem(id = "folder-archive", parentId = "folder-documents", isFolder = true),
+                testDriveItem(id = "file-old-notes", parentId = "folder-archive"),
+            ),
+        )
+
+        dao.deleteDriveItems(listOf("folder-documents"))
+
+        assertNull(dao.getDriveItem("folder-documents").first())
+        assertNull(dao.getDriveItem("file-resume").first())
+        assertNull(dao.getDriveItem("folder-archive").first())
+        assertNull(dao.getDriveItem("file-old-notes").first())
+        assertEquals(listOf("file-budget"), dao.getRootChildren().first().map { it.id })
+    }
+
+    @Test
     fun deleteAllEmptiesTheTable() = runTest {
         dao.upsertDriveItems(testDriveTree)
 

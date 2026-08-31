@@ -44,8 +44,18 @@ class TestDriveItemDao : DriveItemDao {
     override suspend fun upsertDriveItems(entities: List<DriveItemEntity>) =
         this.entities.update { it + entities.associateBy(DriveItemEntity::id) }
 
+    /** Mirrors the real DAO's recursive delete: descendants of a deleted id go too. */
     override suspend fun deleteDriveItems(ids: List<String>) =
-        entities.update { it - ids.toSet() }
+        entities.update { all ->
+            val doomed = ids.toMutableSet()
+            var grew = true
+            while (grew) {
+                val children = all.values.filter { it.parentId in doomed && it.id !in doomed }
+                grew = children.isNotEmpty()
+                doomed += children.map { it.id }
+            }
+            all - doomed
+        }
 
     override suspend fun deleteAll() = entities.update { emptyMap() }
 }

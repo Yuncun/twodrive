@@ -121,6 +121,25 @@ class OfflineFirstDriveItemsRepositoryTest {
     }
 
     @Test
+    fun deletedFolderInTheDeltaSweepsItsCachedDescendants() = testScope.runTest {
+        network.pages[null] = NetworkDriveItemPage(
+            value = listOf(root(), folder("docs", "Documents"), file("a", "a.txt", parent = "docs")),
+            deltaLink = "delta-1",
+        )
+        subject.sync()
+        // Graph reports the deleted folder alone, without an entry per descendant.
+        network.pages["delta-1"] = NetworkDriveItemPage(
+            value = listOf(deleted("docs")),
+            deltaLink = "delta-2",
+        )
+
+        subject.sync()
+
+        assertEquals(emptyList(), subject.getChildren(null).first())
+        assertEquals(null, subject.getDriveItem("a").first())
+    }
+
+    @Test
     fun syncReturnsFalseInsteadOfThrowingWhenTheNetworkIsDown() = testScope.runTest {
         network.pages[null] = NetworkDriveItemPage(value = listOf(root()), deltaLink = "delta-1")
         network.failDeltaWithException = IOException("no network")

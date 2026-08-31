@@ -47,7 +47,23 @@ interface DriveItemDao {
     @Upsert
     suspend fun upsertDriveItems(entities: List<DriveItemEntity>)
 
-    @Query("DELETE FROM drive_items WHERE id IN (:ids)")
+    /**
+     * Deletes the given items and every cached descendant of them. The Graph delta feed
+     * reports a deleted folder as a single entry without enumerating its children (its docs
+     * say to delete a folder locally only once it is empty), so the cascade lives here;
+     * a child that was really moved out re-appears as a live entry in the same feed and is
+     * upserted back.
+     */
+    @Query(
+        """
+        WITH RECURSIVE doomed(id) AS (
+            SELECT id FROM drive_items WHERE id IN (:ids)
+            UNION
+            SELECT drive_items.id FROM drive_items JOIN doomed ON drive_items.parent_id = doomed.id
+        )
+        DELETE FROM drive_items WHERE id IN (SELECT id FROM doomed)
+        """,
+    )
     suspend fun deleteDriveItems(ids: List<String>)
 
     @Query("DELETE FROM drive_items")
