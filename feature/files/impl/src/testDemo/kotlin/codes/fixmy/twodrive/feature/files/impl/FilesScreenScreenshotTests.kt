@@ -85,6 +85,22 @@ class FilesScreenScreenshotTests {
     }
 
     @Test
+    fun filesScreen_homeTab() {
+        composeTestRule.captureMultiDevice("FilesScreenHomeTab") {
+            FilesScreenContent(
+                FilesUiState.Success(
+                    folder = null,
+                    items = demoDriveChildren(),
+                    sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = ViewMode.LIST,
+                ),
+                selectedTab = FilesTab.HOME,
+                homeUiState = HomeUiState.Success(recentFiles = demoDriveRecentFiles()),
+            )
+        }
+    }
+
+    @Test
     fun filesScreen_vaultTab() {
         composeTestRule.captureMultiDevice("FilesScreenVaultTab") {
             FilesScreenContent(
@@ -172,16 +188,19 @@ class FilesScreenScreenshotTests {
     private fun FilesScreenContent(
         uiState: FilesUiState,
         selectedTab: FilesTab = FilesTab.MY_FILES,
+        homeUiState: HomeUiState = HomeUiState.Loading,
     ) {
         TwoDriveTheme {
             TwoDriveBackground {
                 FilesScreen(
                     uiState = uiState,
+                    homeUiState = homeUiState,
                     selectedTab = selectedTab,
                     onTabClick = {},
                     onFolderClick = {},
                     onFileClick = {},
                     onMoreClick = {},
+                    onSeeAllClick = {},
                     onSortOrderChange = {},
                     onViewModeChange = {},
                     // Fixed so the year-dropping date format keeps the goldens stable over time.

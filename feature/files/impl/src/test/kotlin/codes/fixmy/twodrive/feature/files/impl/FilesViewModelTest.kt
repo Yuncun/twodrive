@@ -113,6 +113,23 @@ class FilesViewModelTest {
     }
 
     @Test
+    fun homeListsTheNewestFilesNewestFirstAndSkipsFolders() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.homeUiState.collect() }
+        assertEquals(HomeUiState.Loading, viewModel.homeUiState.value)
+
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+
+        val state = assertIs<HomeUiState.Success>(viewModel.homeUiState.value)
+        assertEquals(
+            driveItemsTestData.filterNot { it.isFolder }
+                .sortedByDescending { it.lastModified }
+                .take(6)
+                .map { it.id },
+            state.recentFiles.map { it.id },
+        )
+    }
+
+    @Test
     fun subfolderShowsOnlyItsChildren() = runTest {
         val subfolderViewModel = FilesViewModel(
             driveItemsRepository = driveItemsRepository,

@@ -23,6 +23,7 @@ import codes.fixmy.twodrive.core.common.result.asResult
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.data.repository.UserDataRepository
 import codes.fixmy.twodrive.core.data.util.SyncManager
+import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.ViewMode
 import codes.fixmy.twodrive.core.model.data.sortedBy
@@ -79,6 +80,19 @@ class FilesViewModel @AssistedInject constructor(
             initialValue = FilesUiState.Loading,
         )
 
+    /**
+     * The Home pivot. OneDrive's Recent files section renders six rows
+     * (docs/ux-reference/spec/files-home.md).
+     */
+    val homeUiState: StateFlow<HomeUiState> = driveItemsRepository
+        .getRecentFiles(RECENT_FILES_COUNT)
+        .map<List<DriveItem>, HomeUiState>(HomeUiState::Success)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = HomeUiState.Loading,
+        )
+
     init {
         // At most one sync per process; opening more screens must not re-walk the delta feed.
         syncManager.requestSync()
@@ -99,5 +113,9 @@ class FilesViewModel @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(folderId: String?): FilesViewModel
+    }
+
+    private companion object {
+        const val RECENT_FILES_COUNT = 6
     }
 }

@@ -17,6 +17,7 @@
 package codes.fixmy.twodrive.feature.files.impl
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,12 +42,15 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -104,14 +108,18 @@ fun FilesScreen(
     if (viewModel.folderId == null) {
         // The pivot row belongs to the drive root; pushed folders show only their list.
         val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
+        val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
         FilesScreen(
             uiState = uiState,
+            homeUiState = homeUiState,
             selectedTab = selectedTab,
             onTabClick = viewModel::selectTab,
             onFolderClick = onFolderClick,
             onFileClick = onFileClick,
             // Will open the item bottom sheet once that screen exists.
             onMoreClick = {},
+            // Will open the full recents list once that screen exists.
+            onSeeAllClick = {},
             onSortOrderChange = viewModel::setSortOrder,
             onViewModeChange = viewModel::setViewMode,
             modifier = modifier,
@@ -134,53 +142,60 @@ fun FilesScreen(
 @Composable
 internal fun FilesScreen(
     uiState: FilesUiState,
+    homeUiState: HomeUiState,
     selectedTab: FilesTab,
     onTabClick: (FilesTab) -> Unit,
     onFolderClick: (DriveItem) -> Unit,
     onFileClick: (DriveItem) -> Unit,
     onMoreClick: (DriveItem) -> Unit,
+    onSeeAllClick: () -> Unit,
     onSortOrderChange: (SortOrder) -> Unit,
     onViewModeChange: (ViewMode) -> Unit,
     modifier: Modifier = Modifier,
     today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        FilesTabRow(selectedTab = selectedTab, onTabClick = onTabClick)
-        when (selectedTab) {
-            FilesTab.MY_FILES -> MyFilesTab(
-                uiState = uiState,
-                today = today,
-                onFolderClick = onFolderClick,
-                onFileClick = onFileClick,
-                onMoreClick = onMoreClick,
-                onSortOrderChange = onSortOrderChange,
-                onViewModeChange = onViewModeChange,
-            )
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            FilesTabRow(selectedTab = selectedTab, onTabClick = onTabClick)
+            when (selectedTab) {
+                FilesTab.MY_FILES -> MyFilesTab(
+                    uiState = uiState,
+                    today = today,
+                    onFolderClick = onFolderClick,
+                    onFileClick = onFileClick,
+                    onMoreClick = onMoreClick,
+                    onSortOrderChange = onSortOrderChange,
+                    onViewModeChange = onViewModeChange,
+                )
 
-            FilesTab.HOME -> FilesTabEmptyState(
-                icon = TwoDriveIcons.Home,
-                titleRes = R.string.feature_files_impl_empty_home_title,
-                captionRes = R.string.feature_files_impl_empty_home_caption,
-            )
+                FilesTab.HOME -> HomeTab(
+                    homeUiState = homeUiState,
+                    today = today,
+                    onFileClick = onFileClick,
+                    onMoreClick = onMoreClick,
+                    onSeeAllClick = onSeeAllClick,
+                )
 
-            FilesTab.SHARED -> FilesTabEmptyState(
-                icon = TwoDriveIcons.People,
-                titleRes = R.string.feature_files_impl_empty_shared_title,
-                captionRes = R.string.feature_files_impl_empty_shared_caption,
-            )
+                FilesTab.SHARED -> FilesTabEmptyState(
+                    icon = TwoDriveIcons.People,
+                    titleRes = R.string.feature_files_impl_empty_shared_title,
+                    captionRes = R.string.feature_files_impl_empty_shared_caption,
+                )
 
-            FilesTab.VAULT -> FilesTabEmptyState(
-                icon = TwoDriveIcons.Lock,
-                titleRes = R.string.feature_files_impl_empty_vault_title,
-                captionRes = R.string.feature_files_impl_empty_vault_caption,
-            )
+                FilesTab.VAULT -> FilesTabEmptyState(
+                    icon = TwoDriveIcons.Lock,
+                    titleRes = R.string.feature_files_impl_empty_vault_title,
+                    captionRes = R.string.feature_files_impl_empty_vault_caption,
+                )
 
-            FilesTab.OFFLINE -> FilesTabEmptyState(
-                icon = TwoDriveIcons.OfflinePin,
-                titleRes = R.string.feature_files_impl_empty_offline_title,
-                captionRes = R.string.feature_files_impl_empty_offline_caption,
-            )
+                FilesTab.OFFLINE -> FilesTabEmptyState(
+                    icon = TwoDriveIcons.OfflinePin,
+                    titleRes = R.string.feature_files_impl_empty_offline_title,
+                    captionRes = R.string.feature_files_impl_empty_offline_caption,
+                )
+            }
         }
+        FilesFloatingLayer(modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
 
@@ -886,6 +901,240 @@ private fun SortKey.secondDirectionLabelRes(): Int = when (this) {
     SortKey.SIZE -> R.string.feature_files_impl_sort_smallest_first
 }
 
+/**
+ * Files ▸ Home: a "Recent files" section over an "Offline files" section, as a LazyColumn of
+ * sections so a third section can be added later without a rewrite
+ * (docs/ux-reference/spec/files-home.md).
+ */
+@Composable
+private fun HomeTab(
+    homeUiState: HomeUiState,
+    today: LocalDate,
+    onFileClick: (DriveItem) -> Unit,
+    onMoreClick: (DriveItem) -> Unit,
+    onSeeAllClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.fillMaxSize()) {
+        when (homeUiState) {
+            HomeUiState.Loading -> TwoDriveLoadingWheel(
+                modifier = Modifier.align(Alignment.Center),
+                contentDesc = stringResource(R.string.feature_files_impl_loading),
+            )
+
+            is HomeUiState.Success -> LazyColumn(modifier = Modifier.testTag("files:home")) {
+                item {
+                    HomeSectionHeader(
+                        titleRes = R.string.feature_files_impl_home_recent_files,
+                        actionLabelRes = R.string.feature_files_impl_home_see_all,
+                        onActionClick = onSeeAllClick,
+                    )
+                }
+                if (homeUiState.recentFiles.isEmpty()) {
+                    item {
+                        HomeEmptySectionCard(
+                            text = stringResource(R.string.feature_files_impl_home_recent_empty),
+                        )
+                    }
+                }
+                items(items = homeUiState.recentFiles, key = DriveItem::id) { item ->
+                    HomeRecentFileRow(
+                        item = item,
+                        today = today,
+                        onClick = { onFileClick(item) },
+                        onMoreClick = { onMoreClick(item) },
+                    )
+                }
+                item { HomeSectionHeader(titleRes = R.string.feature_files_impl_home_offline_files) }
+                item {
+                    HomeEmptySectionCard(
+                        text = stringResource(R.string.feature_files_impl_home_offline_empty),
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * A 56dp Home section header: bold title at the gutter and an optional blue text button at the
+ * right ("See all") — docs/ux-reference/spec/files-home.md.
+ */
+@Composable
+private fun HomeSectionHeader(
+    @StringRes titleRes: Int,
+    modifier: Modifier = Modifier,
+    @StringRes actionLabelRes: Int? = null,
+    onActionClick: () -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(titleRes),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        if (actionLabelRes != null) {
+            TextButton(onClick = onActionClick) {
+                Text(text = stringResource(actionLabelRes))
+            }
+        }
+    }
+}
+
+/**
+ * A Home recent-files row: 68dp tall, taller than the 64dp My-files row, because it carries a
+ * 40dp rounded thumbnail (docs/ux-reference/spec/files-home.md). Until M2.3 syncs real
+ * thumbnails the slot draws the file-type icon on a tinted square; the video play badge, the
+ * document type badge and the leading video duration in the subtitle need the thumbnail and
+ * video facets that arrive with the real Graph milestones.
+ */
+@Composable
+private fun HomeRecentFileRow(
+    item: DriveItem,
+    today: LocalDate,
+    onClick: () -> Unit,
+    onMoreClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(68.dp)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(item.iconTint().copy(alpha = 0.12f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = item.icon(),
+                contentDescription = null,
+                tint = item.iconTint(),
+                modifier = Modifier.size(24.dp),
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = item.subtitle(today),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        IconButton(onClick = onMoreClick) {
+            Icon(
+                imageVector = TwoDriveIcons.MoreHoriz,
+                contentDescription = stringResource(R.string.feature_files_impl_more_options, item.name),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * The pale-blue filled card an empty Home section shows — deliberately not an M3 Card: no
+ * elevation, no border, no icon (docs/ux-reference/spec/files-home.md). OneDrive's #EAF4FC
+ * maps to the theme's primaryContainer so the card stays themed in dark mode. Reused for the
+ * offline empty state; empty folders can adopt it with M2.5.
+ */
+@Composable
+private fun HomeEmptySectionCard(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shape = RoundedCornerShape(8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.padding(16.dp),
+        )
+    }
+}
+
+/**
+ * The search pill and "+" FAB that float over every Files pivot and never scroll away
+ * (docs/ux-reference/spec/files-home.md). Both are placeholders: the pill opens search with
+ * M4.1 and the FAB opens the add menu with M3.3/M3.6. Unlike the observed OneDrive build,
+ * whose pill is mislabelled "Search your photos", the pill's accessible text is exactly its
+ * visible label.
+ */
+@Composable
+private fun FilesFloatingLayer(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Surface(
+            // Opens the search screen once M4.1 builds it.
+            onClick = {},
+            color = MaterialTheme.colorScheme.primaryContainer,
+            shape = RoundedCornerShape(28.dp),
+            // On OneDrive's 411dp reference screen the pill's observed 272dp width is exactly
+            // the space left beside the FAB, so it flexes rather than being hardcoded.
+            modifier = Modifier
+                .weight(1f)
+                .height(56.dp)
+                .testTag("files:search"),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = TwoDriveIcons.Search,
+                    contentDescription = null,
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = stringResource(R.string.feature_files_impl_search_your_files),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        FloatingActionButton(
+            // Opens the add menu once M3.3 builds it.
+            onClick = {},
+            modifier = Modifier.testTag("files:add"),
+        ) {
+            Icon(
+                imageVector = TwoDriveIcons.Add,
+                contentDescription = stringResource(R.string.feature_files_impl_add),
+            )
+        }
+    }
+}
+
 @DevicePreviews
 @Composable
 fun FilesScreenPreview(
@@ -900,11 +1149,13 @@ fun FilesScreenPreview(
                 sortOrder = SortOrder.NAME_ASCENDING,
                 viewMode = ViewMode.LIST,
             ),
+            homeUiState = HomeUiState.Success(recentFiles = items.filterNot { it.isFolder }),
             selectedTab = FilesTab.MY_FILES,
             onTabClick = {},
             onFolderClick = {},
             onFileClick = {},
             onMoreClick = {},
+            onSeeAllClick = {},
             onSortOrderChange = {},
             onViewModeChange = {},
         )

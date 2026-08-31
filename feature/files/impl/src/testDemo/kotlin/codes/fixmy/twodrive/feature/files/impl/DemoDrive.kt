@@ -36,10 +36,29 @@ internal fun demoDriveChildren(
     folderId: String? = null,
     sortOrder: SortOrder = SortOrder.NAME_ASCENDING,
 ): List<DriveItem> = runBlocking {
-    DemoGraphNetworkDataSource(
-        ioDispatcher = UnconfinedTestDispatcher(),
-        networkJson = Json { ignoreUnknownKeys = true },
-    ).getChildren(folderId).value
+    demoDataSource().getChildren(folderId).value
         .map { it.asEntity().asExternalModel() }
         .sortedBy(sortOrder)
 }
+
+/**
+ * The demo drive's newest files, newest first, the way DriveItemsRepository.getRecentFiles
+ * reads them for Files ▸ Home.
+ */
+internal fun demoDriveRecentFiles(limit: Int = 6): List<DriveItem> = runBlocking {
+    val source = demoDataSource()
+    val files = mutableListOf<DriveItem>()
+    val folders = ArrayDeque<String?>().apply { add(null) }
+    while (folders.isNotEmpty()) {
+        val children = source.getChildren(folders.removeFirst()).value
+            .map { it.asEntity().asExternalModel() }
+        files += children.filterNot { it.isFolder }
+        folders += children.filter { it.isFolder }.map { it.id }
+    }
+    files.sortedByDescending { it.lastModified }.take(limit)
+}
+
+private fun demoDataSource() = DemoGraphNetworkDataSource(
+    ioDispatcher = UnconfinedTestDispatcher(),
+    networkJson = Json { ignoreUnknownKeys = true },
+)

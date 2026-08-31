@@ -61,9 +61,12 @@ class FilesScreenTest {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
     }
 
-    private fun setContent(viewMode: ViewMode = ViewMode.LIST) {
+    private fun setContent(
+        viewMode: ViewMode = ViewMode.LIST,
+        startTab: FilesTab = FilesTab.MY_FILES,
+    ) {
         composeTestRule.setContent {
-            var selectedTab by remember { mutableStateOf(FilesTab.MY_FILES) }
+            var selectedTab by remember { mutableStateOf(startTab) }
             FilesScreen(
                 uiState = FilesUiState.Success(
                     folder = null,
@@ -71,11 +74,13 @@ class FilesScreenTest {
                     sortOrder = SortOrder.NAME_ASCENDING,
                     viewMode = viewMode,
                 ),
+                homeUiState = HomeUiState.Success(recentFiles = demoDriveRecentFiles()),
                 selectedTab = selectedTab,
                 onTabClick = { selectedTab = it },
                 onFolderClick = { folderClicks.add(it.id) },
                 onFileClick = {},
                 onMoreClick = {},
+                onSeeAllClick = {},
                 onSortOrderChange = sortChanges::add,
                 onViewModeChange = viewChanges::add,
                 // Fixed so the year-dropping date format renders the same on any test day.
@@ -190,5 +195,47 @@ class FilesScreenTest {
         composeTestRule.onNodeWithText("Documents").performClick()
 
         assertEquals(listOf("f-documents"), folderClicks)
+    }
+
+    @Test
+    fun homeShowsTheSixNewestFilesNewestFirst() {
+        setContent(startTab = FilesTab.HOME)
+
+        composeTestRule.onNodeWithText("Recent files").assertIsDisplayed()
+        composeTestRule.onNodeWithText("See all").assertIsDisplayed()
+        // The demo drive's six newest files; the folders modified in between never appear.
+        composeTestRule.onNodeWithText("Resume 2026.docx").assertIsDisplayed()
+        composeTestRule.onNodeWithText("IMG_20260819_204100.jpg").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("files:home")
+            .performScrollToNode(hasText("Beach sunset.jpg"))
+        composeTestRule.onNodeWithText("Beach sunset.jpg").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Whiteboard scan.heic").assertDoesNotExist()
+    }
+
+    @Test
+    fun homeOfflineSectionShowsTheEmptyCard() {
+        setContent(startTab = FilesTab.HOME)
+
+        composeTestRule.onNodeWithTag("files:home")
+            .performScrollToNode(hasText("Offline files"))
+        composeTestRule.onNodeWithText("Offline files").assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(
+                "Tap the ⋯ icon next to a file, and select “Make available offline” to view it wherever you go.",
+            )
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun searchPillAndAddButtonFloatOverEveryTab() {
+        setContent()
+
+        composeTestRule.onNodeWithText("Search your files").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Add items").assertIsDisplayed()
+
+        composeTestRule.onNodeWithText("Home").performClick()
+
+        composeTestRule.onNodeWithText("Search your files").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Add items").assertIsDisplayed()
     }
 }
