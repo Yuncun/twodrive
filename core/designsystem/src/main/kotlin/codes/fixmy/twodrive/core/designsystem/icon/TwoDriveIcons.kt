@@ -34,6 +34,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Folder
+import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
@@ -70,6 +71,7 @@ object TwoDriveIcons {
     val File = Icons.AutoMirrored.Rounded.InsertDriveFile
     val Folder = Icons.Rounded.Folder
     val FolderBorder = Icons.Outlined.Folder
+    val GridView = Icons.Rounded.GridView
     val Home = Icons.Rounded.Home
     val HomeBorder = Icons.Outlined.Home
     val Image = Icons.Rounded.Image

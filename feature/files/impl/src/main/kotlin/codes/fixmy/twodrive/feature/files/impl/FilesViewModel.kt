@@ -24,6 +24,7 @@ import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.data.repository.UserDataRepository
 import codes.fixmy.twodrive.core.data.util.SyncManager
 import codes.fixmy.twodrive.core.model.data.SortOrder
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import codes.fixmy.twodrive.core.model.data.sortedBy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -61,6 +62,7 @@ class FilesViewModel @AssistedInject constructor(
             folder = folder,
             items = items.sortedBy(userData.sortOrder),
             sortOrder = userData.sortOrder,
+            viewMode = userData.viewMode,
         )
     }
         .asResult()
@@ -88,6 +90,10 @@ class FilesViewModel @AssistedInject constructor(
 
     fun selectTab(tab: FilesTab) {
         _selectedTab.value = tab
+    }
+
+    fun setViewMode(viewMode: ViewMode) {
+        viewModelScope.launch { userDataRepository.setViewMode(viewMode) }
     }
 
     @AssistedFactory

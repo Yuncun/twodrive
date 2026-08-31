@@ -18,6 +18,7 @@ package codes.fixmy.twodrive.feature.files.impl
 
 import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.model.data.SortOrder
+import codes.fixmy.twodrive.core.model.data.ViewMode
 
 /**
  * State for the Files screen: the folder being shown and its sorted children.
@@ -30,6 +31,7 @@ sealed interface FilesUiState {
         val folder: DriveItem?,
         val items: List<DriveItem>,
         val sortOrder: SortOrder,
+        val viewMode: ViewMode,
     ) : FilesUiState
 
     data class Error(val message: String?) : FilesUiState

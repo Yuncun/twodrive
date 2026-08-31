@@ -22,14 +22,15 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.UserData
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
- * Preferences that survive process death: how the user likes folders sorted, and the Graph
- * delta link that lets the next sync fetch only what changed.
+ * Preferences that survive process death: how the user likes folders sorted and laid out, and the
+ * Graph delta link that lets the next sync fetch only what changed.
  */
 class TwoDrivePreferencesDataSource @Inject constructor(
     private val preferences: DataStore<Preferences>,
@@ -39,11 +40,18 @@ class TwoDrivePreferencesDataSource @Inject constructor(
             sortOrder = prefs[SORT_ORDER]?.let { stored ->
                 SortOrder.entries.firstOrNull { it.name == stored }
             } ?: SortOrder.NAME_ASCENDING,
+            viewMode = prefs[VIEW_MODE]?.let { stored ->
+                ViewMode.entries.firstOrNull { it.name == stored }
+            } ?: ViewMode.LIST,
         )
     }
 
     suspend fun setSortOrder(sortOrder: SortOrder) {
         preferences.edit { it[SORT_ORDER] = sortOrder.name }
+    }
+
+    suspend fun setViewMode(viewMode: ViewMode) {
+        preferences.edit { it[VIEW_MODE] = viewMode.name }
     }
 
     suspend fun getDeltaLink(): String? = preferences.data.first()[DELTA_LINK]
@@ -56,6 +64,7 @@ class TwoDrivePreferencesDataSource @Inject constructor(
 
     private companion object {
         val SORT_ORDER = stringPreferencesKey("sort_order")
+        val VIEW_MODE = stringPreferencesKey("view_mode")
         val DELTA_LINK = stringPreferencesKey("delta_link")
     }
 }

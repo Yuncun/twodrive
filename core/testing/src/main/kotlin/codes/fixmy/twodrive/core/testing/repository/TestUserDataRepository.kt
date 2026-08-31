@@ -19,11 +19,12 @@ package codes.fixmy.twodrive.core.testing.repository
 import codes.fixmy.twodrive.core.data.repository.UserDataRepository
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.UserData
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterNotNull
 
-val emptyUserData = UserData(sortOrder = SortOrder.NAME_ASCENDING)
+val emptyUserData = UserData(sortOrder = SortOrder.NAME_ASCENDING, viewMode = ViewMode.LIST)
 
 class TestUserDataRepository : UserDataRepository {
     /**
@@ -39,6 +40,10 @@ class TestUserDataRepository : UserDataRepository {
 
     override suspend fun setSortOrder(sortOrder: SortOrder) {
         userDataFlow.tryEmit(currentUserData.copy(sortOrder = sortOrder))
+    }
+
+    override suspend fun setViewMode(viewMode: ViewMode) {
+        userDataFlow.tryEmit(currentUserData.copy(viewMode = viewMode))
     }
 
     /**

@@ -24,6 +24,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import codes.fixmy.twodrive.core.model.data.SortOrder
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import kotlinx.datetime.LocalDate
 import org.junit.Before
 import org.junit.Rule
@@ -57,12 +58,14 @@ class FolderScreenTest {
                     folder = null,
                     items = demoDriveChildren("f-documents"),
                     sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = ViewMode.LIST,
                 ),
                 onBackClick = { backClicks++ },
                 onFolderClick = {},
                 onFileClick = {},
                 onMoreClick = {},
                 onSortOrderChange = {},
+                onViewModeChange = {},
                 // Fixed so the year-dropping date format renders the same on any test day.
                 today = LocalDate(2026, 8, 30),
             )

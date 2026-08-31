@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package codes.fixmy.twodrive.core.data.repository
+package codes.fixmy.twodrive.core.model.data
 
-import codes.fixmy.twodrive.core.model.data.SortOrder
-import codes.fixmy.twodrive.core.model.data.UserData
-import codes.fixmy.twodrive.core.model.data.ViewMode
-import kotlinx.coroutines.flow.Flow
-
-interface UserDataRepository {
-    val userData: Flow<UserData>
-
-    suspend fun setSortOrder(sortOrder: SortOrder)
-
-    suspend fun setViewMode(viewMode: ViewMode)
+/**
+ * How a folder's items are laid out, matching OneDrive's "View as:" menu
+ * (docs/ux-reference/14-view-options.png). Android has only these two modes.
+ */
+enum class ViewMode {
+    LIST,
+    TILE,
 }

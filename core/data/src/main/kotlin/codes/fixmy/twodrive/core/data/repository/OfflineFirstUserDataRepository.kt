@@ -19,6 +19,7 @@ package codes.fixmy.twodrive.core.data.repository
 import codes.fixmy.twodrive.core.datastore.TwoDrivePreferencesDataSource
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.UserData
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -30,4 +31,7 @@ internal class OfflineFirstUserDataRepository @Inject constructor(
 
     override suspend fun setSortOrder(sortOrder: SortOrder) =
         preferencesDataSource.setSortOrder(sortOrder)
+
+    override suspend fun setViewMode(viewMode: ViewMode) =
+        preferencesDataSource.setViewMode(viewMode)
 }

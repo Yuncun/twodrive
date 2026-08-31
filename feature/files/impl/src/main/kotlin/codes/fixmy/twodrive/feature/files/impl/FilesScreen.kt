@@ -21,6 +21,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +31,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.DropdownMenu
@@ -50,6 +55,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -64,6 +70,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import codes.fixmy.twodrive.core.designsystem.component.DynamicAsyncImage
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveLoadingWheel
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveTab
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveTabRow
@@ -71,6 +78,7 @@ import codes.fixmy.twodrive.core.designsystem.icon.TwoDriveIcons
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.model.data.SortOrder
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import codes.fixmy.twodrive.core.ui.DevicePreviews
 import codes.fixmy.twodrive.core.ui.DriveItemPreviewParameterProvider
 import codes.fixmy.twodrive.core.ui.formatFileSize
@@ -81,6 +89,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
+import androidx.compose.foundation.lazy.grid.items as gridItems
 
 @Composable
 fun FilesScreen(
@@ -104,6 +113,7 @@ fun FilesScreen(
             // Will open the item bottom sheet once that screen exists.
             onMoreClick = {},
             onSortOrderChange = viewModel::setSortOrder,
+            onViewModeChange = viewModel::setViewMode,
             modifier = modifier,
         )
     } else {
@@ -115,6 +125,7 @@ fun FilesScreen(
             onFileClick = onFileClick,
             onMoreClick = {},
             onSortOrderChange = viewModel::setSortOrder,
+            onViewModeChange = viewModel::setViewMode,
             modifier = modifier,
         )
     }
@@ -129,6 +140,7 @@ internal fun FilesScreen(
     onFileClick: (DriveItem) -> Unit,
     onMoreClick: (DriveItem) -> Unit,
     onSortOrderChange: (SortOrder) -> Unit,
+    onViewModeChange: (ViewMode) -> Unit,
     modifier: Modifier = Modifier,
     today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
@@ -142,6 +154,7 @@ internal fun FilesScreen(
                 onFileClick = onFileClick,
                 onMoreClick = onMoreClick,
                 onSortOrderChange = onSortOrderChange,
+                onViewModeChange = onViewModeChange,
             )
 
             FilesTab.HOME -> FilesTabEmptyState(
@@ -187,6 +200,7 @@ internal fun FolderScreen(
     onFileClick: (DriveItem) -> Unit,
     onMoreClick: (DriveItem) -> Unit,
     onSortOrderChange: (SortOrder) -> Unit,
+    onViewModeChange: (ViewMode) -> Unit,
     modifier: Modifier = Modifier,
     today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
@@ -222,6 +236,7 @@ internal fun FolderScreen(
             onFileClick = onFileClick,
             onMoreClick = onMoreClick,
             onSortOrderChange = onSortOrderChange,
+            onViewModeChange = onViewModeChange,
         )
     }
 }
@@ -259,6 +274,7 @@ private fun MyFilesTab(
     onFileClick: (DriveItem) -> Unit,
     onMoreClick: (DriveItem) -> Unit,
     onSortOrderChange: (SortOrder) -> Unit,
+    onViewModeChange: (ViewMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -278,15 +294,27 @@ private fun MyFilesTab(
             is FilesUiState.Success -> Column {
                 SortViewBar(
                     sortOrder = uiState.sortOrder,
+                    viewMode = uiState.viewMode,
                     onSortOrderChange = onSortOrderChange,
+                    onViewModeChange = onViewModeChange,
                 )
-                FilesList(
-                    items = uiState.items,
-                    today = today,
-                    onFolderClick = onFolderClick,
-                    onFileClick = onFileClick,
-                    onMoreClick = onMoreClick,
-                )
+                when (uiState.viewMode) {
+                    ViewMode.LIST -> FilesList(
+                        items = uiState.items,
+                        today = today,
+                        onFolderClick = onFolderClick,
+                        onFileClick = onFileClick,
+                        onMoreClick = onMoreClick,
+                    )
+
+                    ViewMode.TILE -> FilesTileGrid(
+                        items = uiState.items,
+                        today = today,
+                        onFolderClick = onFolderClick,
+                        onFileClick = onFileClick,
+                        onMoreClick = onMoreClick,
+                    )
+                }
             }
         }
     }
@@ -370,13 +398,128 @@ private fun FilesList(
 }
 
 /**
+ * The Tile layout: a three-column grid of thumbnails with the name, the date alone and a centred
+ * "⋯" under each (docs/ux-reference/spec/my-files-tile.md). Folders badge their item count inside
+ * the thumbnail — the opposite of list view, where folders show a size and never a count.
+ */
+@Composable
+private fun FilesTileGrid(
+    items: List<DriveItem>,
+    today: LocalDate,
+    onFolderClick: (DriveItem) -> Unit,
+    onFileClick: (DriveItem) -> Unit,
+    onMoreClick: (DriveItem) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        contentPadding = PaddingValues(18.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .testTag("files:grid"),
+    ) {
+        if (items.isEmpty()) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Text(
+                    text = stringResource(R.string.feature_files_impl_empty_folder),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                )
+            }
+        }
+        gridItems(items = items, key = DriveItem::id) { item ->
+            DriveItemTile(
+                item = item,
+                today = today,
+                onClick = { if (item.isFolder) onFolderClick(item) else onFileClick(item) },
+                onMoreClick = { onMoreClick(item) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun DriveItemTile(
+    item: DriveItem,
+    today: LocalDate,
+    onClick: () -> Unit,
+    onMoreClick: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = onClick),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = 101.dp, height = 58.dp)
+                .clip(RoundedCornerShape(4.dp)),
+        ) {
+            val thumbnailUrl = item.thumbnailUrl
+            if (thumbnailUrl != null) {
+                DynamicAsyncImage(
+                    imageUrl = thumbnailUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                // No thumbnail yet (the demo drive carries none): the type glyph stands in, as
+                // OneDrive shows for files it cannot render.
+                Icon(
+                    imageVector = item.icon(),
+                    contentDescription = null,
+                    tint = item.iconTint(),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .align(Alignment.Center),
+                )
+            }
+            if (item.isFolder) {
+                Text(
+                    text = (item.childCount ?: 0).toString(),
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(8.dp),
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = item.name,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.MiddleEllipsis,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = formatModifiedDate(item.lastModified, today = today),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        IconButton(onClick = onMoreClick) {
+            Icon(
+                imageVector = TwoDriveIcons.MoreHoriz,
+                contentDescription = stringResource(R.string.feature_files_impl_more_options, item.name),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
  * The bar pinned between the header and the list: the sort chip at the left, the view-options
  * button at the right, and a hairline divider under both (docs/ux-reference/spec/my-files-list.md).
  */
 @Composable
 private fun SortViewBar(
     sortOrder: SortOrder,
+    viewMode: ViewMode,
     onSortOrderChange: (SortOrder) -> Unit,
+    onViewModeChange: (ViewMode) -> Unit,
 ) {
     Column {
         Row(
@@ -387,16 +530,95 @@ private fun SortViewBar(
         ) {
             SortChip(sortOrder = sortOrder, onSortOrderChange = onSortOrderChange)
             Spacer(modifier = Modifier.weight(1f))
-            // Opens the view-options menu once M1.6 builds it.
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = TwoDriveIcons.Tune,
-                    contentDescription = stringResource(R.string.feature_files_impl_view_options),
-                )
-            }
+            ViewMenuButton(viewMode = viewMode, onViewModeChange = onViewModeChange)
         }
         HorizontalDivider()
     }
+}
+
+/**
+ * The view-options button and its "View as:" menu: a non-clickable header, then List and Tile,
+ * each with a leading checkmark when selected and a trailing glyph tinted blue when selected
+ * (docs/ux-reference/spec/view-menu.md, 14-view-options.png).
+ */
+@Composable
+private fun ViewMenuButton(
+    viewMode: ViewMode,
+    onViewModeChange: (ViewMode) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { expanded = true }, modifier = Modifier.testTag("files:view")) {
+            Icon(
+                imageVector = TwoDriveIcons.Tune,
+                contentDescription = stringResource(R.string.feature_files_impl_view_options),
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.width(205.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.feature_files_impl_view_as),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            )
+            ViewMenuItem(
+                labelRes = R.string.feature_files_impl_view_list,
+                icon = TwoDriveIcons.ViewList,
+                selected = viewMode == ViewMode.LIST,
+                onClick = {
+                    expanded = false
+                    onViewModeChange(ViewMode.LIST)
+                },
+            )
+            ViewMenuItem(
+                labelRes = R.string.feature_files_impl_view_tile,
+                icon = TwoDriveIcons.GridView,
+                selected = viewMode == ViewMode.TILE,
+                onClick = {
+                    expanded = false
+                    onViewModeChange(ViewMode.TILE)
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ViewMenuItem(
+    @StringRes labelRes: Int,
+    icon: ImageVector,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    DropdownMenuItem(
+        text = { Text(stringResource(labelRes)) },
+        leadingIcon = {
+            if (selected) {
+                Icon(
+                    imageVector = TwoDriveIcons.Check,
+                    contentDescription = null,
+                )
+            } else {
+                // Reserve the leading slot so labels stay aligned (docs/ux-reference/spec/view-menu.md).
+                Spacer(modifier = Modifier.size(24.dp))
+            }
+        },
+        trailingIcon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (selected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+            )
+        },
+        onClick = onClick,
+    )
 }
 
 @Composable
@@ -653,13 +875,19 @@ fun FilesScreenPreview(
 ) {
     TwoDriveTheme {
         FilesScreen(
-            uiState = FilesUiState.Success(folder = null, items = items, sortOrder = SortOrder.NAME_ASCENDING),
+            uiState = FilesUiState.Success(
+                folder = null,
+                items = items,
+                sortOrder = SortOrder.NAME_ASCENDING,
+                viewMode = ViewMode.LIST,
+            ),
             selectedTab = FilesTab.MY_FILES,
             onTabClick = {},
             onFolderClick = {},
             onFileClick = {},
             onMoreClick = {},
             onSortOrderChange = {},
+            onViewModeChange = {},
         )
     }
 }

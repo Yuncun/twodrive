@@ -31,6 +31,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import codes.fixmy.twodrive.core.model.data.SortOrder
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import kotlinx.datetime.LocalDate
 import org.junit.Before
 import org.junit.Rule
@@ -51,13 +52,14 @@ class FilesScreenTest {
 
     private val folderClicks = mutableListOf<String>()
     private val sortChanges = mutableListOf<SortOrder>()
+    private val viewChanges = mutableListOf<ViewMode>()
 
     @Before
     fun setTimeZone() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
     }
 
-    private fun setContent() {
+    private fun setContent(viewMode: ViewMode = ViewMode.LIST) {
         composeTestRule.setContent {
             var selectedTab by remember { mutableStateOf(FilesTab.MY_FILES) }
             FilesScreen(
@@ -65,6 +67,7 @@ class FilesScreenTest {
                     folder = null,
                     items = demoDriveChildren(),
                     sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = viewMode,
                 ),
                 selectedTab = selectedTab,
                 onTabClick = { selectedTab = it },
@@ -72,6 +75,7 @@ class FilesScreenTest {
                 onFileClick = {},
                 onMoreClick = {},
                 onSortOrderChange = sortChanges::add,
+                onViewModeChange = viewChanges::add,
                 // Fixed so the year-dropping date format renders the same on any test day.
                 today = LocalDate(2026, 8, 30),
             )
@@ -134,6 +138,28 @@ class FilesScreenTest {
         composeTestRule.onNodeWithText("File size").performClick()
 
         assertEquals(listOf(SortOrder.SIZE_LARGEST_FIRST), sortChanges)
+    }
+
+    @Test
+    fun viewMenuSwitchesToTile() {
+        setContent()
+
+        composeTestRule.onNodeWithTag("files:view").performClick()
+        composeTestRule.onNodeWithText("View as:").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Tile").performClick()
+
+        assertEquals(listOf(ViewMode.TILE), viewChanges)
+    }
+
+    @Test
+    fun tileSubtitleIsTheDateAloneAndFoldersBadgeTheirCount() {
+        setContent(viewMode = ViewMode.TILE)
+
+        // Documents: list view would say "13.3 MB · Aug 18"; the tile shows the date alone
+        // and badges the item count inside the thumbnail.
+        composeTestRule.onNodeWithText("Aug 18").assertIsDisplayed()
+        composeTestRule.onNodeWithText("13.3 MB · Aug 18").assertDoesNotExist()
+        composeTestRule.onNodeWithText("5").assertIsDisplayed()
     }
 
     @Test

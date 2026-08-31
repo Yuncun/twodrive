@@ -18,6 +18,7 @@ package codes.fixmy.twodrive.core.datastore
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import codes.fixmy.twodrive.core.model.data.SortOrder
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -56,6 +57,17 @@ class TwoDrivePreferencesDataSourceTest {
     fun sortOrderIsPersisted() = testScope.runTest {
         subject.setSortOrder(SortOrder.MODIFIED_NEWEST_FIRST)
         assertEquals(SortOrder.MODIFIED_NEWEST_FIRST, subject.userData.first().sortOrder)
+    }
+
+    @Test
+    fun viewModeDefaultsToList() = testScope.runTest {
+        assertEquals(ViewMode.LIST, subject.userData.first().viewMode)
+    }
+
+    @Test
+    fun viewModeIsPersisted() = testScope.runTest {
+        subject.setViewMode(ViewMode.TILE)
+        assertEquals(ViewMode.TILE, subject.userData.first().viewMode)
     }
 
     @Test

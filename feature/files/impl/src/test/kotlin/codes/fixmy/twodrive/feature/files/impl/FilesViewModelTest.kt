@@ -18,6 +18,7 @@ package codes.fixmy.twodrive.feature.files.impl
 
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.UserData
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import codes.fixmy.twodrive.core.testing.data.driveItemsTestData
 import codes.fixmy.twodrive.core.testing.repository.TestDriveItemsRepository
 import codes.fixmy.twodrive.core.testing.repository.TestUserDataRepository
@@ -74,7 +75,7 @@ class FilesViewModelTest {
     fun rootChildrenAreShownFoldersFirst() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
         driveItemsRepository.sendDriveItems(driveItemsTestData)
-        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING))
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING, viewMode = ViewMode.LIST))
 
         val state = assertIs<FilesUiState.Success>(viewModel.uiState.value)
         assertEquals(
@@ -87,7 +88,7 @@ class FilesViewModelTest {
     fun changingSortOrderReordersItems() = runTest {
         backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
         driveItemsRepository.sendDriveItems(driveItemsTestData)
-        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING))
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING, viewMode = ViewMode.LIST))
 
         viewModel.setSortOrder(SortOrder.SIZE_LARGEST_FIRST)
 
@@ -100,6 +101,18 @@ class FilesViewModelTest {
     }
 
     @Test
+    fun changingViewModeIsReflectedInState() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING, viewMode = ViewMode.LIST))
+
+        viewModel.setViewMode(ViewMode.TILE)
+
+        val state = assertIs<FilesUiState.Success>(viewModel.uiState.value)
+        assertEquals(ViewMode.TILE, state.viewMode)
+    }
+
+    @Test
     fun subfolderShowsOnlyItsChildren() = runTest {
         val subfolderViewModel = FilesViewModel(
             driveItemsRepository = driveItemsRepository,
@@ -109,7 +122,7 @@ class FilesViewModelTest {
         )
         backgroundScope.launch(UnconfinedTestDispatcher()) { subfolderViewModel.uiState.collect() }
         driveItemsRepository.sendDriveItems(driveItemsTestData)
-        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING))
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING, viewMode = ViewMode.LIST))
 
         val state = assertIs<FilesUiState.Success>(subfolderViewModel.uiState.value)
         assertEquals("Documents", state.folder?.name)

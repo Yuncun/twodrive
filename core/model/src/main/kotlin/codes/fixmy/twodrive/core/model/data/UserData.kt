@@ -21,4 +21,5 @@ package codes.fixmy.twodrive.core.model.data
  */
 data class UserData(
     val sortOrder: SortOrder,
+    val viewMode: ViewMode,
 )

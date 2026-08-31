@@ -21,6 +21,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveBackground
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 import codes.fixmy.twodrive.core.model.data.SortOrder
+import codes.fixmy.twodrive.core.model.data.ViewMode
 import codes.fixmy.twodrive.core.screenshottesting.captureMultiDevice
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils.matchesCheck
 import com.google.android.apps.common.testing.accessibility.framework.checks.SpeakableTextPresentCheck
@@ -58,6 +59,26 @@ class FilesScreenScreenshotTests {
                     folder = null,
                     items = demoDriveChildren(),
                     sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = ViewMode.LIST,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun filesScreen_rootFolderTiles() {
+        composeTestRule.captureMultiDevice(
+            "FilesScreenRootTiles",
+            // As for FolderScreen: tiles clipped at the canvas edge lose their visible text and
+            // ATF reports them as unlabelled; scroll clipping is not an accessibility defect.
+            accessibilitySuppressions = matchesCheck(SpeakableTextPresentCheck::class.java),
+        ) {
+            FilesScreenContent(
+                FilesUiState.Success(
+                    folder = null,
+                    items = demoDriveChildren(),
+                    sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = ViewMode.TILE,
                 ),
             )
         }
@@ -67,7 +88,12 @@ class FilesScreenScreenshotTests {
     fun filesScreen_vaultTab() {
         composeTestRule.captureMultiDevice("FilesScreenVaultTab") {
             FilesScreenContent(
-                FilesUiState.Success(folder = null, items = demoDriveChildren(), sortOrder = SortOrder.NAME_ASCENDING),
+                FilesUiState.Success(
+                    folder = null,
+                    items = demoDriveChildren(),
+                    sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = ViewMode.LIST,
+                ),
                 selectedTab = FilesTab.VAULT,
             )
         }
@@ -77,7 +103,12 @@ class FilesScreenScreenshotTests {
     fun filesScreen_offlineTab() {
         composeTestRule.captureMultiDevice("FilesScreenOfflineTab") {
             FilesScreenContent(
-                FilesUiState.Success(folder = null, items = demoDriveChildren(), sortOrder = SortOrder.NAME_ASCENDING),
+                FilesUiState.Success(
+                    folder = null,
+                    items = demoDriveChildren(),
+                    sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = ViewMode.LIST,
+                ),
                 selectedTab = FilesTab.OFFLINE,
             )
         }
@@ -100,12 +131,14 @@ class FilesScreenScreenshotTests {
                             folder = null,
                             items = demoDriveChildren("f-documents"),
                             sortOrder = SortOrder.NAME_ASCENDING,
+                            viewMode = ViewMode.LIST,
                         ),
                         onBackClick = {},
                         onFolderClick = {},
                         onFileClick = {},
                         onMoreClick = {},
                         onSortOrderChange = {},
+                        onViewModeChange = {},
                         // Fixed so the year-dropping date format keeps the goldens stable over time.
                         today = LocalDate(2026, 8, 30),
                     )
@@ -125,7 +158,12 @@ class FilesScreenScreenshotTests {
     fun filesScreen_emptyFolder() {
         composeTestRule.captureMultiDevice("FilesScreenEmpty") {
             FilesScreenContent(
-                FilesUiState.Success(folder = null, items = emptyList(), sortOrder = SortOrder.NAME_ASCENDING),
+                FilesUiState.Success(
+                    folder = null,
+                    items = emptyList(),
+                    sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = ViewMode.LIST,
+                ),
             )
         }
     }
@@ -145,6 +183,7 @@ class FilesScreenScreenshotTests {
                     onFileClick = {},
                     onMoreClick = {},
                     onSortOrderChange = {},
+                    onViewModeChange = {},
                     // Fixed so the year-dropping date format keeps the goldens stable over time.
                     today = LocalDate(2026, 8, 30),
                 )
