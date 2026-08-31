@@ -26,7 +26,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - O: M1.3 the secondary tab row is icon-over-label, not label-only: Home house, My files filled folder, Shared two-person, Vault safe, Offline phone-with-check; selected tab tints icon+label blue with a 3dp label-width indicator
   - O: M1.3 the app bar's title slot holds a two-segment "Photos | Files" pill (155x36dp; selected segment = white chip with a thin outline and a bold label, unselected = grey label on a light-grey track), not a text title; TwoDrive has no Photos mode, so decide what occupies that slot
   - O: M1.3 the account avatar is a 56dp IconButton at x=4.2dp in the navigation slot and its only job is to open the drawer; the pivot bar is a separate 60.2dp ScrollableTabRow below the 56dp app bar
-- [ ] M1.4 Folder navigation: tapping a folder pushes a screen titled with the folder name, back arrow, same list; navigation is type-safe.
+- [x] M1.4 Folder navigation: tapping a folder pushes a screen titled with the folder name, back arrow, same list; navigation is type-safe.
   spec details:
   - O: M1.4 the folder screen has no app bar title, no pivot tabs and no avatar: a 56dp toolbar holding only a back arrow ("Navigate Up") at x=0, then an 89.9dp band with the folder name centred at ~24-26sp bold, then the same pinned 48dp sort/view bar, list starting at y=241dp — docs/ux-reference/spec/folder.md
   - O: M1.4 there is no breadcrumb anywhere; nesting is conveyed only by the title and the back arrow, so the route needs the folder name as an argument to render before children load
