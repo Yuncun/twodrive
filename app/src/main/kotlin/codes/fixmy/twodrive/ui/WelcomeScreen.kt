@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,8 +75,10 @@ fun WelcomeScreen(
             Spacer(Modifier.height(40.dp))
             Text(
                 text = stringResource(R.string.welcome_headline),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
+                modifier = Modifier.widthIn(max = WelcomeHeadlineMaxWidth),
             )
             Spacer(Modifier.weight(1f))
             if (error != null) {
@@ -104,6 +108,7 @@ fun WelcomeScreen(
 }
 
 private val WelcomeIllustrationWidth = 240.dp
+private val WelcomeHeadlineMaxWidth = 312.dp
 private val SignInButtonHeight = 56.dp
 
 @Preview
