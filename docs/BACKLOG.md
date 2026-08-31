@@ -60,12 +60,13 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [x] O: M1.7 the modified date drops the year inside the current year ("Jun 18", "May 7") and keeps it otherwise ("Jan 18, 2024") — the concrete rule behind the existing "use a localized formatter" review item (already fixed in 29b122e)
 - [x] Welcome screen: match the observed layout metrics
   - O: M1.1 welcome layout: illustration ~200x124dp centred, headline "Protect your files and access them anywhere" ~24sp bold centred in a ~312dp column, then a bottom-anchored stack — Sign in filled 379x48dp with a 4dp radius (not the M3 pill), 8dp gap, then the secondary buttons TwoDrive drops — docs/ux-reference/spec/welcome.md
-- [ ] My files list rows: match the observed OneDrive metrics and copy
+- [x] My files list rows: match the observed OneDrive metrics and copy (239106b; uniform 68dp row decided)
   - O: M1.2 list row metrics from the emulator: row pitch 64dp, leading icon 40dp at x=16dp, name and subtitle both left-aligned at x=68.6dp, trailing "⋯" a 48dp IconButton at x=353dp, and no divider between rows — docs/ux-reference/spec/my-files-list.md
   - O: M1.2 docs/ux-reference/README.md says the row icon/thumbnail is 48dp; the measured value is 40dp (105px ÷ 2.625). Correct the README so the "icon is 40dp" review item is not actioned the wrong way (done 2026-08-30: Eric chose 40dp; code and README both corrected)
   - O: M1.2 a shared item shows a 16dp two-person badge inline at the start of the subtitle row, pushing "size · date" to x=88.8dp; model `isShared` on DriveItem and render the badge
   - O: M1.2 size copy is one decimal for MB/GB and none for KB ("0 KB", "181 KB", "1.2 MB", "294.6 MB", "1.4 GB"); the subtitle separator is a middle dot with a non-breaking space on each side (U+00A0 U+00B7 U+00A0)
   - O: M1.2 list rows are not a uniform height — a folder row is 169px (64.4dp) and a file row 179px (68.2dp) on the same screen; pick one 68dp row for TwoDrive rather than reproducing the split
+- [ ] Tile view: shared badge bottom-right of the thumbnail per spec/my-files-tile.md (list rows got theirs in 239106b)
 - [ ] Screenshot coverage: add a portrait phone device and dark-theme captures
   - R: DefaultTestDevices.PHONE is 640x360dp landscape, so no screenshot in the repo captures a portrait phone; the welcome screen's centred illustration and bottom-pinned button are only verified on foldable and tablet
   - R: M1.0 no dark-theme screenshots: dab6c62 shipped DarkColorScheme and deleted captureMultiTheme, and captureForDevice still takes darkMode but nothing passes true, so all 9 PNGs are light
