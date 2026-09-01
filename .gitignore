@@ -48,5 +48,3 @@ captures/
 # Kotlin
 .kotlin
 
-# local agent/device harness (loop prompts, device scripts, secrets) — never committed
-.harness/
