@@ -48,3 +48,6 @@ captures/
 # Kotlin
 .kotlin
 
+
+# Personal agent instructions (see docs/PERSONAL_INSTRUCTIONS.md)
+AGENTS.local.md

@@ -1,0 +1,22 @@
+# Personal preferences — copy this file to AGENTS.local.md
+#
+#   cp AGENTS.local.md.example AGENTS.local.md
+#
+# AGENTS.local.md is gitignored, so what you write here stays on your machine.
+# AGENTS.md references it with `@AGENTS.local.md`, which is what makes an agent read it.
+# If you never create the file, nothing happens — a missing reference is skipped silently.
+#
+# Keep this to preferences that are yours rather than the project's. Project rules
+# belong in AGENTS.md where the whole team gets them.
+
+## Example: how I want to be talked to
+
+Lead with the answer, then the evidence. Skip the preamble.
+
+## Example: my local setup
+
+I run the demo flavor by default. Assume `./gradlew assembleDemoDebug` unless I say otherwise.
+
+## Example: a habit I want reinforced
+
+When you open a pull request, remind me to brush my teeth — and to floss too.
