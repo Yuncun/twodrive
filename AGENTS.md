@@ -100,3 +100,9 @@ and, for UI changes, the Gradle-managed device smoke test above. CI (`.github/wo
 
 - The demo flavor never needs a Microsoft account; CI runs only demo-flavor checks.
 - Prod-flavor tests against a real account need a phone you own with Microsoft Authenticator. Keep the scripts and secrets for that in an untracked `.harness/` directory (gitignored); nothing in this repo assumes a particular device, account, or agent tool.
+
+## Personal instructions
+
+Preferences that belong to you rather than the project go in an untracked `AGENTS.local.md` (gitignored).
+
+@AGENTS.local.md
