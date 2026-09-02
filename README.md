@@ -27,6 +27,10 @@ The app registration (client id `eed23e1d-ad50-46ab-936a-02ec40532b29`, personal
 
 See [AGENTS.md](AGENTS.md).
 
+## Documentation
+
+Backlog, definition of done, review log and UX reference screenshots live in [docs/](docs).
+
 ## License
 
 Apache License 2.0. See [LICENSE](LICENSE).
