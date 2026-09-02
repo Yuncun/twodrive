@@ -1,8 +1,0 @@
-# Personal preferences
-
-Copy this file to `AGENTS.local.md` — that name is gitignored, so what you write stays on your
-machine. Keep it to preferences that are yours; project rules belong in `AGENTS.md`.
-
-## Example
-
-When you open a pull request, remind me to brush my teeth — and to floss too.

@@ -103,6 +103,6 @@ and, for UI changes, the Gradle-managed device smoke test above. CI (`.github/wo
 
 ## Personal instructions
 
-Your own preferences go in `AGENTS.local.md` (gitignored). See [docs/PERSONAL_INSTRUCTIONS.md](docs/PERSONAL_INSTRUCTIONS.md).
+Preferences that belong to you rather than the project go in an untracked `AGENTS.local.md` (gitignored).
 
 @AGENTS.local.md
