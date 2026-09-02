@@ -27,6 +27,12 @@ The app registration (client id `eed23e1d-ad50-46ab-936a-02ec40532b29`, personal
 
 See [AGENTS.md](AGENTS.md).
 
+## Contributing
+
+Start with the [Build](#build) table above: `./gradlew assembleDemoDebug` builds the app and `./gradlew testDemoDebugUnitTest` runs the unit tests, both against the `demo` flavor, so you need neither network nor a Microsoft account.
+
+Before opening a pull request, run the full check list in [docs/DEFINITION_OF_DONE.md](docs/DEFINITION_OF_DONE.md) — formatting, build, unit tests, screenshot tests and the device smoke test, in that order — and make sure it passes locally. That file also covers what a change is expected to include, such as a unit test for new behaviour and a screenshot test for a new or changed screen.
+
 ## License
 
 Apache License 2.0. See [LICENSE](LICENSE).
