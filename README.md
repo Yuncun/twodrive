@@ -19,10 +19,6 @@ Requires JDK 17+ and the Android SDK (`local.properties` with `sdk.dir`, or `AND
 
 The `demo` flavor serves a fixed drive from JSON assets and is always signed in, so everything above runs without network or credentials. The `prod` flavor talks to Graph.
 
-## Sign-in setup
-
-The app registration (client id `eed23e1d-ad50-46ab-936a-02ec40532b29`, personal accounts only) lives in `core/auth/src/prod/res/raw/msal_config.json`. Its Android redirect URI is derived from the checked-in debug certificate in `keystore/`, so builds from any machine can sign in without re-registering.
-
 ## Architecture
 
 See [AGENTS.md](AGENTS.md).
