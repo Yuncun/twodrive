@@ -1,0 +1,59 @@
+{
+  "items": [
+    {
+      "id": "M3.1",
+      "slug": "open-file",
+      "brief": "Open a file in the system viewer when its row or tile is tapped. Today TwoDriveApp.kt's onFileClick launches item.webUrl in a Chrome custom tab; replace that with: download the file's content (GET me/drive/items/{id}/content, which 302-redirects to a pre-authenticated 1drv URL, so follow the redirect with the plain unauthenticated OkHttp client the thumbnail fetcher already uses) into the app cache dir with a visible progress indicator, then fire ACTION_VIEW through a FileProvider with the item's mimeType and FLAG_GRANT_READ_URI_PERMISSION, falling back to a snackbar when no app can open it. The item bottom sheet (M3.2) has no Open entry, so the row tap must remain the only way to open a file. Keep FilesScreen.kt and FilesViewModel.kt untouched: the FilesScreen already exposes onFileClick, so do the work in a new core/data downloader plus app-level state (TwoDriveApp.kt / a small OpenFileViewModel), which keeps this branch clear of the M3.2 and M3.3 edits to FilesScreen.kt. Demo flavour: DemoGraphNetworkDataSource should serve a small placeholder file from assets so the demo build can exercise the whole flow. Note the reference screenshot 22-file-preview.png is mislabeled (it shows My files with a privacy banner); there is no committed capture of the OneDrive viewer, so use the system viewer with no custom preview UI.",
+      "likely_files": [
+        "app/src/main/kotlin/codes/fixmy/twodrive/ui/TwoDriveApp.kt",
+        "app/src/main/AndroidManifest.xml",
+        "app/src/main/res/xml/file_paths.xml",
+        "core/network/src/main/kotlin/codes/fixmy/twodrive/core/network/GraphNetworkDataSource.kt",
+        "core/network/src/main/kotlin/codes/fixmy/twodrive/core/network/retrofit/RetrofitGraphNetwork.kt",
+        "core/network/src/main/kotlin/codes/fixmy/twodrive/core/network/demo/DemoGraphNetworkDataSource.kt",
+        "core/data/src/main/kotlin/codes/fixmy/twodrive/core/data/repository/DriveItemContentRepository.kt",
+        "core/data/src/main/kotlin/codes/fixmy/twodrive/core/data/di/DataModule.kt",
+        "core/data/src/test/kotlin/codes/fixmy/twodrive/core/data/testdoubles/TestGraphNetworkDataSource.kt",
+        "core/ui/src/main/kotlin/codes/fixmy/twodrive/core/ui/LaunchCustomTab.kt"
+      ],
+      "screenshot": "docs/ux-reference/22-file-preview.png"
+    },
+    {
+      "id": "M3.2",
+      "slug": "item-bottom-sheet",
+      "brief": "Build the item 'more options' bottom sheet that opens from the trailing ... button on every row and tile; FilesScreen.kt currently passes onMoreClick = {} at its two call sites. Follow docs/ux-reference/spec/item-bottom-sheet.md: ModalBottomSheet with skipPartiallyExpanded and 12dp top corners, default drag handle, a centred 72dp thumbnail (reuse DriveItemThumbnail / DriveItemIcon), centred name (titleMedium) and 'size . date' (bodyMedium, onSurfaceVariant), then an 80dp row of grey 8dp-radius action tiles (Share and Delete; plus Download for files) and 48dp ListItem rows (Rename, Move, Details) with 24dp icons at 16dp and labels at 56dp. Omit Make available offline, Comment, Copy, Add to album and Add to Favorites entirely. Drive the sheet from a List<ItemAction> computed from (item, source list): Home > Recent files drops Delete and Move, My files and folder screens offer the full set. Delete is a plain grey tile with no destructive styling. Every action only dismisses the sheet in this item; expose the tap as a single onAction: (ItemAction, DriveItem) -> Unit callback so M3.4 (Rename/Delete), M3.5 (Move), M3.7 (Share) and M3.8 (Details) can plug in without reshaping the sheet. Put the sheet in a new file (ItemBottomSheet.kt) with its own ItemAction enum, add screenshot tests for the folder and file variants, and keep FilesViewModel.kt, the network and data layers untouched. Merge note: M3.3 also edits FilesScreen.kt (the FAB near the bottom of the file) and strings.xml; keep the onMoreClick wiring near the top-level FilesScreen/FolderScreen composables to keep the diffs apart.",
+      "likely_files": [
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/ItemBottomSheet.kt",
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/ItemAction.kt",
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesScreen.kt",
+        "feature/files/impl/src/main/res/values/strings.xml",
+        "feature/files/impl/src/testDemo/kotlin/codes/fixmy/twodrive/feature/files/impl/ItemBottomSheetScreenshotTests.kt",
+        "feature/files/impl/src/testDemo/kotlin/codes/fixmy/twodrive/feature/files/impl/ItemBottomSheetTest.kt",
+        "core/designsystem/src/main/kotlin/codes/fixmy/twodrive/core/designsystem/icon/TwoDriveIcons.kt"
+      ],
+      "screenshot": "docs/ux-reference/12-item-more-options.png"
+    },
+    {
+      "id": "M3.3",
+      "slug": "create-folder",
+      "brief": "Make the + FAB (FilesScreen.kt, testTag files:add, onClick = {} today) open an add-items ModalBottomSheet and implement its Create folder entry end to end. There is no captured reference for the add menu: docs/ux-reference/21-add-items-menu.png is mislabeled (it shows the item bottom sheet), so design from docs/ux-reference/spec/add-menu.md and Material 3: a sheet of 48dp ListItem rows with 24dp leading icons at 16dp and labels at 56dp, containing Create folder and an Upload row that is present but disabled or a no-op until M3.6 wires it. Create folder opens an AlertDialog with a single name field (Cancel / Create, Create disabled while blank), then POST me/drive/items/{parentId}/children (or me/drive/root/children at the root) with {name, folder: {}, '@microsoft.graph.conflictBehavior': 'rename'}, inserts the returned item into Room so the list updates immediately, and shows a snackbar on failure. Add createFolder to GraphNetworkDataSource, RetrofitGraphNetwork, DemoGraphNetworkDataSource (append to the in-memory demo drive), the TestGraphNetworkDataSource and TestDriveItemsRepository doubles, DriveItemsRepository and OfflineFirstDriveItemsRepository, and FilesViewModel. Quota: never copy OneDrive's full-screen frozen-account takeover; surface a 507 as a snackbar and keep the user on the list. Merge note: M3.1 also adds a method to the GraphNetworkDataSource interface and its Retrofit/demo/test implementations, and M3.2 also edits FilesScreen.kt and strings.xml; keep the FAB change local to the bottom of FilesScreen.kt and put the sheet and dialog in new files.",
+      "likely_files": [
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/AddItemsSheet.kt",
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/CreateFolderDialog.kt",
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesScreen.kt",
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesViewModel.kt",
+        "feature/files/impl/src/main/res/values/strings.xml",
+        "feature/files/impl/src/test/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesViewModelTest.kt",
+        "core/data/src/main/kotlin/codes/fixmy/twodrive/core/data/repository/DriveItemsRepository.kt",
+        "core/data/src/main/kotlin/codes/fixmy/twodrive/core/data/repository/OfflineFirstDriveItemsRepository.kt",
+        "core/data/src/test/kotlin/codes/fixmy/twodrive/core/data/repository/OfflineFirstDriveItemsRepositoryTest.kt",
+        "core/data/src/test/kotlin/codes/fixmy/twodrive/core/data/testdoubles/TestGraphNetworkDataSource.kt",
+        "core/testing/src/main/kotlin/codes/fixmy/twodrive/core/testing/repository/TestDriveItemsRepository.kt",
+        "core/network/src/main/kotlin/codes/fixmy/twodrive/core/network/GraphNetworkDataSource.kt",
+        "core/network/src/main/kotlin/codes/fixmy/twodrive/core/network/retrofit/RetrofitGraphNetwork.kt",
+        "core/network/src/main/kotlin/codes/fixmy/twodrive/core/network/demo/DemoGraphNetworkDataSource.kt"
+      ],
+      "screenshot": "docs/ux-reference/21-add-items-menu.png"
+    }
+  ]
+}
