@@ -18,9 +18,17 @@ package codes.fixmy.twodrive.core.model.data
 
 /**
  * The user's default drive and its storage quota, in bytes.
+ *
+ * [isQuotaFull] is true when Graph reports the quota as exceeded, when [quotaUsed] has reached
+ * [quotaTotal], or when a request was refused with 507 Insufficient Storage.
  */
 data class Drive(
     val id: String,
     val quotaUsed: Long,
     val quotaTotal: Long,
-)
+    val isQuotaFull: Boolean = quotaTotal in 1..quotaUsed,
+) {
+    /** The share of the quota in use, clamped to 0..1 for a progress bar. */
+    val quotaFraction: Float
+        get() = if (quotaTotal <= 0) 0f else (quotaUsed.toFloat() / quotaTotal).coerceIn(0f, 1f)
+}

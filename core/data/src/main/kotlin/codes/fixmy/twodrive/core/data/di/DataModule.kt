@@ -17,6 +17,8 @@
 package codes.fixmy.twodrive.core.data.di
 
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
+import codes.fixmy.twodrive.core.data.repository.DriveRepository
+import codes.fixmy.twodrive.core.data.repository.NetworkDriveRepository
 import codes.fixmy.twodrive.core.data.repository.OfflineFirstDriveItemsRepository
 import codes.fixmy.twodrive.core.data.repository.OfflineFirstUserDataRepository
 import codes.fixmy.twodrive.core.data.repository.UserDataRepository
@@ -37,6 +39,11 @@ abstract class DataModule {
     internal abstract fun bindsDriveItemsRepository(
         driveItemsRepository: OfflineFirstDriveItemsRepository,
     ): DriveItemsRepository
+
+    @Binds
+    internal abstract fun bindsDriveRepository(
+        driveRepository: NetworkDriveRepository,
+    ): DriveRepository
 
     @Binds
     internal abstract fun bindsUserDataRepository(
