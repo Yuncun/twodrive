@@ -87,7 +87,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - R: M2.2 sync() returns a Boolean that is always true and signals failure by throwing instead; return false on failure like NiA's Syncable, or return Unit (fixed 2026-08-31: 46cde96 returns false)
   - R: M2.2 deleting a folder leaves its descendants in Room: apply() deletes only the ids named in the delta page and there is no cascade — verify what Graph sends for a deleted folder and sweep orphans (fixed 2026-08-31: b3940d9 recursive-CTE sweep; Graph delta sends the folder only, per v1.0 docs)
 - [ ] M2.3 Thumbnails via `/items/{id}/thumbnails` (Coil, memory+disk cache); paging of children (`@odata.nextLink`).
-- [ ] M2.4 Account drawer (19-account-drawer.png): avatar, email, storage bar from `/me/drive` quota, Sign out. Handle 507/quota-full state visibly.
+- [x] M2.4 (e62aabc) Account drawer (19-account-drawer.png): avatar, email, storage bar from `/me/drive` quota, Sign out. Handle 507/quota-full state visibly.
   spec details:
   - R: M2.4 tapping the account icon signs the user out on the spot (onActionClick = onSignOut in TwoDriveApp.kt); it should open the drawer, and the top bar's onNavigationClick is an empty stub
   - O: M2.4 drawer metrics: a 305dp modal sheet with rounded right corners; account-switcher header of 96dp tiles with 56dp avatars (a 2dp blue ring on the current one) over a 1dp tab-style blue indicator; a non-clickable email row; then 48.4dp link rows with 24dp icons at x=16dp and labels at x=56dp and no dividers between them — docs/ux-reference/spec/account-drawer.md
