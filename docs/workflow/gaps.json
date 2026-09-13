@@ -1,0 +1,134 @@
+[
+  {
+    "feature": "Create new account (outlined button on Welcome)",
+    "screenshot": "docs/ux-reference/02-welcome.png",
+    "backlog_id": null,
+    "evidence": "app/src/main/kotlin/codes/fixmy/twodrive/ui/WelcomeScreen.kt shows only Sign in; no account-creation link"
+  },
+  {
+    "feature": "Skip to my photos (text button on Welcome)",
+    "screenshot": "docs/ux-reference/02-welcome.png",
+    "backlog_id": null,
+    "evidence": "WelcomeScreen.kt has no skip button; Photos is out of scope per docs/BACKLOG.md"
+  },
+  {
+    "feature": "Photos | Files segmented control in the app bar",
+    "screenshot": "docs/ux-reference/11-myfiles.png",
+    "backlog_id": null,
+    "evidence": "No segmented pill anywhere in app/ or feature/files; top bar has no Photos/Files switch (Photos out of scope)"
+  },
+  {
+    "feature": "Item bottom sheet from the ... button (Share/Delete tiles, Rename, Move, Details rows)",
+    "screenshot": "docs/ux-reference/12-item-more-options.png",
+    "backlog_id": "M3.2",
+    "evidence": "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesScreen.kt:127 and :142 pass onMoreClick = {}; no ModalBottomSheet exists"
+  },
+  {
+    "feature": "Share from item bottom sheet (share link)",
+    "screenshot": "docs/ux-reference/12-item-more-options.png",
+    "backlog_id": "M3.7",
+    "evidence": "No createLink call in core/network RetrofitGraphNetwork.kt and no share UI"
+  },
+  {
+    "feature": "Delete from item bottom sheet",
+    "screenshot": "docs/ux-reference/12-item-more-options.png",
+    "backlog_id": "M3.4",
+    "evidence": "No DELETE endpoint in RetrofitGraphNetwork.kt and no delete action in FilesViewModel"
+  },
+  {
+    "feature": "Rename from item bottom sheet",
+    "screenshot": "docs/ux-reference/12-item-more-options.png",
+    "backlog_id": "M3.4",
+    "evidence": "No PATCH name endpoint in RetrofitGraphNetwork.kt and no rename dialog"
+  },
+  {
+    "feature": "Move from item bottom sheet",
+    "screenshot": "docs/ux-reference/12-item-more-options.png",
+    "backlog_id": "M3.5",
+    "evidence": "No PATCH parentReference endpoint and no folder picker sheet"
+  },
+  {
+    "feature": "Details from item bottom sheet",
+    "screenshot": "docs/ux-reference/12-item-more-options.png",
+    "backlog_id": "M3.8",
+    "evidence": "No details screen or nav key in feature/files"
+  },
+  {
+    "feature": "Make available offline switch in item bottom sheet",
+    "screenshot": "docs/ux-reference/12-item-more-options.png",
+    "backlog_id": null,
+    "evidence": "No offline pinning in data layer; M3.2 says hide it (offline sync out of scope)"
+  },
+  {
+    "feature": "+ FAB opens add-items menu (Upload / Create folder)",
+    "screenshot": "docs/ux-reference/21-add-items-menu.png",
+    "backlog_id": "M3.3",
+    "evidence": "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesScreen.kt:1163 FloatingActionButton onClick = {}; no add menu, create-folder or upload code (screenshot is mislabeled, see inventory note)"
+  },
+  {
+    "feature": "Upload from + menu",
+    "screenshot": "docs/ux-reference/21-add-items-menu.png",
+    "backlog_id": "M3.6",
+    "evidence": "No createUploadSession, file picker or WorkManager upload worker in the repo"
+  },
+  {
+    "feature": "Open file in the app / system viewer (tap file row)",
+    "screenshot": "docs/ux-reference/22-file-preview.png",
+    "backlog_id": "M3.1",
+    "evidence": "app/src/main/kotlin/codes/fixmy/twodrive/ui/TwoDriveApp.kt:235 opens item.webUrl in a Custom Tab; no download-to-cache or ACTION_VIEW (screenshot is mislabeled)"
+  },
+  {
+    "feature": "See all recent files",
+    "screenshot": "docs/ux-reference/10-files-root.png",
+    "backlog_id": null,
+    "evidence": "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesScreen.kt:129 onSeeAllClick = {}; no full recents screen"
+  },
+  {
+    "feature": "Search your files pill opens search",
+    "screenshot": "docs/ux-reference/10-files-root.png",
+    "backlog_id": "M4.1",
+    "evidence": "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesScreen.kt:1133 search pill onClick is a placeholder; no search screen"
+  },
+  {
+    "feature": "Search screen with Folders, files text field",
+    "screenshot": "docs/ux-reference/23-search.png",
+    "backlog_id": "M4.1",
+    "evidence": "No search nav key, screen or /search(q=) endpoint in core/network"
+  },
+  {
+    "feature": "Search no-results empty state (Couldn't find anything)",
+    "screenshot": "docs/ux-reference/24-search-no-results.png",
+    "backlog_id": "M4.1",
+    "evidence": "No search results or empty-state composable exists"
+  },
+  {
+    "feature": "Shared tab lists shared items",
+    "screenshot": "docs/ux-reference/11-myfiles.png",
+    "backlog_id": "M4.2",
+    "evidence": "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesScreen.kt:188 FilesTab.SHARED renders FilesTabEmptyState; no sharedWithMe endpoint"
+  },
+  {
+    "feature": "Vault tab: Start using Personal Vault button",
+    "screenshot": "docs/ux-reference/17-vault.png",
+    "backlog_id": null,
+    "evidence": "Vault tab shows 'Personal Vault is not available in TwoDrive.' with no button (Vault out of scope)"
+  },
+  {
+    "feature": "Offline tab / Offline files section lists offline files",
+    "screenshot": "docs/ux-reference/18-offline.png",
+    "backlog_id": null,
+    "evidence": "Offline tab and Home section are static empty states; no offline file storage (offline sync out of scope)"
+  },
+  {
+    "feature": "Changes to Privacy Settings banner with Privacy Settings button and close X",
+    "screenshot": "docs/ux-reference/22-file-preview.png",
+    "backlog_id": null,
+    "evidence": "No privacy banner composable in feature/files or app/"
+  },
+  {
+    "feature": "Notification permission prompt at launch",
+    "screenshot": "docs/ux-reference/01-launch.png",
+    "backlog_id": null,
+    "evidence": "No POST_NOTIFICATIONS request in app/src/main; needed only once M3.6 upload notifications exist"
+  }
+]
