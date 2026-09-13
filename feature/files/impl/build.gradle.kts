@@ -33,6 +33,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(projects.core.testing)
     // The demo-flavour tests read the bundled demo drive through DemoGraphNetworkDataSource.
+    testDemoImplementation(libs.coil.kt)
     testDemoImplementation(libs.kotlinx.serialization.json)
     testDemoImplementation(projects.core.screenshotTesting)
 

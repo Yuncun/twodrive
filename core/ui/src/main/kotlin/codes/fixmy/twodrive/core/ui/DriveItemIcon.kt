@@ -24,19 +24,21 @@ import codes.fixmy.twodrive.core.model.data.DriveItem
 
 /**
  * The kinds of item the file list draws differently: a yellow folder and one icon and brand color
- * per document type, as in OneDrive's file list.
+ * per document type, as in OneDrive's file list. [hasThumbnail] marks the kinds Graph renders a
+ * thumbnail for (photos, video frames, the first page of a document), so the list asks Graph only
+ * for those and draws the icon for the rest without a request.
  */
-enum class DriveItemKind(val icon: ImageVector, val tint: Color) {
-    FOLDER(TwoDriveIcons.Folder, FileTypeColors.Folder),
-    DOCUMENT(TwoDriveIcons.Document, FileTypeColors.Word),
-    SPREADSHEET(TwoDriveIcons.Spreadsheet, FileTypeColors.Excel),
-    PRESENTATION(TwoDriveIcons.Presentation, FileTypeColors.PowerPoint),
-    PDF(TwoDriveIcons.Pdf, FileTypeColors.Pdf),
-    IMAGE(TwoDriveIcons.Image, FileTypeColors.Image),
-    VIDEO(TwoDriveIcons.Video, FileTypeColors.Video),
-    AUDIO(TwoDriveIcons.Audio, FileTypeColors.Audio),
-    TEXT(TwoDriveIcons.Text, FileTypeColors.Text),
-    OTHER(TwoDriveIcons.File, FileTypeColors.Generic),
+enum class DriveItemKind(val icon: ImageVector, val tint: Color, val hasThumbnail: Boolean) {
+    FOLDER(TwoDriveIcons.Folder, FileTypeColors.Folder, hasThumbnail = false),
+    DOCUMENT(TwoDriveIcons.Document, FileTypeColors.Word, hasThumbnail = true),
+    SPREADSHEET(TwoDriveIcons.Spreadsheet, FileTypeColors.Excel, hasThumbnail = true),
+    PRESENTATION(TwoDriveIcons.Presentation, FileTypeColors.PowerPoint, hasThumbnail = true),
+    PDF(TwoDriveIcons.Pdf, FileTypeColors.Pdf, hasThumbnail = true),
+    IMAGE(TwoDriveIcons.Image, FileTypeColors.Image, hasThumbnail = true),
+    VIDEO(TwoDriveIcons.Video, FileTypeColors.Video, hasThumbnail = true),
+    AUDIO(TwoDriveIcons.Audio, FileTypeColors.Audio, hasThumbnail = false),
+    TEXT(TwoDriveIcons.Text, FileTypeColors.Text, hasThumbnail = false),
+    OTHER(TwoDriveIcons.File, FileTypeColors.Generic, hasThumbnail = false),
 }
 
 /**

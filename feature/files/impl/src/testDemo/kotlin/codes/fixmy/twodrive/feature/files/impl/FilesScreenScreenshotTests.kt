@@ -17,12 +17,15 @@
 package codes.fixmy.twodrive.feature.files.impl
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveBackground
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.ViewMode
 import codes.fixmy.twodrive.core.screenshottesting.captureMultiDevice
+import coil.Coil
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils.matchesCheck
 import com.google.android.apps.common.testing.accessibility.framework.checks.SpeakableTextPresentCheck
 import com.google.android.apps.common.testing.accessibility.framework.checks.TouchTargetSizeCheck
@@ -98,6 +101,56 @@ class FilesScreenScreenshotTests {
                 selectedTab = FilesTab.HOME,
                 homeUiState = HomeUiState.Success(recentFiles = demoDriveRecentFiles()),
             )
+        }
+    }
+
+    @Test
+    fun filesScreen_homeTabThumbnails() {
+        Coil.setImageLoader(demoThumbnailImageLoader(composeTestRule.activity))
+        composeTestRule.captureMultiDevice("FilesScreenHomeTabThumbnails") {
+            // The capture helper turns inspection mode on, where Coil draws no image at all.
+            CompositionLocalProvider(LocalInspectionMode provides false) {
+                FilesScreenContent(
+                    FilesUiState.Success(
+                        folder = null,
+                        items = demoDriveChildren(),
+                        sortOrder = SortOrder.NAME_ASCENDING,
+                        viewMode = ViewMode.LIST,
+                    ),
+                    selectedTab = FilesTab.HOME,
+                    homeUiState = HomeUiState.Success(recentFiles = demoDriveRecentFiles()),
+                )
+            }
+        }
+    }
+
+    @Test
+    fun folderScreen_thumbnails() {
+        Coil.setImageLoader(demoThumbnailImageLoader(composeTestRule.activity))
+        composeTestRule.captureMultiDevice("FolderScreenThumbnails") {
+            CompositionLocalProvider(LocalInspectionMode provides false) {
+                TwoDriveTheme {
+                    TwoDriveBackground {
+                        FolderScreen(
+                            folderName = "Pictures",
+                            uiState = FilesUiState.Success(
+                                folder = null,
+                                items = demoDriveChildren("f-pictures"),
+                                sortOrder = SortOrder.NAME_ASCENDING,
+                                viewMode = ViewMode.LIST,
+                            ),
+                            isOffline = false,
+                            onBackClick = {},
+                            onFolderClick = {},
+                            onFileClick = {},
+                            onMoreClick = {},
+                            onSortOrderChange = {},
+                            onViewModeChange = {},
+                            today = LocalDate(2026, 8, 30),
+                        )
+                    }
+                }
+            }
         }
     }
 

@@ -55,6 +55,16 @@ class DriveItemIconTest {
     }
 
     @Test
+    fun onlyKindsGraphRendersAskForAThumbnail() {
+        assertEquals(true, item(mimeType = "image/jpeg").kind().hasThumbnail)
+        assertEquals(true, item(mimeType = "video/mp4").kind().hasThumbnail)
+        assertEquals(true, item(mimeType = "application/pdf").kind().hasThumbnail)
+        assertEquals(false, item(isFolder = true).kind().hasThumbnail)
+        assertEquals(false, item(mimeType = "audio/mpeg").kind().hasThumbnail)
+        assertEquals(false, item(mimeType = null).kind().hasThumbnail)
+    }
+
+    @Test
     fun legacyOfficeMimeTypesMapToTheSameKinds() {
         assertEquals(DriveItemKind.DOCUMENT, item(mimeType = "application/msword").kind())
         assertEquals(DriveItemKind.SPREADSHEET, item(mimeType = "application/vnd.ms-excel").kind())

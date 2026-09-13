@@ -16,12 +16,16 @@
 
 package codes.fixmy.twodrive.feature.files.impl
 
+import android.content.Context
 import codes.fixmy.twodrive.core.data.model.asEntity
 import codes.fixmy.twodrive.core.database.model.asExternalModel
 import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.sortedBy
 import codes.fixmy.twodrive.core.network.demo.DemoGraphNetworkDataSource
+import codes.fixmy.twodrive.core.network.thumbnail.DriveItemThumbnailFetcher
+import coil.ImageLoader
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.serialization.json.Json
@@ -57,6 +61,22 @@ internal fun demoDriveRecentFiles(limit: Int = 6): List<DriveItem> = runBlocking
     }
     files.sortedByDescending { it.lastModified }.take(limit)
 }
+
+/**
+ * An image loader that resolves thumbnails the way the running demo app does — through
+ * DriveItemThumbnailFetcher and the bundled placeholder assets — but runs the whole pipeline on
+ * the main thread, so Compose's idling (which pumps Robolectric's paused main looper) waits for
+ * every thumbnail before a screenshot is taken. No caches, so each test starts cold.
+ */
+internal fun demoThumbnailImageLoader(context: Context): ImageLoader = ImageLoader.Builder(context)
+    .memoryCache(null)
+    .diskCache(null)
+    .dispatcher(Dispatchers.Main.immediate)
+    .components {
+        add(DriveItemThumbnailFetcher.Factory { demoDataSource() })
+        add(DriveItemThumbnailFetcher.Keyer)
+    }
+    .build()
 
 private fun demoDataSource() = DemoGraphNetworkDataSource(
     ioDispatcher = UnconfinedTestDispatcher(),

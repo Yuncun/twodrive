@@ -79,7 +79,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import codes.fixmy.twodrive.core.designsystem.component.DynamicAsyncImage
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveLoadingWheel
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveTab
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveTabRow
@@ -90,6 +89,7 @@ import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.ViewMode
 import codes.fixmy.twodrive.core.ui.DevicePreviews
 import codes.fixmy.twodrive.core.ui.DriveItemPreviewParameterProvider
+import codes.fixmy.twodrive.core.ui.DriveItemThumbnail
 import codes.fixmy.twodrive.core.ui.formatFileSize
 import codes.fixmy.twodrive.core.ui.formatModifiedDate
 import codes.fixmy.twodrive.core.ui.icon
@@ -496,23 +496,13 @@ private fun DriveItemTile(
                 .size(width = 101.dp, height = 58.dp)
                 .clip(RoundedCornerShape(4.dp)),
         ) {
-            val thumbnailUrl = item.thumbnailUrl
-            if (thumbnailUrl != null) {
-                DynamicAsyncImage(
-                    imageUrl = thumbnailUrl,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            } else {
-                // No thumbnail yet (the demo drive carries none): the type glyph stands in, as
-                // OneDrive shows for files it cannot render.
+            DriveItemThumbnail(item = item, modifier = Modifier.fillMaxSize()) {
+                // Folders, and files Graph cannot render, show the type glyph as OneDrive does.
                 Icon(
                     imageVector = item.icon(),
                     contentDescription = null,
                     tint = item.iconTint(),
-                    modifier = Modifier
-                        .size(48.dp)
-                        .align(Alignment.Center),
+                    modifier = Modifier.size(48.dp),
                 )
             }
             if (item.isFolder) {
@@ -776,8 +766,8 @@ private fun SortMenuItem(
 
 /**
  * One list row, on the observed OneDrive metrics: a uniform 68dp row (OneDrive splits 64/68 by
- * kind; TwoDrive picks one), 40dp icon at x=16, text at x=68, the ⋯ button 10dp off the right
- * edge, no divider (docs/ux-reference/spec/my-files-list.md).
+ * kind; TwoDrive picks one), 40dp icon or thumbnail at x=16, text at x=68, the ⋯ button 10dp
+ * off the right edge, no divider (docs/ux-reference/spec/my-files-list.md).
  */
 @Composable
 private fun DriveItemRow(
@@ -794,14 +784,20 @@ private fun DriveItemRow(
             .padding(start = 16.dp, end = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            imageVector = item.icon(),
-            contentDescription = null,
-            tint = item.iconTint(),
+        DriveItemThumbnail(
+            item = item,
             modifier = Modifier
                 .padding(end = 12.dp)
-                .size(40.dp),
-        )
+                .size(40.dp)
+                .clip(RoundedCornerShape(4.dp)),
+        ) {
+            Icon(
+                imageVector = item.icon(),
+                contentDescription = null,
+                tint = item.iconTint(),
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = item.name,
@@ -1014,10 +1010,9 @@ private fun HomeSectionHeader(
 
 /**
  * A Home recent-files row: 68dp tall, taller than the 64dp My-files row, because it carries a
- * 40dp rounded thumbnail (docs/ux-reference/spec/files-home.md). Until M2.3 syncs real
- * thumbnails the slot draws the file-type icon on a tinted square; the video play badge, the
- * document type badge and the leading video duration in the subtitle need the thumbnail and
- * video facets that arrive with the real Graph milestones.
+ * 40dp rounded thumbnail (docs/ux-reference/spec/files-home.md). Items without a thumbnail draw
+ * the file-type icon on a tinted square; the video play badge, the document type badge and the
+ * leading video duration in the subtitle need Graph's video facet, which sync does not store yet.
  */
 @Composable
 private fun HomeRecentFileRow(
@@ -1034,12 +1029,12 @@ private fun HomeRecentFileRow(
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
+        DriveItemThumbnail(
+            item = item,
             modifier = Modifier
                 .size(40.dp)
                 .clip(RoundedCornerShape(4.dp))
                 .background(item.iconTint().copy(alpha = 0.12f)),
-            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = item.icon(),
