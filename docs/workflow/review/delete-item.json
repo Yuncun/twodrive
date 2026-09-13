@@ -1,0 +1,38 @@
+{
+  "item": "delete-item",
+  "reviewed_sha": "0e7a76f4607b3d8a431b53240999702793a4f77a",
+  "round": 0,
+  "final": false,
+  "findings": [
+    {
+      "file": "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/DeleteSnackbarHost.kt",
+      "line": 55,
+      "blocking": true,
+      "summary": "Leaving the screen during the undo window drops the delete. FilesEntryProvider scopes FilesViewModel to the activity (hiltViewModel keyed by folderId, no nav-entry ViewModel store), so popping a folder screen cancels this LaunchedEffect with neither onUndo nor onUndoWindowEnd: the item stays hidden only in that folder's ViewModel, no DELETE is sent, Room keeps it (Home > Recent files still lists it) and it is back after relaunch. Repro: open Documents, delete a file, press Back within 10 s. Fix: when the host leaves composition (DisposableEffect onDispose, not a key change) call onUndoWindowEnd; deleteUndoWindowEnded is already a no-op when nothing is pending. Add a test for it."
+    },
+    {
+      "file": "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesViewModel.kt",
+      "line": 235,
+      "blocking": false,
+      "summary": "isInside walks ancestors with one Room query per level per recent file on every emission while something is hidden; fine for six rows, but a repository/DAO subtree lookup (getDriveItemWithDescendants already exists) would be one query."
+    },
+    {
+      "file": "core/data/src/main/kotlin/codes/fixmy/twodrive/core/data/repository/OfflineFirstDriveItemsRepository.kt",
+      "line": 96,
+      "blocking": false,
+      "summary": "The request runs in viewModelScope; if it is cancelled after Graph accepted the DELETE, the cancellation branch re-inserts the rows until the next delta sync removes them. Low odds with an activity-scoped ViewModel."
+    },
+    {
+      "file": "docs/workflow/flows/delete-item/04-delete-persists.yaml",
+      "line": 37,
+      "blocking": false,
+      "summary": "The brief asked for .maestro/delete-item/; the branch instead edits the test-plan flow committed on main (a file outside likely_files). The wait is justified; the merge step should treat docs/workflow/flows as the device proof."
+    },
+    {
+      "file": "feature/files/impl/src/test/screenshots/",
+      "line": 0,
+      "blocking": false,
+      "summary": "Other item's likely_files: only this directory overlaps, and only with six new DeleteSnackbar*.png; no existing PNG changed and :feature:files:impl:verifyRoborazziDemoDebug passes at 0e7a76f. No other files-chrome file is touched."
+    }
+  ]
+}
