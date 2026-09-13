@@ -41,9 +41,11 @@
         </activity>
 
         <!--
-            MSAL returns from the browser-based sign-in through this activity. The path is the
-            URL-encoded SHA-1 of the checked-in debug signing certificate (see app/build.gradle.kts)
-            and must match the Android redirect URI on the Entra app registration.
+            MSAL returns from the browser-based sign-in through this activity. The host is the
+            application id, so debug (codes.fixmy.twodrive.debug) and release builds each match
+            their own redirect URI; the path is the URL-encoded SHA-1 of the checked-in signing
+            certificate (see app/build.gradle.kts). Both must match a redirect URI registered on
+            the Entra app, and MsalConfig fills the same host into msal_config.json.
         -->
         <activity
             android:name="com.microsoft.identity.client.BrowserTabActivity"
@@ -56,7 +58,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="codes.fixmy.twodrive"
+                    android:host="${applicationId}"
                     android:path="/J9AaPozhP6djyGWJSSzVi2DZpoU="
                     android:scheme="msauth" />
             </intent-filter>
