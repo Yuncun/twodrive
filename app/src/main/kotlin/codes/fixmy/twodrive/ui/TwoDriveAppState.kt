@@ -56,6 +56,10 @@ class TwoDriveAppState(
     coroutineScope: CoroutineScope,
     networkMonitor: NetworkMonitor,
 ) {
+    /**
+     * Device connectivity for app-wide surfaces such as the account drawer's notice banner
+     * (docs/BACKLOG.md M2.4). The Files screen shows its own offline snackbar, tied to sync failure.
+     */
     val isOffline = networkMonitor.isOnline
         .map(Boolean::not)
         .stateIn(

@@ -23,6 +23,7 @@ import codes.fixmy.twodrive.core.network.demo.DemoAssetManager
 import codes.fixmy.twodrive.core.network.retrofit.BearerTokenInterceptor
 import codes.fixmy.twodrive.core.network.retrofit.GRAPH_BASE_URL
 import codes.fixmy.twodrive.core.network.retrofit.GRAPH_BASE_URL_NAME
+import codes.fixmy.twodrive.core.network.retrofit.RetryAfterInterceptor
 import coil.ImageLoader
 import coil.util.DebugLogger
 import dagger.Module
@@ -60,9 +61,12 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun okHttpCallFactory(
+        retryAfterInterceptor: RetryAfterInterceptor,
         bearerTokenInterceptor: BearerTokenInterceptor,
     ): Call.Factory = trace("TwoDriveOkHttpClient") {
         OkHttpClient.Builder()
+            // Outermost, so each retry passes through the token interceptor again.
+            .addInterceptor(retryAfterInterceptor)
             .addInterceptor(bearerTokenInterceptor)
             .addInterceptor(
                 HttpLoggingInterceptor()

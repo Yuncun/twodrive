@@ -22,6 +22,7 @@ import codes.fixmy.twodrive.core.common.result.Result
 import codes.fixmy.twodrive.core.common.result.asResult
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.data.repository.UserDataRepository
+import codes.fixmy.twodrive.core.data.util.NetworkMonitor
 import codes.fixmy.twodrive.core.data.util.SyncManager
 import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.model.data.SortOrder
@@ -36,6 +37,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -45,7 +49,8 @@ import kotlinx.coroutines.launch
 class FilesViewModel @AssistedInject constructor(
     private val driveItemsRepository: DriveItemsRepository,
     private val userDataRepository: UserDataRepository,
-    syncManager: SyncManager,
+    private val syncManager: SyncManager,
+    networkMonitor: NetworkMonitor,
     @Assisted val folderId: String?,
 ) : ViewModel() {
 
@@ -93,9 +98,31 @@ class FilesViewModel @AssistedInject constructor(
             initialValue = HomeUiState.Loading,
         )
 
+    /**
+     * True while the last sync failed and the device has no connection, so the screen can say
+     * it is showing the files saved on this device. A failure while online is not an offline one.
+     */
+    val isOffline: StateFlow<Boolean> = combine(
+        syncManager.lastSyncFailed,
+        networkMonitor.isOnline,
+    ) { lastSyncFailed, isOnline -> lastSyncFailed && !isOnline }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false,
+        )
+
     init {
         // At most one sync per process; opening more screens must not re-walk the delta feed.
         syncManager.requestSync()
+        // Coming back online retries a sync that failed; after a success the request is a no-op.
+        viewModelScope.launch {
+            networkMonitor.isOnline
+                .distinctUntilChanged()
+                .drop(1)
+                .filter { it }
+                .collect { syncManager.requestSync() }
+        }
     }
 
     fun setSortOrder(sortOrder: SortOrder) {

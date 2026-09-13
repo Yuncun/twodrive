@@ -16,7 +16,6 @@
 -->
 <resources>
     <string name="app_name">TwoDrive</string>
-    <string name="not_connected">⚠️ You aren’t connected to the internet</string>
     <string name="welcome_headline">Protect your files and access them anywhere</string>
     <string name="welcome_sign_in_button">Sign in</string>
     <string name="welcome_sign_in_error_cancelled">Sign-in was cancelled.</string>

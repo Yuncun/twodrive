@@ -48,11 +48,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,6 +75,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -105,6 +110,7 @@ fun FilesScreen(
     viewModel: FilesViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isOffline by viewModel.isOffline.collectAsStateWithLifecycle()
     if (viewModel.folderId == null) {
         // The pivot row belongs to the drive root; pushed folders show only their list.
         val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
@@ -113,6 +119,7 @@ fun FilesScreen(
             uiState = uiState,
             homeUiState = homeUiState,
             selectedTab = selectedTab,
+            isOffline = isOffline,
             onTabClick = viewModel::selectTab,
             onFolderClick = onFolderClick,
             onFileClick = onFileClick,
@@ -128,6 +135,7 @@ fun FilesScreen(
         FolderScreen(
             folderName = folderName.orEmpty(),
             uiState = uiState,
+            isOffline = isOffline,
             onBackClick = onBackClick,
             onFolderClick = onFolderClick,
             onFileClick = onFileClick,
@@ -144,6 +152,7 @@ internal fun FilesScreen(
     uiState: FilesUiState,
     homeUiState: HomeUiState,
     selectedTab: FilesTab,
+    isOffline: Boolean,
     onTabClick: (FilesTab) -> Unit,
     onFolderClick: (DriveItem) -> Unit,
     onFileClick: (DriveItem) -> Unit,
@@ -195,7 +204,10 @@ internal fun FilesScreen(
                 )
             }
         }
-        FilesFloatingLayer(modifier = Modifier.align(Alignment.BottomCenter))
+        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+            OfflineSnackbarHost(isOffline = isOffline)
+            FilesFloatingLayer()
+        }
     }
 }
 
@@ -210,6 +222,7 @@ internal fun FilesScreen(
 internal fun FolderScreen(
     folderName: String,
     uiState: FilesUiState,
+    isOffline: Boolean,
     onBackClick: () -> Unit,
     onFolderClick: (DriveItem) -> Unit,
     onFileClick: (DriveItem) -> Unit,
@@ -220,40 +233,66 @@ internal fun FolderScreen(
     today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-    ) {
-        LargeTopAppBar(
-            title = {
-                Text(
-                    text = folderName,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = TwoDriveIcons.ArrowBack,
-                        contentDescription = stringResource(R.string.feature_files_impl_navigate_up),
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+        ) {
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        text = folderName,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
-                }
-            },
-            colors = TopAppBarDefaults.largeTopAppBarColors(containerColor = Color.Transparent),
-            scrollBehavior = scrollBehavior,
-        )
-        MyFilesTab(
-            uiState = uiState,
-            today = today,
-            onFolderClick = onFolderClick,
-            onFileClick = onFileClick,
-            onMoreClick = onMoreClick,
-            onSortOrderChange = onSortOrderChange,
-            onViewModeChange = onViewModeChange,
-        )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = TwoDriveIcons.ArrowBack,
+                            contentDescription = stringResource(R.string.feature_files_impl_navigate_up),
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(containerColor = Color.Transparent),
+                scrollBehavior = scrollBehavior,
+            )
+            MyFilesTab(
+                uiState = uiState,
+                today = today,
+                onFolderClick = onFolderClick,
+                onFileClick = onFileClick,
+                onMoreClick = onMoreClick,
+                onSortOrderChange = onSortOrderChange,
+                onViewModeChange = onViewModeChange,
+            )
+        }
+        OfflineSnackbarHost(isOffline = isOffline, modifier = Modifier.align(Alignment.BottomCenter))
     }
+}
+
+/**
+ * Tells the user the list comes from this device while a sync has failed for want of a
+ * connection. The snackbar stays until the connection returns: leaving composition or
+ * [isOffline] turning false cancels [SnackbarHostState.showSnackbar], which dismisses it.
+ */
+@Composable
+private fun OfflineSnackbarHost(
+    isOffline: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val message = stringResource(R.string.feature_files_impl_offline)
+    LaunchedEffect(isOffline) {
+        if (isOffline) {
+            snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Indefinite)
+        }
+    }
+    SnackbarHost(
+        hostState = snackbarHostState,
+        modifier = modifier.testTag("files:offline"),
+    )
 }
 
 @Composable
@@ -391,15 +430,7 @@ private fun FilesList(
             .testTag("files:list"),
     ) {
         if (items.isEmpty()) {
-            item {
-                Text(
-                    text = stringResource(R.string.feature_files_impl_empty_folder),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                )
-            }
+            item { EmptyFolderCard() }
         }
         items(items = items, key = DriveItem::id) { item ->
             DriveItemRow(
@@ -435,15 +466,8 @@ private fun FilesTileGrid(
             .testTag("files:grid"),
     ) {
         if (items.isEmpty()) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Text(
-                    text = stringResource(R.string.feature_files_impl_empty_folder),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp),
-                )
-            }
+            // The grid's content padding already insets the card, so it drops its own gutter.
+            item(span = { GridItemSpan(maxLineSpan) }) { EmptyFolderCard(horizontalPadding = 0.dp) }
         }
         gridItems(items = items, key = DriveItem::id) { item ->
             DriveItemTile(
@@ -932,7 +956,7 @@ private fun HomeTab(
                 }
                 if (homeUiState.recentFiles.isEmpty()) {
                     item {
-                        HomeEmptySectionCard(
+                        EmptySectionCard(
                             text = stringResource(R.string.feature_files_impl_home_recent_empty),
                         )
                     }
@@ -947,7 +971,7 @@ private fun HomeTab(
                 }
                 item { HomeSectionHeader(titleRes = R.string.feature_files_impl_home_offline_files) }
                 item {
-                    HomeEmptySectionCard(
+                    EmptySectionCard(
                         text = stringResource(R.string.feature_files_impl_home_offline_empty),
                     )
                 }
@@ -1051,22 +1075,39 @@ private fun HomeRecentFileRow(
 }
 
 /**
+ * An empty folder. No empty folder was captured from OneDrive, which reuses its empty-section card
+ * for empty lists (docs/ux-reference/spec/folder.md), so the folder shows that card under the sort
+ * bar rather than a full-screen illustration.
+ */
+@Composable
+private fun EmptyFolderCard(horizontalPadding: Dp = 16.dp) {
+    EmptySectionCard(
+        text = stringResource(R.string.feature_files_impl_empty_folder),
+        horizontalPadding = horizontalPadding,
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .testTag("files:empty"),
+    )
+}
+
+/**
  * The pale-blue filled card an empty Home section shows — deliberately not an M3 Card: no
  * elevation, no border, no icon (docs/ux-reference/spec/files-home.md). OneDrive's #EAF4FC
  * maps to the theme's primaryContainer so the card stays themed in dark mode. Reused for the
- * offline empty state; empty folders can adopt it with M2.5.
+ * offline section and for empty folders.
  */
 @Composable
-private fun HomeEmptySectionCard(
+private fun EmptySectionCard(
     text: String,
     modifier: Modifier = Modifier,
+    horizontalPadding: Dp = 16.dp,
 ) {
     Surface(
         color = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = horizontalPadding),
     ) {
         Text(
             text = text,
@@ -1151,6 +1192,7 @@ fun FilesScreenPreview(
             ),
             homeUiState = HomeUiState.Success(recentFiles = items.filterNot { it.isFolder }),
             selectedTab = FilesTab.MY_FILES,
+            isOffline = false,
             onTabClick = {},
             onFolderClick = {},
             onFileClick = {},

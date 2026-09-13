@@ -18,6 +18,7 @@
     <string name="feature_files_impl_loading">Loading files…</string>
     <string name="feature_files_impl_error">Something went wrong loading your files.</string>
     <string name="feature_files_impl_empty_folder">This folder is empty</string>
+    <string name="feature_files_impl_offline">You’re offline. Showing files saved on this device.</string>
     <string name="feature_files_impl_sort_by">Sort by %1$s</string>
     <string name="feature_files_impl_sort_key_name">Name</string>
     <string name="feature_files_impl_sort_key_modified">Modified</string>

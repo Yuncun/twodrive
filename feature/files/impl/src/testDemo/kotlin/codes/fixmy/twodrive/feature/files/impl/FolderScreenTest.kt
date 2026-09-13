@@ -60,6 +60,7 @@ class FolderScreenTest {
                     sortOrder = SortOrder.NAME_ASCENDING,
                     viewMode = ViewMode.LIST,
                 ),
+                isOffline = false,
                 onBackClick = { backClicks++ },
                 onFolderClick = {},
                 onFileClick = {},
