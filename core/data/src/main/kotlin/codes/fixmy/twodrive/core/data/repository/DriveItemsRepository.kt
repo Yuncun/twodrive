@@ -26,6 +26,13 @@ interface DriveItemsRepository {
     /**
      * The direct children of [folderId], or of the drive root when [folderId] is null. The list is
      * unsorted; callers apply the user's sort preference.
+     *
+     * Graph's `@odata.nextLink` paging ends at [sync], which walks every page into Room; this
+     * read never touches the network. It is a plain list rather than Paging 3 on purpose: the
+     * query reads one folder through the `parent_id` index (never the whole drive), a row is a
+     * few hundred bytes so even a 10,000-item folder is a few megabytes, the lazy list composes
+     * only the visible rows, and the sort preference (folders first, then name, date or size) is
+     * applied in memory, which a PagingSource would have to move into SQL.
      */
     fun getChildren(folderId: String?): Flow<List<DriveItem>>
 
