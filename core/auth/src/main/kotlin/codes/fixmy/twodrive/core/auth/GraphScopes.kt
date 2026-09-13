@@ -16,9 +16,6 @@
 
 package codes.fixmy.twodrive.core.auth
 
-/**
- * Delegated Microsoft Graph permissions the app asks the user to consent to.
- */
 object GraphScopes {
-    val ALL: List<String> = listOf("User.Read", "Files.ReadWrite")
+    val ALL: List<String> = listOf("User.Read", "Files.ReadWrite.All")
 }

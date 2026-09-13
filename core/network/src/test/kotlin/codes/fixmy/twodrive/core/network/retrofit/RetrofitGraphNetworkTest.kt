@@ -36,7 +36,11 @@ class RetrofitGraphNetworkTest {
     @Before
     fun setUp() {
         server.start()
-        val tokenProvider = AccessTokenProvider { "test-token" }
+        val tokenProvider = object : AccessTokenProvider {
+            override suspend fun accessToken() = "test-token"
+            override suspend fun refreshAccessToken() = "test-token"
+            override suspend fun requireSignIn() = Unit
+        }
         val client = OkHttpClient.Builder()
             .addInterceptor(BearerTokenInterceptor(tokenProvider))
             .build()
