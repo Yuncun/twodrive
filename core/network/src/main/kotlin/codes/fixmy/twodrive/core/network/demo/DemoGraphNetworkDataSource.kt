@@ -22,6 +22,7 @@ import android.os.Build.VERSION_CODES.M
 import codes.fixmy.twodrive.core.common.network.Dispatcher
 import codes.fixmy.twodrive.core.common.network.TwoDriveDispatchers.IO
 import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
+import codes.fixmy.twodrive.core.network.model.NetworkContent
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
@@ -115,6 +116,15 @@ class DemoGraphNetworkDataSource @Inject constructor(
         return folder
     }
 
+    /**
+     * Serves the placeholder bundled as `content/<itemId>`. Only some demo files bundle one; the
+     * rest fail with [FileNotFoundException], as a download that cannot complete would.
+     */
+    override suspend fun getContent(itemId: String): NetworkContent = withContext(ioDispatcher) {
+        val bytes = assets.open("$CONTENT_DIR/$itemId").use(InputStream::readBytes)
+        NetworkContent(length = bytes.size.toLong(), stream = bytes.inputStream())
+    }
+
     /** Reads width and height from a PNG's IHDR chunk, which always follows the 8-byte signature. */
     private fun pngDimensions(input: InputStream): Pair<Int, Int> = DataInputStream(input).run {
         skipBytes(PNG_IHDR_WIDTH_OFFSET)
@@ -150,6 +160,7 @@ class DemoGraphNetworkDataSource @Inject constructor(
         private const val DRIVE_ASSET = "drive.json"
         private const val ITEMS_ASSET = "items.json"
         private const val THUMBNAILS_DIR = "thumbnails"
+        private const val CONTENT_DIR = "content"
         private const val ANDROID_ASSET_URL = "file:///android_asset/"
         private const val PNG_IHDR_WIDTH_OFFSET = 16
         private const val CREATED_FOLDER_ID_PREFIX = "demo-created-folder-"

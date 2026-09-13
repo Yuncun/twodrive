@@ -35,4 +35,7 @@
     <string name="account_drawer_banner_sync_failed_title">Couldn’t sync your files</string>
     <string name="account_drawer_banner_sync_failed_body">TwoDrive couldn’t reach OneDrive, so your files may be out of date.</string>
     <string name="account_drawer_banner_sync_failed_action">Try again</string>
+    <string name="open_file_downloading">Downloading…</string>
+    <string name="open_file_failed">Couldn’t download the file. Check your connection and try again.</string>
+    <string name="open_file_no_app">No app on this device can open this file.</string>
 </resources>

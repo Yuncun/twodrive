@@ -69,6 +69,8 @@ class GraphDeltaSyncTest {
             network = RetrofitGraphNetwork(
                 networkJson = Json { ignoreUnknownKeys = true },
                 okhttpCallFactory = { client },
+                noRedirectCallFactory = { client },
+                unauthenticatedCallFactory = { client },
                 baseUrl = server.url("/v1.0/").toString(),
             ),
             preferences = preferences,

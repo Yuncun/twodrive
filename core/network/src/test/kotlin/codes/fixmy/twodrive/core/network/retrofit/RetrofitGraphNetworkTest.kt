@@ -25,7 +25,9 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import retrofit2.HttpException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -48,6 +50,8 @@ class RetrofitGraphNetworkTest {
         subject = RetrofitGraphNetwork(
             networkJson = Json { ignoreUnknownKeys = true },
             okhttpCallFactory = { client },
+            noRedirectCallFactory = { client.newBuilder().followRedirects(false).build() },
+            unauthenticatedCallFactory = { OkHttpClient() },
             baseUrl = server.url("/v1.0/").toString(),
         )
     }
@@ -144,6 +148,33 @@ class RetrofitGraphNetworkTest {
         subject.createFolder(parentId = null, name = "Trips")
 
         assertEquals("/v1.0/me/drive/root/children", server.takeRequest().path)
+    }
+
+    @Test
+    fun contentFollowsTheRedirectWithoutTheBearerToken() = runTest {
+        val downloadUrl = server.url("/download/abc?tempauth=xyz")
+        server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", downloadUrl))
+        server.enqueue(MockResponse().setBody("hello"))
+
+        val content = subject.getContent("abc")
+
+        val graphRequest = server.takeRequest()
+        assertEquals("/v1.0/me/drive/items/abc/content", graphRequest.path)
+        assertEquals("Bearer test-token", graphRequest.getHeader("Authorization"))
+        val downloadRequest = server.takeRequest()
+        assertEquals("/download/abc?tempauth=xyz", downloadRequest.path)
+        assertNull(downloadRequest.getHeader("Authorization"))
+        assertEquals(5, content.length)
+        assertEquals("hello", content.use { it.stream.readBytes().decodeToString() })
+    }
+
+    @Test
+    fun contentFailureIsAnHttpException() = runTest {
+        server.enqueue(MockResponse().setResponseCode(404))
+
+        val error = assertFailsWith<HttpException> { subject.getContent("gone") }
+
+        assertEquals(404, error.code())
     }
 
     private fun fixture(name: String): String =

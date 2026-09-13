@@ -21,7 +21,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.Test
+import java.io.FileNotFoundException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -103,5 +105,19 @@ class DemoGraphNetworkDataSourceTest {
     @Test
     fun itemsWithoutABundledThumbnailHaveNone() = runTest(testDispatcher) {
         assertTrue(subject.getThumbnails("i-song").isEmpty())
+    }
+
+    @Test
+    fun contentServesTheBundledPlaceholder() = runTest(testDispatcher) {
+        val content = subject.getContent("i-notes")
+
+        val text = content.use { it.stream.readBytes().decodeToString() }
+        assertEquals(text.length.toLong(), content.length)
+        assertTrue(text.startsWith("# Meeting notes"))
+    }
+
+    @Test
+    fun contentOfAFileWithoutAPlaceholderFails() = runTest(testDispatcher) {
+        assertFailsWith<FileNotFoundException> { subject.getContent("i-lease") }
     }
 }

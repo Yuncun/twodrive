@@ -17,6 +17,7 @@
 package codes.fixmy.twodrive.core.data.testdoubles
 
 import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
+import codes.fixmy.twodrive.core.network.model.NetworkContent
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
@@ -28,6 +29,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
+import java.io.IOException
 
 /**
  * Scripted [GraphNetworkDataSource]: pages are keyed by the link they are requested with; the
@@ -85,5 +87,15 @@ class TestGraphNetworkDataSource : GraphNetworkDataSource {
             folder = NetworkFolderFacet(childCount = 0),
             parentReference = NetworkParentReference(id = parentId ?: "root"),
         )
+    }
+
+    /** File bytes by item id; a missing id fails like a download that cannot complete. */
+    val contents = mutableMapOf<String, ByteArray>()
+    val contentRequests = mutableListOf<String>()
+
+    override suspend fun getContent(itemId: String): NetworkContent {
+        contentRequests += itemId
+        val bytes = contents[itemId] ?: throw IOException("No content for $itemId")
+        return NetworkContent(length = bytes.size.toLong(), stream = bytes.inputStream())
     }
 }

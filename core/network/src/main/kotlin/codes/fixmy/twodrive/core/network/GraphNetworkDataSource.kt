@@ -16,6 +16,7 @@
 
 package codes.fixmy.twodrive.core.network
 
+import codes.fixmy.twodrive.core.network.model.NetworkContent
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
@@ -57,4 +58,9 @@ interface GraphNetworkDataSource {
      * rather than failing.
      */
     suspend fun createFolder(parentId: String?, name: String): NetworkDriveItem
+
+    /**
+     * Opens the bytes of file [itemId] for reading. The caller must close the returned content.
+     */
+    suspend fun getContent(itemId: String): NetworkContent
 }

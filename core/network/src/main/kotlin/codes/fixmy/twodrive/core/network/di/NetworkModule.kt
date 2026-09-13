@@ -24,8 +24,10 @@ import codes.fixmy.twodrive.core.network.demo.DemoAssetManager
 import codes.fixmy.twodrive.core.network.retrofit.BearerTokenInterceptor
 import codes.fixmy.twodrive.core.network.retrofit.GRAPH_BASE_URL
 import codes.fixmy.twodrive.core.network.retrofit.GRAPH_BASE_URL_NAME
+import codes.fixmy.twodrive.core.network.retrofit.GRAPH_NO_REDIRECT_CALL_FACTORY
 import codes.fixmy.twodrive.core.network.retrofit.InsufficientStorageMonitor
 import codes.fixmy.twodrive.core.network.retrofit.RetryAfterInterceptor
+import codes.fixmy.twodrive.core.network.retrofit.UNAUTHENTICATED_CALL_FACTORY
 import codes.fixmy.twodrive.core.network.thumbnail.DriveItemThumbnailFetcher
 import coil.ImageLoader
 import coil.disk.DiskCache
@@ -65,11 +67,11 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(
+    fun okHttpClient(
         retryAfterInterceptor: RetryAfterInterceptor,
         bearerTokenInterceptor: BearerTokenInterceptor,
         insufficientStorageMonitor: InsufficientStorageMonitor,
-    ): Call.Factory = trace("TwoDriveOkHttpClient") {
+    ): OkHttpClient = trace("TwoDriveOkHttpClient") {
         OkHttpClient.Builder()
             // Outermost, so each retry passes through the token interceptor again.
             .addInterceptor(retryAfterInterceptor)
@@ -85,6 +87,24 @@ internal object NetworkModule {
                     },
             )
             .build()
+    }
+
+    @Provides
+    fun okHttpCallFactory(client: OkHttpClient): Call.Factory = client
+
+    /** Shares the authenticated client's connection pool and interceptors. */
+    @Provides
+    @Singleton
+    @Named(GRAPH_NO_REDIRECT_CALL_FACTORY)
+    fun noRedirectCallFactory(client: OkHttpClient): Call.Factory =
+        client.newBuilder().followRedirects(false).build()
+
+    /** Downloads pre-authenticated URLs (thumbnails, file content) that must not see the token. */
+    @Provides
+    @Singleton
+    @Named(UNAUTHENTICATED_CALL_FACTORY)
+    fun unauthenticatedCallFactory(): Call.Factory = trace("TwoDriveUnauthenticatedOkHttpClient") {
+        OkHttpClient()
     }
 
     /**
@@ -105,9 +125,10 @@ internal object NetworkModule {
         // We specifically request dagger.Lazy here, so that it's not instantiated from Dagger.
         network: dagger.Lazy<GraphNetworkDataSource>,
         @ApplicationContext application: Context,
+        @Named(UNAUTHENTICATED_CALL_FACTORY) unauthenticatedCallFactory: dagger.Lazy<Call.Factory>,
     ): ImageLoader = trace("TwoDriveImageLoader") {
         ImageLoader.Builder(application)
-            .callFactory { OkHttpClient() }
+            .callFactory { unauthenticatedCallFactory.get() }
             .memoryCache {
                 MemoryCache.Builder(application)
                     .maxSizePercent(IMAGE_MEMORY_CACHE_PERCENT)
