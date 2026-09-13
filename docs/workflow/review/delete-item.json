@@ -1,14 +1,14 @@
 {
   "item": "delete-item",
-  "reviewed_sha": "0e7a76f4607b3d8a431b53240999702793a4f77a",
-  "round": 0,
-  "final": false,
+  "reviewed_sha": "df7fc17409d05183a71cd567b5b82370495c35f2",
+  "round": 1,
+  "final": true,
   "findings": [
     {
       "file": "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/DeleteSnackbarHost.kt",
-      "line": 55,
-      "blocking": true,
-      "summary": "Leaving the screen during the undo window drops the delete. FilesEntryProvider scopes FilesViewModel to the activity (hiltViewModel keyed by folderId, no nav-entry ViewModel store), so popping a folder screen cancels this LaunchedEffect with neither onUndo nor onUndoWindowEnd: the item stays hidden only in that folder's ViewModel, no DELETE is sent, Room keeps it (Home > Recent files still lists it) and it is back after relaunch. Repro: open Documents, delete a file, press Back within 10 s. Fix: when the host leaves composition (DisposableEffect onDispose, not a key change) call onUndoWindowEnd; deleteUndoWindowEnded is already a no-op when nothing is pending. Add a test for it."
+      "line": 70,
+      "blocking": false,
+      "summary": "Fixed in df7fc17: DisposableEffect onDispose calls onUndoWindowEnd, so popping a folder mid-window sends the delete; DeleteSnackbarHostTest covers leaving composition and a new pending delete not ending the window (both pass, with the rest of :feature:files:impl testDemoDebugUnitTest and verifyRoborazziDemoDebug). Side effect, acceptable: rotation or opening a folder from the root also ends the window early, sending the delete sooner (never dropping it)."
     },
     {
       "file": "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesViewModel.kt",
@@ -32,7 +32,7 @@
       "file": "feature/files/impl/src/test/screenshots/",
       "line": 0,
       "blocking": false,
-      "summary": "Other item's likely_files: only this directory overlaps, and only with six new DeleteSnackbar*.png; no existing PNG changed and :feature:files:impl:verifyRoborazziDemoDebug passes at 0e7a76f. No other files-chrome file is touched."
+      "summary": "Other item likely_files: only this directory overlaps, with six new DeleteSnackbar*.png; no existing PNG changed and :feature:files:impl:verifyRoborazziDemoDebug passes at df7fc17. No other files-chrome file is touched."
     }
   ]
 }
