@@ -22,10 +22,11 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [x] R: M1.2 every folder in core/network/src/demo/assets/items.json has "size": 0, so the folder-size row the item above asks for cannot be shown from the demo drive; give the demo folders the recursive size Graph returns
 - [x] R: M1.2 the row name is maxLines = 1 with the default Clip overflow, so a long name is cut mid-letter instead of ellipsized; the subtitle has no maxLines at all, so a long one wraps and makes that row taller than its neighbours
 - [x] M1.3 Secondary tab row Home / My files / Shared / Vault / Offline with only My files functional; others show empty states from docs/ux-reference (17/18).
-- [ ] App chrome and secondary tab row: observed tab-row and top-bar details (in progress — being built with M1.3)
-  - O: M1.3 the secondary tab row is icon-over-label, not label-only: Home house, My files filled folder, Shared two-person, Vault safe, Offline phone-with-check; selected tab tints icon+label blue with a 3dp label-width indicator
-  - O: M1.3 the app bar's title slot holds a two-segment "Photos | Files" pill (155x36dp; selected segment = white chip with a thin outline and a bold label, unselected = grey label on a light-grey track), not a text title; TwoDrive has no Photos mode, so decide what occupies that slot
-  - O: M1.3 the account avatar is a 56dp IconButton at x=4.2dp in the navigation slot and its only job is to open the drawer; the pivot bar is a separate 60.2dp ScrollableTabRow below the 56dp app bar
+- [x] M1.8 (1e28c92) App chrome: fixed-width five-tab pivot row, initials avatar in top bar and drawer; Photos|Files pill not reproduced (TwoDrive has no Photos mode, centred Files title kept)
+  - [x] O: M1.3 the secondary tab row is icon-over-label, not label-only: Home house, My files filled folder, Shared two-person, Vault safe, Offline phone-with-check; selected tab tints icon+label blue with a 3dp label-width indicator
+  - [x] O: M1.3 the app bar's title slot holds a two-segment "Photos | Files" pill (155x36dp; selected segment = white chip with a thin outline and a bold label, unselected = grey label on a light-grey track), not a text title; TwoDrive has no Photos mode, so decide what occupies that slot
+  - [x] O: M1.3 the account avatar is a 56dp IconButton at x=4.2dp in the navigation slot and its only job is to open the drawer; the pivot bar is a separate 60.2dp ScrollableTabRow below the 56dp app bar
+  - [ ] M1.8b round solid-blue + FAB in FilesFloatingLayer (containerColor = primary, CircleShape)
 - [x] M1.4 Folder navigation: tapping a folder pushes a screen titled with the folder name, back arrow, same list; navigation is type-safe.
   spec details:
   - O: M1.4 the folder screen has no app bar title, no pivot tabs and no avatar: a 56dp toolbar holding only a back arrow ("Navigate Up") at x=0, then an 89.9dp band with the folder name centred at ~24-26sp bold, then the same pinned 48dp sort/view bar, list starting at y=241dp — docs/ux-reference/spec/folder.md
@@ -109,6 +110,8 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - O: M3.3 there is no captured reference for the add menu: docs/ux-reference/21-add-items-menu.png is mis-named and actually shows the item bottom sheet for the folder "Email attachments" (a duplicate of 12-item-more-options.png). Rename or replace it, and design the add menu from M3 rather than from that file
   - O: M3.3/M3.6 on an over-quota account the "+" FAB never opens a menu — it replaces the screen with a full-bleed "Your OneDrive will be frozen" page (illustration, title, body naming the account, a "Learn more" link, and bottom-pinned "Upgrade" / "Go to OneDrive" buttons). TwoDrive should keep the user on the list and surface quota refusals as a snackbar or a disabled FAB instead — docs/ux-reference/spec/add-menu.md
 - [ ] M3.4 Rename + Delete (PATCH / DELETE), optimistic Room update, undo snackbar for delete.
+- [x] M3.4a (da0a72f) Delete from the item bottom sheet with undo snackbar
+- [ ] M3.4b Rename from the item bottom sheet
 - [ ] M3.5 Move: folder picker bottom sheet, PATCH parentReference.
 - [ ] M3.6 Upload from "+" menu: system file picker, `createUploadSession` chunked upload for >4 MB, WorkManager, progress notification.
 - [ ] M3.7 Share link: `createLink` (view/edit toggle), copy + system share sheet.
