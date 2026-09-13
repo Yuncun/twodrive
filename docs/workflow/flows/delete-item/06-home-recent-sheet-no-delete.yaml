@@ -1,0 +1,16 @@
+# delete-item behaviour 6: the item sheet opened from Home > Recent files still shows no Delete tile.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "Home"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Recent files"
+- assertVisible: "Resume 2026.docx"
+- tapOn: "More options for Resume 2026.docx"
+- assertVisible: "Share"
+- assertNotVisible: "Delete"

@@ -1,0 +1,45 @@
+# files-chrome behaviour 5: the avatar and the pivot row stay in place while switching tabs.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Open account drawer"
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "Home"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Open account drawer"
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "Shared"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Open account drawer"
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "Vault"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Open account drawer"
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "Offline"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Open account drawer"
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Open account drawer"
+- assertVisible:
+    id: "files:tabs"
+- assertVisible:
+    id: "files:list"

@@ -1,0 +1,42 @@
+# delete-item behaviour 4: once the snackbar goes away without Undo, the item stays gone
+# after switching tabs and after relaunching the app (relaunch keeps state).
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Music"
+- tapOn: "More options for Music"
+- assertVisible: "Share"
+- tapOn: "Delete"
+- assertNotVisible: "Share"
+- assertNotVisible: "Music"
+- assertVisible: "Deleted Music"
+- extendedWaitUntil:
+    notVisible: "Deleted Music"
+    timeout: 20000
+- tapOn:
+    text: "Home"
+    childOf:
+      id: "files:tabs"
+- assertVisible:
+    id: "files:home"
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Documents"
+- assertNotVisible: "Music"
+- stopApp
+- launchApp
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Documents"
+- assertNotVisible: "Music"

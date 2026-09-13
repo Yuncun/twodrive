@@ -1,0 +1,89 @@
+{
+  "apk_sha": "7bb4dd3d36a95d73ba9947b70af350a9349a065b",
+  "flows": [
+    {
+      "item": "delete-item",
+      "behaviour": "Tapping the ... button on a My files row and then the Delete tile removes that row from the list immediately.",
+      "flow": "docs/workflow/flows/delete-item/01-delete-removes-row.yaml",
+      "status": "fail",
+      "reason": "assertNotVisible 'Household budget.xlsx' failed after tapping Delete: the sheet closes but FilesScreen passes onAction = { _, _ -> }, so nothing deletes and the row stays."
+    },
+    {
+      "item": "delete-item",
+      "behaviour": "A snackbar reading 'Deleted <name>' with an Undo action appears after the row disappears.",
+      "flow": "docs/workflow/flows/delete-item/02-deleted-snackbar-undo.yaml",
+      "status": "fail",
+      "reason": "assertVisible 'Deleted Household budget.xlsx' failed: no DeleteSnackbarHost exists, so no snackbar or Undo action is shown after Delete."
+    },
+    {
+      "item": "delete-item",
+      "behaviour": "Tapping Undo puts the row back in the list at its sorted position.",
+      "flow": "docs/workflow/flows/delete-item/03-undo-restores-row.yaml",
+      "status": "fail",
+      "reason": "assertNotVisible 'Music' failed right after Delete: the row is never hidden, so there is no pending delete for Undo to restore."
+    },
+    {
+      "item": "delete-item",
+      "behaviour": "When the snackbar goes away without Undo, the item stays gone after switching tabs and after relaunching the app.",
+      "flow": "docs/workflow/flows/delete-item/04-delete-persists.yaml",
+      "status": "fail",
+      "reason": "assertNotVisible 'Music' failed right after Delete: no delete happens, so nothing can persist across the tab switch and relaunch the flow then checks."
+    },
+    {
+      "item": "delete-item",
+      "behaviour": "Deleting a folder from My files also removes the files inside it from Home > Recent files.",
+      "flow": "docs/workflow/flows/delete-item/05-delete-folder-clears-recents.yaml",
+      "status": "fail",
+      "reason": "assertNotVisible 'Documents' failed after Delete: the folder is not removed, so its child 'Meeting notes.txt' would still be listed under Home > Recent files."
+    },
+    {
+      "item": "delete-item",
+      "behaviour": "The item sheet opened from Home > Recent files still shows no Delete tile.",
+      "flow": "docs/workflow/flows/delete-item/06-home-recent-sheet-no-delete.yaml",
+      "status": "pass",
+      "reason": "Already true: itemActions() drops DELETE for ItemSource.HOME_RECENT, so the Home sheet shows Share but no Delete tile."
+    },
+    {
+      "item": "files-chrome",
+      "behaviour": "On the Files root, all five pivot tabs Home, My files, Shared, Vault and Offline are visible at once with no horizontal scrolling.",
+      "flow": "docs/workflow/flows/files-chrome/01-five-tabs-visible.yaml",
+      "status": "fail",
+      "reason": "assertVisible 'Offline' with width 108±12px failed: the ScrollableTabRow overflows the 1080px screen and clips the Offline label to 72px, so the row still needs a horizontal scroll."
+    },
+    {
+      "item": "files-chrome",
+      "behaviour": "Tapping each pivot tab selects it and shows that tab's content (My files list, or the Shared, Vault and Offline empty states).",
+      "flow": "docs/workflow/flows/files-chrome/02-tabs-show-content.yaml",
+      "status": "pass",
+      "reason": "Already true: each tab tap shows files:list, the Shared/Vault/Offline empty-state text, or files:home."
+    },
+    {
+      "item": "files-chrome",
+      "behaviour": "The top bar shows a round account avatar with the signed-in user's initials at the left edge.",
+      "flow": "docs/workflow/flows/files-chrome/03-avatar-initials.yaml",
+      "status": "fail",
+      "reason": "assertVisible 'DU' failed: the top bar's navigation slot is still the Person glyph, so no initials for 'Demo User' are rendered."
+    },
+    {
+      "item": "files-chrome",
+      "behaviour": "Tapping the avatar opens the account drawer, which shows the same account's email.",
+      "flow": "docs/workflow/flows/files-chrome/04-avatar-opens-drawer.yaml",
+      "status": "pass",
+      "reason": "Already true: the 'Open account drawer' button opens the drawer showing the Personal tile and demo@example.com."
+    },
+    {
+      "item": "files-chrome",
+      "behaviour": "The avatar and the pivot row stay in place while switching tabs.",
+      "flow": "docs/workflow/flows/files-chrome/05-chrome-stays-across-tabs.yaml",
+      "status": "pass",
+      "reason": "Already true: the top-bar account button and files:tabs remain visible after selecting each of the five tabs."
+    },
+    {
+      "item": "files-chrome",
+      "behaviour": "Opening a folder shows the back arrow and folder title with no avatar and no pivot row.",
+      "flow": "docs/workflow/flows/files-chrome/06-folder-hides-chrome.yaml",
+      "status": "pass",
+      "reason": "Already true: the pushed folder shows 'Navigate up' and its title while the top bar and files:tabs are gone."
+    }
+  ]
+}

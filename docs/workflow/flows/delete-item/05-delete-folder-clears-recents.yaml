@@ -1,0 +1,31 @@
+# delete-item behaviour 5: deleting a folder from My files also removes its files from
+# Home > Recent files. Meeting notes.txt lives in Documents and is among the six most recent.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "Home"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Recent files"
+- assertVisible: "Meeting notes.txt"
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Documents"
+- tapOn: "More options for Documents"
+- assertVisible: "Share"
+- tapOn: "Delete"
+- assertNotVisible: "Share"
+- assertNotVisible: "Documents"
+- tapOn:
+    text: "Home"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Recent files"
+- assertVisible: "Resume 2026.docx"
+- assertNotVisible: "Meeting notes.txt"

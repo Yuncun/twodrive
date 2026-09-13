@@ -1,0 +1,11 @@
+# files-chrome behaviour 3: the top bar shows a round account avatar with the signed-in user's
+# initials at the left edge. The demo profile is "Demo User", so the initials are DU; the avatar
+# keeps the button's "Open account drawer" description.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- assertVisible: "Open account drawer"
+- assertVisible: "DU"

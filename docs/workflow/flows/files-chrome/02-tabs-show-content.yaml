@@ -1,0 +1,36 @@
+# files-chrome behaviour 2: tapping each pivot tab selects it and shows that tab's content.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible:
+    id: "files:list"
+- assertVisible: "Documents"
+- tapOn:
+    text: "Shared"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Nothing shared yet"
+- tapOn:
+    text: "Vault"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Personal Vault is not available in TwoDrive."
+- tapOn:
+    text: "Offline"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Access offline files anywhere"
+- tapOn:
+    text: "Home"
+    childOf:
+      id: "files:tabs"
+- assertVisible:
+    id: "files:home"
+- assertVisible: "Recent files"

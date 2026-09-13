@@ -1,0 +1,20 @@
+# files-chrome behaviour 6: opening a folder shows the back arrow and folder title,
+# with no avatar and no pivot row.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Documents"
+- tapOn: "Documents"
+- assertVisible: "Navigate up"
+- assertVisible: "Documents"
+- assertVisible: "Meeting notes.txt"
+- assertNotVisible: "Open account drawer"
+- assertNotVisible:
+    id: "files:tabs"

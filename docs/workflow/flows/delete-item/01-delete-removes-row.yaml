@@ -1,0 +1,19 @@
+# delete-item behaviour 1: tapping ... on a My files row and then the Delete tile removes the row.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible:
+    id: "files:list"
+- assertVisible: "Household budget.xlsx"
+- tapOn: "More options for Household budget.xlsx"
+- assertVisible: "Share"
+- tapOn: "Delete"
+- assertNotVisible: "Share"
+- assertNotVisible: "Household budget.xlsx"

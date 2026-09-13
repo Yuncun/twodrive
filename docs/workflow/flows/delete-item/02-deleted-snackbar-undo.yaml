@@ -1,0 +1,18 @@
+# delete-item behaviour 2: a "Deleted <name>" snackbar with an Undo action appears after the row goes.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Household budget.xlsx"
+- tapOn: "More options for Household budget.xlsx"
+- assertVisible: "Share"
+- tapOn: "Delete"
+- assertNotVisible: "Share"
+- assertVisible: "Deleted Household budget.xlsx"
+- assertVisible: "Undo"

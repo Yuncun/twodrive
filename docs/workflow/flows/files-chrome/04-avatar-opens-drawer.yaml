@@ -1,0 +1,13 @@
+# files-chrome behaviour 4: tapping the avatar opens the account drawer showing the same account's email.
+# The drawer sheet lives outside the Scaffold that turns test tags into resource ids, so it is
+# matched by its account tile description and email text rather than by id.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- tapOn: "Open account drawer"
+- assertVisible: "Personal account with email demo@example.com"
+- assertVisible: "demo@example.com"
+- assertVisible: "Sign out"

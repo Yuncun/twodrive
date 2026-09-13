@@ -1,0 +1,28 @@
+# delete-item behaviour 3: tapping Undo puts the row back at its sorted position.
+# Default sort is Name A to Z, where Music sits below Documents and above Personal Vault.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- tapOn:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible: "Music"
+- tapOn: "More options for Music"
+- assertVisible: "Share"
+- tapOn: "Delete"
+- assertNotVisible: "Share"
+- assertNotVisible: "Music"
+- tapOn: "Undo"
+- assertVisible: "Music"
+- assertVisible:
+    text: "Music"
+    below:
+      text: "Documents"
+- assertVisible:
+    text: "Music"
+    above:
+      text: "Personal Vault"

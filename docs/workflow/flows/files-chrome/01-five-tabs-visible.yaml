@@ -1,0 +1,34 @@
+# files-chrome behaviour 1: on the Files root all five pivot tabs are visible at once,
+# with no horizontal scrolling. The accessibility tree reports label bounds clipped to the
+# screen, so the width check catches a last tab that is cut off at the right edge: on the
+# 1080px-wide Pixel_9 the unclipped "Offline" label measures 108px and "Home" 98px.
+appId: codes.fixmy.twodrive.demo.debug
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "files:tabs"
+- assertVisible:
+    text: "Home"
+    childOf:
+      id: "files:tabs"
+    width: 98
+    tolerance: 12
+- assertVisible:
+    text: "My files"
+    childOf:
+      id: "files:tabs"
+- assertVisible:
+    text: "Shared"
+    childOf:
+      id: "files:tabs"
+- assertVisible:
+    text: "Vault"
+    childOf:
+      id: "files:tabs"
+- assertVisible:
+    text: "Offline"
+    childOf:
+      id: "files:tabs"
+    width: 108
+    tolerance: 12
