@@ -30,7 +30,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.model.data.SortOrder
@@ -185,8 +184,8 @@ class FilesScreenTest {
     fun tappingATabShowsItsEmptyState() {
         setContent()
 
-        // The last tab starts off-screen on a narrow test display.
-        composeTestRule.onNodeWithText("Offline").performScrollTo().performClick()
+        // All five tabs share the row's width, so the last one is on screen without scrolling.
+        composeTestRule.onNodeWithText("Offline").assertIsDisplayed().performClick()
 
         composeTestRule.onNodeWithText("Access offline files anywhere").assertIsDisplayed()
         composeTestRule.onNodeWithText("Documents").assertDoesNotExist()

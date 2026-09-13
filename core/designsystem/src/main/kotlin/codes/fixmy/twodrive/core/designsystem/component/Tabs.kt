@@ -20,8 +20,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
-import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -84,9 +84,9 @@ fun TwoDriveTab(
 }
 
 /**
- * TwoDrive tab row. Wraps Material 3 [ScrollableTabRow] in OneDrive's pivot style: left-aligned
- * scrollable tabs with a 3 dp blue indicator under the selected one
- * (docs/ux-reference/spec/files-home.md).
+ * TwoDrive tab row. Wraps Material 3 [TabRow] in OneDrive's pivot style: equal-width tabs
+ * spanning the full width, so all five fit without scrolling, with a 3 dp blue indicator under
+ * the selected one (docs/ux-reference/spec/files-home.md).
  *
  * @param selectedTabIndex The index of the currently selected tab.
  * @param modifier Modifier to be applied to the tab row.
@@ -98,12 +98,11 @@ fun TwoDriveTabRow(
     modifier: Modifier = Modifier,
     tabs: @Composable () -> Unit,
 ) {
-    ScrollableTabRow(
+    TabRow(
         selectedTabIndex = selectedTabIndex,
         modifier = modifier,
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        edgePadding = 0.dp,
         indicator = { tabPositions ->
             TabRowDefaults.SecondaryIndicator(
                 modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
