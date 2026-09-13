@@ -71,6 +71,8 @@ android {
         }
     }
     testOptions.unitTests.isIncludeAndroidResources = true
+    // View models log failures with android.util.Log; let it no-op in JVM unit tests.
+    testOptions.unitTests.isReturnDefaultValues = true
     namespace = "codes.fixmy.twodrive"
 }
 

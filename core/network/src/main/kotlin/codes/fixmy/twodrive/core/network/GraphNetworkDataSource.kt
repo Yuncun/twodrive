@@ -16,6 +16,7 @@
 
 package codes.fixmy.twodrive.core.network
 
+import codes.fixmy.twodrive.core.network.model.NetworkContent
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
 import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSet
@@ -49,4 +50,9 @@ interface GraphNetworkDataSource {
      * The thumbnail renditions of [itemId]; empty when Graph cannot render the item.
      */
     suspend fun getThumbnails(itemId: String): List<NetworkThumbnailSet>
+
+    /**
+     * Opens the bytes of file [itemId] for reading. The caller must close the returned content.
+     */
+    suspend fun getContent(itemId: String): NetworkContent
 }

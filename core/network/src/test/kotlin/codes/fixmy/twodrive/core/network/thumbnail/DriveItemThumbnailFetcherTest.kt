@@ -167,6 +167,8 @@ class DriveItemThumbnailFetcherTest {
         val network = RetrofitGraphNetwork(
             networkJson = Json { ignoreUnknownKeys = true },
             okhttpCallFactory = { client },
+            noRedirectCallFactory = { client },
+            unauthenticatedCallFactory = { client },
             baseUrl = server.url("/v1.0/").toString(),
         )
         return ImageLoader.Builder(context)

@@ -65,6 +65,7 @@ import codes.fixmy.twodrive.core.designsystem.component.TwoDriveBackground
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveNavigationSuiteScaffold
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveTopAppBar
 import codes.fixmy.twodrive.core.designsystem.icon.TwoDriveIcons
+import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.model.data.UserProfile
 import codes.fixmy.twodrive.core.navigation.Navigator
 import codes.fixmy.twodrive.core.navigation.toEntries
@@ -80,13 +81,16 @@ fun TwoDriveApp(
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
     accountDrawerViewModel: AccountDrawerViewModel = hiltViewModel(),
+    openFileViewModel: OpenFileViewModel = hiltViewModel(),
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
     TwoDriveBackground(modifier = modifier) {
         // The Files screen owns the offline snackbar: it shows only when a sync actually failed.
+        // Opening a file reports its failures here too.
         val snackbarHostState = remember { SnackbarHostState() }
 
         val accountDrawerUiState by accountDrawerViewModel.uiState.collectAsStateWithLifecycle()
+        val openFileUiState by openFileViewModel.uiState.collectAsStateWithLifecycle()
 
         TwoDriveApp(
             appState = appState,
@@ -96,7 +100,15 @@ fun TwoDriveApp(
             onSignOut = onSignOut,
             onAccountDrawerOpened = accountDrawerViewModel::refreshQuota,
             onRetrySync = accountDrawerViewModel::retrySync,
+            onFileClick = openFileViewModel::open,
             windowAdaptiveInfo = windowAdaptiveInfo,
+        )
+
+        OpenFileHost(
+            uiState = openFileUiState,
+            snackbarHostState = snackbarHostState,
+            onCancel = openFileViewModel::cancel,
+            onResultHandled = openFileViewModel::onResultHandled,
         )
     }
 }
@@ -114,6 +126,7 @@ internal fun TwoDriveApp(
     onSignOut: () -> Unit,
     onAccountDrawerOpened: () -> Unit,
     onRetrySync: () -> Unit,
+    onFileClick: (DriveItem) -> Unit,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
@@ -232,9 +245,7 @@ internal fun TwoDriveApp(
                         val entryProvider = entryProvider {
                             filesEntry(
                                 navigator = navigator,
-                                onFileClick = { item ->
-                                    item.webUrl?.let { launchCustomChromeTab(context, it.toUri(), toolbarColor) }
-                                },
+                                onFileClick = onFileClick,
                             )
                         }
 

@@ -16,6 +16,10 @@
 
 package codes.fixmy.twodrive.core.data.di
 
+import android.content.Context
+import codes.fixmy.twodrive.core.data.repository.CONTENT_CACHE_DIR
+import codes.fixmy.twodrive.core.data.repository.CacheDriveItemContentRepository
+import codes.fixmy.twodrive.core.data.repository.DriveItemContentRepository
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.data.repository.DriveRepository
 import codes.fixmy.twodrive.core.data.repository.NetworkDriveRepository
@@ -28,8 +32,12 @@ import codes.fixmy.twodrive.core.data.util.NetworkMonitor
 import codes.fixmy.twodrive.core.data.util.SyncManager
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.io.File
+import javax.inject.Named
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -39,6 +47,11 @@ abstract class DataModule {
     internal abstract fun bindsDriveItemsRepository(
         driveItemsRepository: OfflineFirstDriveItemsRepository,
     ): DriveItemsRepository
+
+    @Binds
+    internal abstract fun bindsDriveItemContentRepository(
+        driveItemContentRepository: CacheDriveItemContentRepository,
+    ): DriveItemContentRepository
 
     @Binds
     internal abstract fun bindsDriveRepository(
@@ -59,4 +72,12 @@ abstract class DataModule {
     internal abstract fun bindsSyncManager(
         syncManager: InProcessSyncManager,
     ): SyncManager
+
+    companion object {
+        /** Must match the `cache-path` the app's FileProvider shares. */
+        @Provides
+        @Named(CONTENT_CACHE_DIR)
+        fun providesContentCacheDir(@ApplicationContext context: Context): File =
+            context.cacheDir.resolve("open_files")
+    }
 }
