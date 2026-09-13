@@ -1,0 +1,242 @@
+[
+  {
+    "screen": "Launch (notification permission dialog over Welcome)",
+    "screenshot": "docs/ux-reference/01-launch.png",
+    "actions": [
+      "System dialog: Allow OneDrive to send you notifications? - Allow",
+      "System dialog: Don't allow",
+      "Behind dialog: Sign in (primary button)",
+      "Behind dialog: Create new account (outlined button)",
+      "Behind dialog: Skip to my photos (text button)"
+    ]
+  },
+  {
+    "screen": "Welcome (signed out)",
+    "screenshot": "docs/ux-reference/02-welcome.png",
+    "actions": [
+      "Sign in (primary button)",
+      "Create new account (outlined button)",
+      "Skip to my photos (text button)"
+    ]
+  },
+  {
+    "screen": "Microsoft sign-in: enter account",
+    "screenshot": "docs/ux-reference/03-signin.png",
+    "actions": [
+      "Checkbox: Connect to INT (OneDrive) or PPE (ODB and NGO) (internal build only)",
+      "Text field: Email or phone",
+      "Next arrow button (submit)",
+      "Sign in with a SharePoint Server URL (link)",
+      "No account? Create one! (bottom bar)"
+    ]
+  },
+  {
+    "screen": "Microsoft sign-in: get a sign-in request",
+    "screenshot": "docs/ux-reference/04-auth.png",
+    "actions": [
+      "Account chip showing signed-in email",
+      "Send request (primary button)",
+      "Use your password (link)",
+      "Help and feedback (footer link)",
+      "Terms of use (footer link)",
+      "Privacy and cookies (footer link)"
+    ]
+  },
+  {
+    "screen": "Microsoft sign-in: check your Authenticator app (number match)",
+    "screenshot": "docs/ux-reference/05-number.png",
+    "actions": [
+      "Back arrow",
+      "Account chip showing signed-in email",
+      "Number to enter in Authenticator (display only)",
+      "Use your password (link)",
+      "Can't use your Microsoft app? (link)",
+      "Help and feedback (footer link)",
+      "Terms of use (footer link)",
+      "Privacy and cookies (footer link)"
+    ]
+  },
+  {
+    "screen": "Files > Home",
+    "screenshot": "docs/ux-reference/10-files-root.png",
+    "actions": [
+      "Avatar (opens account drawer)",
+      "Segmented control: Photos | Files (Files selected)",
+      "Tab row: Home (selected)",
+      "Tab row: My files",
+      "Tab row: Shared",
+      "Tab row: Vault",
+      "Tab row: Offline",
+      "Section header: Recent files",
+      "See all (link, Recent files)",
+      "Recent file row: tap to open (thumbnail, name, duration/size/date)",
+      "Recent file row: more options (...)",
+      "Section header: Offline files",
+      "Info card: Tap the ... icon next to a file, and select \"Make available offline\" to view it wherever you go.",
+      "Search your files (pill search bar)",
+      "+ (floating action button, add items)"
+    ]
+  },
+  {
+    "screen": "Files > My files (root list)",
+    "screenshot": "docs/ux-reference/11-myfiles.png",
+    "actions": [
+      "Avatar (opens account drawer)",
+      "Segmented control: Photos | Files (Files selected)",
+      "Tab row: Home",
+      "Tab row: My files (selected)",
+      "Tab row: Shared",
+      "Tab row: Vault",
+      "Tab row: Offline",
+      "Sort chip: down-arrow Name with chevron (opens sort menu)",
+      "View options icon (opens View as menu)",
+      "Folder row: tap to open (folder icon, name, size and date; shared-people icon on shared folders)",
+      "Folder row: more options (...)",
+      "Search your files (pill search bar)",
+      "+ (floating action button, add items)"
+    ]
+  },
+  {
+    "screen": "Item bottom sheet (more options)",
+    "screenshot": "docs/ux-reference/12-item-more-options.png",
+    "actions": [
+      "Drag handle / tap scrim to dismiss",
+      "Item header: large icon, name, size and date (display only)",
+      "Share (tile)",
+      "Delete (tile)",
+      "Make available offline (row with switch)",
+      "Rename (row)",
+      "Move (row)",
+      "Details (row)"
+    ]
+  },
+  {
+    "screen": "Sort menu (dropdown from sort chip)",
+    "screenshot": "docs/ux-reference/13-sort-menu.png",
+    "actions": [
+      "Sort chip shows up-chevron while open",
+      "Name (checked)",
+      "Modified",
+      "File size",
+      "Divider",
+      "A to Z (checked)",
+      "Z to A",
+      "Tap outside to dismiss"
+    ]
+  },
+  {
+    "screen": "View as menu (dropdown from view options icon)",
+    "screenshot": "docs/ux-reference/14-view-options.png",
+    "actions": [
+      "Header: View as:",
+      "List (checked, list icon)",
+      "Tile (grid icon)",
+      "Tap outside to dismiss"
+    ]
+  },
+  {
+    "screen": "Folder contents",
+    "screenshot": "docs/ux-reference/15-folder-contents.png",
+    "actions": [
+      "Back arrow",
+      "Folder name title (centered)",
+      "Sort chip: down-arrow Name with chevron (opens sort menu)",
+      "View options icon (opens View as menu)",
+      "File row: tap to open (thumbnail, name, size and date)",
+      "File row: more options (...)",
+      "Search your files (pill search bar)",
+      "+ (floating action button, add items)"
+    ]
+  },
+  {
+    "screen": "Files > Vault (empty state)",
+    "screenshot": "docs/ux-reference/17-vault.png",
+    "actions": [
+      "Avatar (opens account drawer)",
+      "Segmented control: Photos | Files (Files selected)",
+      "Tab row: Home",
+      "Tab row: My files",
+      "Tab row: Shared",
+      "Tab row: Vault (selected)",
+      "Tab row: Offline",
+      "Empty-state illustration, title: Scan files right to Personal Vault",
+      "Empty-state body: Protect digital copies of files like your passport and easily access them whenever you need.",
+      "Start using Personal Vault (primary button)"
+    ]
+  },
+  {
+    "screen": "Files > Offline (empty state)",
+    "screenshot": "docs/ux-reference/18-offline.png",
+    "actions": [
+      "Avatar (opens account drawer)",
+      "Segmented control: Photos | Files (Files selected)",
+      "Tab row: Home",
+      "Tab row: My files",
+      "Tab row: Shared",
+      "Tab row: Vault",
+      "Tab row: Offline (selected)",
+      "Empty-state illustration, title: Access offline files anywhere",
+      "Empty-state body: Tap the ... icon by any file and select \"Make Available Offline\" to access it offline.",
+      "Search your files (pill search bar)",
+      "+ (floating action button, add items)"
+    ]
+  },
+  {
+    "screen": "Item bottom sheet (more options) over My files with privacy banner",
+    "screenshot": "docs/ux-reference/21-add-items-menu.png",
+    "actions": [
+      "Drag handle / tap scrim to dismiss",
+      "Item header: large folder icon, name, size and date (display only)",
+      "Share (tile)",
+      "Delete (tile)",
+      "Make available offline (row with switch)",
+      "Rename (row)",
+      "Move (row)",
+      "Details (row)",
+      "Behind sheet: Changes to Privacy Settings banner with Privacy Settings button and close X"
+    ],
+    "note": "Filename and README say this is the + add-items menu (Upload / Take a photo / Scan / Create folder), but the screenshot shows the item bottom sheet. The + menu has no committed screenshot; its contents are known only from the README."
+  },
+  {
+    "screen": "Files > My files with dismissible privacy banner",
+    "screenshot": "docs/ux-reference/22-file-preview.png",
+    "actions": [
+      "Avatar (opens account drawer)",
+      "Segmented control: Photos | Files (Files selected)",
+      "Tab row: Home",
+      "Tab row: My files (selected)",
+      "Tab row: Shared",
+      "Tab row: Vault",
+      "Tab row: Offline",
+      "Sort chip: down-arrow Name with chevron (opens sort menu)",
+      "View options icon (opens View as menu)",
+      "Banner: Changes to Privacy Settings, body text, Privacy Settings (outlined button)",
+      "Banner: close X",
+      "Folder row: tap to open (folder icon, name, size and date; shared-people icon on shared folders)",
+      "Folder row: more options (...)",
+      "Search your files (pill search bar)",
+      "+ (floating action button, add items)"
+    ],
+    "note": "Filename and README say this is the in-app file viewer, but the screenshot shows the My files list with a privacy banner. No committed screenshot shows the file viewer."
+  },
+  {
+    "screen": "Search (empty query, keyboard open)",
+    "screenshot": "docs/ux-reference/23-search.png",
+    "actions": [
+      "Back arrow",
+      "Text field with placeholder: Folders, files (focused)",
+      "Soft keyboard with search key (submit)",
+      "Empty results area"
+    ]
+  },
+  {
+    "screen": "Search: no results",
+    "screenshot": "docs/ux-reference/24-search-no-results.png",
+    "actions": [
+      "Pill search field with back arrow, query text, clear X",
+      "Empty-state illustration, title: Couldn't find anything",
+      "Empty-state body: It can take a few minutes for new or edited items to appear in search results.",
+      "Snackbar: Your work account needs attention. with OK action"
+    ]
+  }
+]
