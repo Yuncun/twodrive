@@ -78,7 +78,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - R: 49f29af committed tools/device scripts carrying the personal sign-in address and the test phone's adb serial 44271JEKB17967; e7b8dea took them out of the tree, but the repo is public and both stay in its history — decided 2026-08-30: acceptable, keep history as is (no rewrite)
 
 ## Milestone 2 — real Graph (prod flavor)
-- [ ] M2.1 MSAL sign-in in prod flavor: `MsalAuthRepository` (single account, `consumers` authority, scopes User.Read Files.ReadWrite.All), silent token refresh, sign-out; OkHttp interceptor adds the bearer token; 401 → re-auth. Unit-test the interceptor with MockWebServer.
+- [x] M2.1 (35029b2) MSAL sign-in in prod flavor: `MsalAuthRepository` (single account, `consumers` authority, scopes User.Read Files.ReadWrite.All), silent token refresh, sign-out; OkHttp interceptor adds the bearer token; 401 → re-auth. Unit-test the interceptor with MockWebServer.
   - Redirect URI must follow the real package name: debug builds are `codes.fixmy.twodrive.debug`, release `codes.fixmy.twodrive`. Use `${applicationId}` as the `android:host` in the manifest's BrowserTabActivity filter and generate `redirect_uri` in msal_config from `BuildConfig.APPLICATION_ID` (or a `msal_config` per build type). Both hosts are registered in the Entra app with hash `J9AaPozhP6djyGWJSSzVi2DZpoU=`. Verify by installing prodDebug on an emulator: MSAL must not throw a redirect-URI mismatch.
 - [x] M2.2 (be30946) `/me/drive/root/delta` sync into Room with delta token in DataStore; `DriveItemsRepository` is offline-first (Room is the source of truth); unit tests with MockWebServer JSON fixtures copied from real Graph responses (docs/graph-fixtures/).
   spec details:
