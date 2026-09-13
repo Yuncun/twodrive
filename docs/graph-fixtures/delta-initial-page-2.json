@@ -1,0 +1,201 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#Collection(driveItem)",
+  "@odata.deltaLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta(token='aTE09NjM4OTE0MjU2MDAwMDAwMDAwO1NWMjtkZWx0YUE')",
+  "value": [
+    {
+      "createdDateTime": "2026-01-10T18:22:41.18Z",
+      "cTag": "adDo1QzZFMUYyQTNCNEQ1RTZGITEwMS42Mzg5105",
+      "eTag": "aNUM2RTFGMkEzQjRENUU2RiExMDEuMA105",
+      "id": "5C6E1F2A3B4D5E6F!105",
+      "lastModifiedDateTime": "2026-06-21T16:40:12Z",
+      "name": "beach.jpg",
+      "size": 2539520,
+      "webUrl": "https://1drv.ms/u/s!demo105",
+      "createdBy": {
+        "application": {
+          "displayName": "OneDrive website",
+          "id": "44048800"
+        },
+        "user": {
+          "displayName": "Demo User",
+          "id": "5c6e1f2a3b4d5e6f"
+        }
+      },
+      "lastModifiedBy": {
+        "application": {
+          "displayName": "OneDrive website",
+          "id": "44048800"
+        },
+        "user": {
+          "displayName": "Demo User",
+          "id": "5c6e1f2a3b4d5e6f"
+        }
+      },
+      "parentReference": {
+        "driveId": "5c6e1f2a3b4d5e6f",
+        "driveType": "personal",
+        "id": "5C6E1F2A3B4D5E6F!103"
+      },
+      "fileSystemInfo": {
+        "createdDateTime": "2026-01-10T18:22:41.18Z",
+        "lastModifiedDateTime": "2026-06-21T16:40:12Z"
+      },
+      "file": {
+        "mimeType": "image/jpeg",
+        "hashes": {
+          "quickXorHash": "dG9vIGxhenkgdG8gY29tcHV0ZSE=",
+          "sha1Hash": "A94A8FE5CCB19BA61C4C0873D391E987982FBBD3",
+          "sha256Hash": "9F86D081884C7D659A2FEAEA0C55AD015A3BF4B1B2B0B822CD15D6C15B0F00A0"
+        }
+      },
+      "image": {
+        "height": 3024,
+        "width": 4032
+      },
+      "photo": {
+        "takenDateTime": "2026-06-21T16:40:12Z"
+      }
+    },
+    {
+      "createdDateTime": "2026-01-10T18:22:41.18Z",
+      "cTag": "adDo1QzZFMUYyQTNCNEQ1RTZGITEwMS42Mzg5106",
+      "eTag": "aNUM2RTFGMkEzQjRENUU2RiExMDEuMA106",
+      "id": "5C6E1F2A3B4D5E6F!106",
+      "lastModifiedDateTime": "2026-03-11T10:00:00Z",
+      "name": "Archive",
+      "size": 1024000,
+      "webUrl": "https://1drv.ms/u/s!demo106",
+      "createdBy": {
+        "application": {
+          "displayName": "OneDrive website",
+          "id": "44048800"
+        },
+        "user": {
+          "displayName": "Demo User",
+          "id": "5c6e1f2a3b4d5e6f"
+        }
+      },
+      "lastModifiedBy": {
+        "application": {
+          "displayName": "OneDrive website",
+          "id": "44048800"
+        },
+        "user": {
+          "displayName": "Demo User",
+          "id": "5c6e1f2a3b4d5e6f"
+        }
+      },
+      "parentReference": {
+        "driveId": "5c6e1f2a3b4d5e6f",
+        "driveType": "personal",
+        "id": "5C6E1F2A3B4D5E6F!102"
+      },
+      "fileSystemInfo": {
+        "createdDateTime": "2026-01-10T18:22:41.18Z",
+        "lastModifiedDateTime": "2026-03-11T10:00:00Z"
+      },
+      "folder": {
+        "childCount": 1,
+        "view": {
+          "viewType": "thumbnails",
+          "sortBy": "name",
+          "sortOrder": "ascending"
+        }
+      }
+    },
+    {
+      "createdDateTime": "2026-01-10T18:22:41.18Z",
+      "cTag": "adDo1QzZFMUYyQTNCNEQ1RTZGITEwMS42Mzg5107",
+      "eTag": "aNUM2RTFGMkEzQjRENUU2RiExMDEuMA107",
+      "id": "5C6E1F2A3B4D5E6F!107",
+      "lastModifiedDateTime": "2026-03-11T10:00:00Z",
+      "name": "notes.txt",
+      "size": 1024000,
+      "webUrl": "https://1drv.ms/u/s!demo107",
+      "createdBy": {
+        "application": {
+          "displayName": "OneDrive website",
+          "id": "44048800"
+        },
+        "user": {
+          "displayName": "Demo User",
+          "id": "5c6e1f2a3b4d5e6f"
+        }
+      },
+      "lastModifiedBy": {
+        "application": {
+          "displayName": "OneDrive website",
+          "id": "44048800"
+        },
+        "user": {
+          "displayName": "Demo User",
+          "id": "5c6e1f2a3b4d5e6f"
+        }
+      },
+      "parentReference": {
+        "driveId": "5c6e1f2a3b4d5e6f",
+        "driveType": "personal",
+        "id": "5C6E1F2A3B4D5E6F!106"
+      },
+      "fileSystemInfo": {
+        "createdDateTime": "2026-01-10T18:22:41.18Z",
+        "lastModifiedDateTime": "2026-03-11T10:00:00Z"
+      },
+      "file": {
+        "mimeType": "text/plain",
+        "hashes": {
+          "quickXorHash": "dG9vIGxhenkgdG8gY29tcHV0ZSE=",
+          "sha1Hash": "A94A8FE5CCB19BA61C4C0873D391E987982FBBD3",
+          "sha256Hash": "9F86D081884C7D659A2FEAEA0C55AD015A3BF4B1B2B0B822CD15D6C15B0F00A0"
+        }
+      }
+    },
+    {
+      "createdDateTime": "2026-01-10T18:22:41.18Z",
+      "cTag": "adDo1QzZFMUYyQTNCNEQ1RTZGITEwMS42Mzg5108",
+      "eTag": "aNUM2RTFGMkEzQjRENUU2RiExMDEuMA108",
+      "id": "5C6E1F2A3B4D5E6F!108",
+      "lastModifiedDateTime": "2026-08-01T12:00:00Z",
+      "name": "Budget.xlsx",
+      "size": 512000,
+      "webUrl": "https://1drv.ms/u/s!demo108",
+      "createdBy": {
+        "application": {
+          "displayName": "OneDrive website",
+          "id": "44048800"
+        },
+        "user": {
+          "displayName": "Demo User",
+          "id": "5c6e1f2a3b4d5e6f"
+        }
+      },
+      "lastModifiedBy": {
+        "application": {
+          "displayName": "OneDrive website",
+          "id": "44048800"
+        },
+        "user": {
+          "displayName": "Demo User",
+          "id": "5c6e1f2a3b4d5e6f"
+        }
+      },
+      "parentReference": {
+        "driveId": "5c6e1f2a3b4d5e6f",
+        "driveType": "personal",
+        "id": "5C6E1F2A3B4D5E6F!101"
+      },
+      "fileSystemInfo": {
+        "createdDateTime": "2026-01-10T18:22:41.18Z",
+        "lastModifiedDateTime": "2026-08-01T12:00:00Z"
+      },
+      "file": {
+        "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "hashes": {
+          "quickXorHash": "dG9vIGxhenkgdG8gY29tcHV0ZSE=",
+          "sha1Hash": "A94A8FE5CCB19BA61C4C0873D391E987982FBBD3",
+          "sha256Hash": "9F86D081884C7D659A2FEAEA0C55AD015A3BF4B1B2B0B822CD15D6C15B0F00A0"
+        }
+      }
+    }
+  ]
+}

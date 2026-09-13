@@ -25,6 +25,8 @@ android {
     testOptions.unitTests.isIncludeAndroidResources = true
     // sync() logs failures with android.util.Log; let it no-op in JVM unit tests.
     testOptions.unitTests.isReturnDefaultValues = true
+    // Graph response bodies that MockWebServer tests serve, shared with docs readers.
+    sourceSets.getByName("test").resources.srcDir(rootProject.file("docs/graph-fixtures"))
 }
 
 dependencies {
@@ -40,5 +42,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(libs.okhttp)
+    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.turbine)
 }

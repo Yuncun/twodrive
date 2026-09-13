@@ -1,0 +1,11 @@
+{
+  "error": {
+    "code": "serviceNotAvailable",
+    "message": "The service is not available. Try the request again after a delay. There may be a Retry-After header.",
+    "innerError": {
+      "date": "2026-09-02T11:31:05",
+      "request-id": "5b1f2a9c-3e4d-4c8b-8a7f-6d2e1c0b9a88",
+      "client-request-id": "5b1f2a9c-3e4d-4c8b-8a7f-6d2e1c0b9a88"
+    }
+  }
+}
