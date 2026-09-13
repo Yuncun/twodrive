@@ -1,0 +1,188 @@
+[
+  {
+    "screen": "files-home",
+    "reference": "docs/workflow/compare-2/files-home/10-files-root.png",
+    "app_png": "docs/workflow/compare-2/files-home/emulator-files-home.png",
+    "why": "Top bar shows an initials avatar and a centered 'Files' title; the reference has a photo avatar beside a Photos|Files segmented pill and no title."
+  },
+  {
+    "screen": "files-home",
+    "reference": "docs/workflow/compare-2/files-home/10-files-root.png",
+    "app_png": "docs/workflow/compare-2/files-home/emulator-files-home.png",
+    "why": "Selected-tab indicator spans the full tab width and the tab row has a bottom divider; the reference uses a short pill under the label and no divider."
+  },
+  {
+    "screen": "files-home",
+    "reference": "docs/workflow/compare-2/files-home/10-files-root.png",
+    "app_png": "docs/workflow/compare-2/files-home/emulator-files-home.png",
+    "why": "+ FAB is a pale tonal rounded square instead of a round solid-blue button."
+  },
+  {
+    "screen": "files-home",
+    "reference": "docs/workflow/compare-2/files-home/10-files-root.png",
+    "app_png": "docs/workflow/compare-2/files-home/emulator-files-home.png",
+    "why": "Search pill is flat pale blue with a black icon; the reference is white with a drop shadow and a blue search icon."
+  },
+  {
+    "screen": "files-home",
+    "reference": "docs/workflow/compare-2/files-home/10-files-root.png",
+    "app_png": "docs/workflow/compare-2/files-home/emulator-files-home.png",
+    "why": "An extra bottom navigation bar with a single 'Files' item sits below the search row; the reference has no bottom bar."
+  },
+  {
+    "screen": "files-home",
+    "reference": "docs/workflow/compare-2/files-home/10-files-root.png",
+    "app_png": "docs/workflow/compare-2/files-home/emulator-files-home.png",
+    "why": "The Offline files tip card runs under the search pill and FAB so its second line is hidden; the reference keeps the card fully above the search row."
+  },
+  {
+    "screen": "files-home",
+    "reference": "docs/workflow/compare-2/files-home/10-files-root.png",
+    "app_png": "docs/workflow/compare-2/files-home/emulator-files-home.png",
+    "why": "Video rows lack the duration prefix in the meta line (reference: '0:12 · 28 MB · Jun 14', app: '88.1 MB · Aug 15')."
+  },
+  {
+    "screen": "files-home",
+    "reference": "docs/workflow/compare-2/files-home/10-files-root.png",
+    "app_png": "docs/workflow/compare-2/files-home/emulator-files-home.png",
+    "why": "Recent-file thumbnails have square corners; the reference thumbnails are rounded."
+  },
+  {
+    "screen": "my-files",
+    "reference": "docs/workflow/compare-2/my-files/11-myfiles.png",
+    "app_png": "docs/workflow/compare-2/my-files/emulator-my-files.png",
+    "why": "Top bar shows an initials avatar and a centered 'Files' title; the reference has a photo avatar beside a Photos|Files segmented pill and no title."
+  },
+  {
+    "screen": "my-files",
+    "reference": "docs/workflow/compare-2/my-files/11-myfiles.png",
+    "app_png": "docs/workflow/compare-2/my-files/emulator-my-files.png",
+    "why": "Selected-tab indicator spans the full tab width and the tab row has a bottom divider; the reference uses a short pill under the label and no divider."
+  },
+  {
+    "screen": "my-files",
+    "reference": "docs/workflow/compare-2/my-files/11-myfiles.png",
+    "app_png": "docs/workflow/compare-2/my-files/emulator-my-files.png",
+    "why": "Sort chip renders a blue arrow, bold 'Name' and blue chevron; the reference chip is thin grey text with grey glyphs."
+  },
+  {
+    "screen": "my-files",
+    "reference": "docs/workflow/compare-2/my-files/11-myfiles.png",
+    "app_png": "docs/workflow/compare-2/my-files/emulator-my-files.png",
+    "why": "+ FAB is a pale tonal rounded square instead of a round solid-blue button."
+  },
+  {
+    "screen": "my-files",
+    "reference": "docs/workflow/compare-2/my-files/11-myfiles.png",
+    "app_png": "docs/workflow/compare-2/my-files/emulator-my-files.png",
+    "why": "Search pill is flat pale blue with a black icon; the reference is white with a drop shadow and a blue search icon."
+  },
+  {
+    "screen": "my-files",
+    "reference": "docs/workflow/compare-2/my-files/11-myfiles.png",
+    "app_png": "docs/workflow/compare-2/my-files/emulator-my-files.png",
+    "why": "An extra bottom navigation bar with a single 'Files' item sits below the search row; the reference has no bottom bar."
+  },
+  {
+    "screen": "vault",
+    "reference": "docs/workflow/compare-2/vault/17-vault.png",
+    "app_png": "docs/workflow/compare-2/vault/emulator-vault.png",
+    "why": "Top bar shows an initials avatar and a centered 'Files' title; the reference has a photo avatar beside a Photos|Files segmented pill and no title."
+  },
+  {
+    "screen": "vault",
+    "reference": "docs/workflow/compare-2/vault/17-vault.png",
+    "app_png": "docs/workflow/compare-2/vault/emulator-vault.png",
+    "why": "Selected-tab indicator spans the full tab width and the tab row has a bottom divider; the reference uses a short pill under the label and no divider."
+  },
+  {
+    "screen": "vault",
+    "reference": "docs/workflow/compare-2/vault/17-vault.png",
+    "app_png": "docs/workflow/compare-2/vault/emulator-vault.png",
+    "why": "Search pill and + FAB are shown on the Vault tab; the reference Vault tab has neither (empty-state copy differs by design: 'not available in TwoDrive')."
+  },
+  {
+    "screen": "vault",
+    "reference": "docs/workflow/compare-2/vault/17-vault.png",
+    "app_png": "docs/workflow/compare-2/vault/emulator-vault.png",
+    "why": "An extra bottom navigation bar with a single 'Files' item sits at the bottom; the reference has no bottom bar."
+  },
+  {
+    "screen": "offline",
+    "reference": "docs/workflow/compare-2/offline/18-offline.png",
+    "app_png": "docs/workflow/compare-2/offline/emulator-offline.png",
+    "why": "Top bar shows an initials avatar and a centered 'Files' title; the reference has a photo avatar beside a Photos|Files segmented pill and no title."
+  },
+  {
+    "screen": "offline",
+    "reference": "docs/workflow/compare-2/offline/18-offline.png",
+    "app_png": "docs/workflow/compare-2/offline/emulator-offline.png",
+    "why": "Selected-tab indicator spans the full tab width and the tab row has a bottom divider; the reference uses a short pill under the label and no divider."
+  },
+  {
+    "screen": "offline",
+    "reference": "docs/workflow/compare-2/offline/18-offline.png",
+    "app_png": "docs/workflow/compare-2/offline/emulator-offline.png",
+    "why": "+ FAB is a pale tonal rounded square instead of a round solid-blue button (empty-state title and body copy match)."
+  },
+  {
+    "screen": "offline",
+    "reference": "docs/workflow/compare-2/offline/18-offline.png",
+    "app_png": "docs/workflow/compare-2/offline/emulator-offline.png",
+    "why": "Search pill is flat pale blue with a black icon; the reference is white with a drop shadow and a blue search icon."
+  },
+  {
+    "screen": "offline",
+    "reference": "docs/workflow/compare-2/offline/18-offline.png",
+    "app_png": "docs/workflow/compare-2/offline/emulator-offline.png",
+    "why": "An extra bottom navigation bar with a single 'Files' item sits below the search row; the reference has no bottom bar."
+  },
+  {
+    "screen": "folder",
+    "reference": "docs/workflow/compare-2/folder/15-folder-contents.png",
+    "app_png": "docs/workflow/compare-2/folder/emulator-folder.png",
+    "why": "Folder title is left-aligned, display-size regular weight; the reference title is centered and bold at headline size."
+  },
+  {
+    "screen": "folder",
+    "reference": "docs/workflow/compare-2/folder/15-folder-contents.png",
+    "app_png": "docs/workflow/compare-2/folder/emulator-folder.png",
+    "why": "Bottom search pill and + FAB are absent; the reference shows both inside the folder."
+  },
+  {
+    "screen": "folder",
+    "reference": "docs/workflow/compare-2/folder/15-folder-contents.png",
+    "app_png": "docs/workflow/compare-2/folder/emulator-folder.png",
+    "why": "Sort row renders a blue arrow, bold 'Name', blue chevron and a divider beneath; the reference row is thin grey text with no divider."
+  },
+  {
+    "screen": "folder",
+    "reference": "docs/workflow/compare-2/folder/15-folder-contents.png",
+    "app_png": "docs/workflow/compare-2/folder/emulator-folder.png",
+    "why": "An extra bottom navigation bar with a single 'Files' item sits at the bottom; the reference has no bottom bar (back arrow, no avatar and no pivot row match)."
+  },
+  {
+    "screen": "item-bottom-sheet",
+    "reference": "docs/workflow/compare-2/item-bottom-sheet/12-item-more-options.png",
+    "app_png": "docs/workflow/compare-2/item-bottom-sheet/emulator-item-bottom-sheet.png",
+    "why": "Missing the 'Make available offline' switch row between the tiles and Rename."
+  },
+  {
+    "screen": "item-bottom-sheet",
+    "reference": "docs/workflow/compare-2/item-bottom-sheet/12-item-more-options.png",
+    "app_png": "docs/workflow/compare-2/item-bottom-sheet/emulator-item-bottom-sheet.png",
+    "why": "File variant shows a third Download tile; the reference always shows exactly two tiles, Share and Delete (Delete tile itself now matches)."
+  },
+  {
+    "screen": "item-bottom-sheet",
+    "reference": "docs/workflow/compare-2/item-bottom-sheet/12-item-more-options.png",
+    "app_png": "docs/workflow/compare-2/item-bottom-sheet/emulator-item-bottom-sheet.png",
+    "why": "Sheet background is a pale lavender tonal surface and the item name is bold; the reference sheet is white with a regular-weight name."
+  },
+  {
+    "screen": "delete-snackbar",
+    "reference": "unmatched",
+    "app_png": "docs/workflow/compare-2/delete-snackbar/emulator-delete-snackbar.png",
+    "why": "No OneDrive reference capture exists for the delete snackbar; app shows a dark 'Deleted Household budget.xlsx' snackbar with a purple Undo action above the search row, purple being the Material default rather than the app's blue."
+  }
+]
