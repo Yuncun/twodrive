@@ -37,7 +37,13 @@ class TestGraphNetworkDataSource : GraphNetworkDataSource {
 
     override suspend fun getMe(): NetworkUser = NetworkUser(id = "u", userPrincipalName = "test@example.com")
 
-    override suspend fun getDrive(): NetworkDrive = NetworkDrive(id = "d")
+    var drive: NetworkDrive = NetworkDrive(id = "d")
+    var failDriveWith: Exception? = null
+
+    override suspend fun getDrive(): NetworkDrive {
+        failDriveWith?.let { throw it }
+        return drive
+    }
 
     override suspend fun getChildren(itemId: String?): NetworkDriveItemPage = NetworkDriveItemPage(emptyList())
 

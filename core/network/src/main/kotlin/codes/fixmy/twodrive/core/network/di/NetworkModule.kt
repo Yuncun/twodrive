@@ -23,6 +23,7 @@ import codes.fixmy.twodrive.core.network.demo.DemoAssetManager
 import codes.fixmy.twodrive.core.network.retrofit.BearerTokenInterceptor
 import codes.fixmy.twodrive.core.network.retrofit.GRAPH_BASE_URL
 import codes.fixmy.twodrive.core.network.retrofit.GRAPH_BASE_URL_NAME
+import codes.fixmy.twodrive.core.network.retrofit.InsufficientStorageMonitor
 import coil.ImageLoader
 import coil.util.DebugLogger
 import dagger.Module
@@ -61,9 +62,11 @@ internal object NetworkModule {
     @Singleton
     fun okHttpCallFactory(
         bearerTokenInterceptor: BearerTokenInterceptor,
+        insufficientStorageMonitor: InsufficientStorageMonitor,
     ): Call.Factory = trace("TwoDriveOkHttpClient") {
         OkHttpClient.Builder()
             .addInterceptor(bearerTokenInterceptor)
+            .addInterceptor(insufficientStorageMonitor)
             .addInterceptor(
                 HttpLoggingInterceptor()
                     .apply {
