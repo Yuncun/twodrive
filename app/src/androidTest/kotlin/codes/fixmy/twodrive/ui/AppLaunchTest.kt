@@ -30,8 +30,8 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * Smoke test for the demo flavor: the app starts already signed in with the demo account and
- * shows the Files tab populated from the bundled JSON drive.
+ * Smoke test for the demo flavor: the app starts already signed in with the demo account, shows
+ * the Files tab populated from the bundled JSON drive, and opens the account drawer.
  */
 @HiltAndroidTest
 class AppLaunchTest {
@@ -46,17 +46,16 @@ class AppLaunchTest {
     fun setup() = hiltRule.inject()
 
     @Test
-    fun launch_showsFilesTabWithDemoDrive() {
+    fun launch_showsFilesTabWithDemoDriveAndAccountDrawer() {
         composeTestRule.onNodeWithTag("files:list").assertIsDisplayed()
         composeTestRule.waitUntil(timeoutMillis = 10_000) {
             composeTestRule.onAllNodes(androidx.compose.ui.test.hasText("Documents")).fetchSemanticsNodes().isNotEmpty()
         }
         composeTestRule.onNodeWithText("Documents").assertIsDisplayed()
-    }
 
-    /** The avatar opens the drawer with the demo account and its over-quota storage footer. */
-    @Test
-    fun accountIcon_opensDrawerWithDemoQuota() {
+        // The avatar opens the account drawer with the demo account and its over-quota footer.
+        // Kept in this one test: a second @HiltAndroidTest in the process would open a second
+        // DataStore on the same preferences file and fail.
         composeTestRule.onNodeWithContentDescription("Open account drawer").performClick()
         composeTestRule.waitUntil(timeoutMillis = 10_000) {
             composeTestRule.onAllNodes(
