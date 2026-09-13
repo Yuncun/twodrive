@@ -48,6 +48,10 @@ class DemoAuthRepository @Inject constructor() : AuthRepository, AccessTokenProv
     override suspend fun accessToken(): String? =
         if (state.value is AuthState.SignedIn) DEMO_TOKEN else null
 
+    override suspend fun refreshAccessToken(): String? = accessToken()
+
+    override suspend fun requireSignIn() = signOut()
+
     companion object {
         val DEMO_PROFILE = UserProfile(displayName = "Demo User", email = "demo@example.com")
         const val DEMO_TOKEN = "demo-access-token"

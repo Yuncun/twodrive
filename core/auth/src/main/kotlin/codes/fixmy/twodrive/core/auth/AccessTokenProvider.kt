@@ -16,13 +16,27 @@
 
 package codes.fixmy.twodrive.core.auth
 
-/**
- * Supplies a bearer token for Microsoft Graph requests.
- */
-fun interface AccessTokenProvider {
+interface AccessTokenProvider {
     /**
      * Returns a valid access token, refreshing silently when needed, or `null` if nobody is
-     * signed in.
+     * signed in or the account needs to sign in again.
+     *
+     * @throws AuthException if a token could not be obtained for another reason, e.g. no network.
      */
     suspend fun accessToken(): String?
+
+    /**
+     * Returns a new access token, bypassing any cached one, after the server rejected the
+     * current token. Returns `null` when the account can no longer refresh silently; the
+     * provider is then signed out so the UI prompts for an interactive sign-in.
+     *
+     * @throws AuthException if a token could not be obtained for another reason, e.g. no network.
+     */
+    suspend fun refreshAccessToken(): String?
+
+    /**
+     * Signs out because the server keeps rejecting freshly issued tokens, so the UI prompts for
+     * an interactive sign-in.
+     */
+    suspend fun requireSignIn()
 }

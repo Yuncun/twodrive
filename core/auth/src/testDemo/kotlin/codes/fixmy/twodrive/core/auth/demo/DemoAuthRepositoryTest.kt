@@ -48,4 +48,14 @@ class DemoAuthRepositoryTest {
         repository.signIn(Activity())
         assertIs<AuthState.SignedIn>(repository.authState.first())
     }
+
+    @Test
+    fun refreshKeepsTokenAndRequireSignInSignsOut() = runTest {
+        assertEquals(DemoAuthRepository.DEMO_TOKEN, repository.refreshAccessToken())
+
+        repository.requireSignIn()
+
+        assertIs<AuthState.SignedOut>(repository.authState.first())
+        assertNull(repository.refreshAccessToken())
+    }
 }

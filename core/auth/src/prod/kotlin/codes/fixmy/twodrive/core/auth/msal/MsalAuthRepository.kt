@@ -41,6 +41,7 @@ import com.microsoft.identity.client.SilentAuthenticationCallback
 import com.microsoft.identity.client.exception.MsalClientException
 import com.microsoft.identity.client.exception.MsalException
 import com.microsoft.identity.client.exception.MsalServiceException
+import com.microsoft.identity.client.exception.MsalUiRequiredException
 import com.microsoft.identity.client.exception.MsalUserCancelException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -52,6 +53,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -120,31 +122,49 @@ class MsalAuthRepository @Inject constructor(
         state.value = AuthState.SignedOut
     }
 
-    override suspend fun accessToken(): String? {
+    override suspend fun accessToken(): String? = acquireTokenSilently(forceRefresh = false)
+
+    override suspend fun refreshAccessToken(): String? = acquireTokenSilently(forceRefresh = true)
+
+    override suspend fun requireSignIn() = signOut()
+
+    /**
+     * Returns a token from MSAL's cache, redeeming the refresh token when the cached access token
+     * has expired or [forceRefresh] is set. When the refresh token itself is no longer accepted
+     * (expired, revoked, consent withdrawn) the account is signed out so the UI asks the user to
+     * sign in again, and `null` is returned.
+     */
+    private suspend fun acquireTokenSilently(forceRefresh: Boolean): String? {
         val app = client.await()
         val account = withContext(ioDispatcher) { app.currentAccount() } ?: return null
-        return suspendCancellableCoroutine { continuation ->
-            val parameters = AcquireTokenSilentParameters.Builder()
-                .withScopes(GraphScopes.ALL)
-                .forAccount(account)
-                .fromAuthority(account.authority)
-                .withCallback(
-                    object : SilentAuthenticationCallback {
-                        override fun onSuccess(authenticationResult: IAuthenticationResult) =
-                            continuation.resume(authenticationResult.accessToken)
+        return try {
+            suspendCancellableCoroutine { continuation ->
+                val parameters = AcquireTokenSilentParameters.Builder()
+                    .withScopes(GraphScopes.ALL)
+                    .forAccount(account)
+                    .fromAuthority(account.authority)
+                    .forceRefresh(forceRefresh)
+                    .withCallback(
+                        object : SilentAuthenticationCallback {
+                            override fun onSuccess(authenticationResult: IAuthenticationResult) =
+                                continuation.resume(authenticationResult.accessToken)
 
-                        override fun onError(exception: MsalException) =
-                            continuation.resumeWithException(
-                                AuthException(
-                                    exception.toAuthError(),
-                                    "Token refresh failed: ${exception.errorCode}",
-                                    exception,
-                                ),
-                            )
-                    },
-                )
-                .build()
-            app.acquireTokenSilentAsync(parameters)
+                            override fun onError(exception: MsalException) =
+                                continuation.resumeWithException(exception)
+                        },
+                    )
+                    .build()
+                app.acquireTokenSilentAsync(parameters)
+            }
+        } catch (exception: MsalUiRequiredException) {
+            signOut()
+            null
+        } catch (exception: MsalException) {
+            throw AuthException(
+                exception.toAuthError(),
+                "Token refresh failed: ${exception.errorCode}",
+                exception,
+            )
         }
     }
 
@@ -152,7 +172,7 @@ class MsalAuthRepository @Inject constructor(
         suspendCancellableCoroutine { continuation ->
             PublicClientApplication.createSingleAccountPublicClientApplication(
                 context,
-                R.raw.msal_config,
+                resolvedConfigFile(),
                 object : IPublicClientApplication.ISingleAccountApplicationCreatedListener {
                     override fun onCreated(application: ISingleAccountPublicClientApplication) =
                         continuation.resume(application)
@@ -168,6 +188,16 @@ class MsalAuthRepository @Inject constructor(
                 },
             )
         }
+
+    /** Writes msal_config.json with this build's package name filled into the redirect URI. */
+    private fun resolvedConfigFile(): File {
+        val template = context.resources.openRawResource(R.raw.msal_config)
+            .bufferedReader()
+            .use { it.readText() }
+        return File(context.noBackupFilesDir, "msal_config.json").apply {
+            writeText(MsalConfig.resolve(template, context.packageName))
+        }
+    }
 
     private fun MsalException.toAuthError() = when {
         this is MsalUserCancelException -> AuthError.CANCELLED
