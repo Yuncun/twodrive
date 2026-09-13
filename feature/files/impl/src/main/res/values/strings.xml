@@ -54,4 +54,10 @@
     <string name="feature_files_impl_home_offline_empty">Tap the ⋯ icon next to a file, and select “Make available offline” to view it wherever you go.</string>
     <string name="feature_files_impl_search_your_files">Search your files</string>
     <string name="feature_files_impl_add">Add items</string>
+    <string name="feature_files_impl_item_action_share">Share</string>
+    <string name="feature_files_impl_item_action_delete">Delete</string>
+    <string name="feature_files_impl_item_action_download">Download</string>
+    <string name="feature_files_impl_item_action_rename">Rename</string>
+    <string name="feature_files_impl_item_action_move">Move</string>
+    <string name="feature_files_impl_item_action_details">Details</string>
 </resources>

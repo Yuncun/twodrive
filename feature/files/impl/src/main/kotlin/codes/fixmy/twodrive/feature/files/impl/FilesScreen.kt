@@ -111,6 +111,18 @@ fun FilesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isOffline by viewModel.isOffline.collectAsStateWithLifecycle()
+    // The item whose "⋯" was tapped and the list it was tapped in; non-null while its sheet is open.
+    var sheetTarget by remember { mutableStateOf<Pair<DriveItem, ItemSource>?>(null) }
+    sheetTarget?.let { (item, source) ->
+        ItemBottomSheet(
+            item = item,
+            source = source,
+            today = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
+            onDismissRequest = { sheetTarget = null },
+            // Rename, Delete, Move, Share and Details plug in here with M3.4, M3.5, M3.7 and M3.8.
+            onAction = { _, _ -> },
+        )
+    }
     if (viewModel.folderId == null) {
         // The pivot row belongs to the drive root; pushed folders show only their list.
         val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
@@ -123,8 +135,10 @@ fun FilesScreen(
             onTabClick = viewModel::selectTab,
             onFolderClick = onFolderClick,
             onFileClick = onFileClick,
-            // Will open the item bottom sheet once that screen exists.
-            onMoreClick = {},
+            onMoreClick = { item ->
+                val source = if (selectedTab == FilesTab.HOME) ItemSource.HOME_RECENT else ItemSource.FOLDER
+                sheetTarget = item to source
+            },
             // Will open the full recents list once that screen exists.
             onSeeAllClick = {},
             onSortOrderChange = viewModel::setSortOrder,
@@ -139,7 +153,7 @@ fun FilesScreen(
             onBackClick = onBackClick,
             onFolderClick = onFolderClick,
             onFileClick = onFileClick,
-            onMoreClick = {},
+            onMoreClick = { item -> sheetTarget = item to ItemSource.FOLDER },
             onSortOrderChange = viewModel::setSortOrder,
             onViewModeChange = viewModel::setViewMode,
             modifier = modifier,
@@ -841,7 +855,7 @@ private fun DriveItemRow(
  * their recursive size just like files
  * (docs/ux-reference/11-myfiles.png).
  */
-private fun DriveItem.subtitle(today: LocalDate): String =
+internal fun DriveItem.subtitle(today: LocalDate): String =
     "${formatFileSize(size)}\u00A0·\u00A0${formatModifiedDate(lastModified, today = today)}"
 
 private fun FilesTab.labelRes(): Int = when (this) {
