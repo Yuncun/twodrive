@@ -17,8 +17,11 @@
 package codes.fixmy.twodrive.core.designsystem.icon
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
+import androidx.compose.material.icons.outlined.Cloud
+import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Image
@@ -26,10 +29,12 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.OfflinePin
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Audiotrack
+import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Description
@@ -65,8 +70,10 @@ object TwoDriveIcons {
     val ArrowDownward = Icons.Rounded.ArrowDownward
     val ArrowUpward = Icons.Rounded.ArrowUpward
     val Audio = Icons.Rounded.Audiotrack
+    val Cancel = Icons.Rounded.Cancel
     val Check = Icons.Rounded.Check
     val Close = Icons.Rounded.Close
+    val Cloud = Icons.Outlined.Cloud
     val Document = Icons.Rounded.Description
     val File = Icons.AutoMirrored.Rounded.InsertDriveFile
     val Folder = Icons.Rounded.Folder
@@ -82,6 +89,7 @@ object TwoDriveIcons {
     val LockBorder = Icons.Outlined.Lock
     val MoreHoriz = Icons.Rounded.MoreHoriz
     val MoreVert = Icons.Rounded.MoreVert
+    val Offline = Icons.Outlined.CloudOff
     val OfflinePin = Icons.Rounded.OfflinePin
     val OfflinePinBorder = Icons.Outlined.OfflinePin
     val Pdf = Icons.Rounded.PictureAsPdf
@@ -92,7 +100,9 @@ object TwoDriveIcons {
     val Presentation = Icons.Rounded.Slideshow
     val Search = Icons.Rounded.Search
     val Settings = Icons.Rounded.Settings
+    val SignOut = Icons.AutoMirrored.Outlined.Logout
     val Spreadsheet = Icons.Rounded.TableChart
+    val SyncProblem = Icons.Outlined.SyncProblem
     val Text = Icons.Rounded.TextSnippet
     val Tune = Icons.Rounded.Tune
     val Video = Icons.Rounded.Videocam
