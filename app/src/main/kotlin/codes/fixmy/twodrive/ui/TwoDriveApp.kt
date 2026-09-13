@@ -32,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -40,8 +39,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -53,7 +50,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.net.toUri
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import codes.fixmy.twodrive.R
@@ -77,20 +73,8 @@ fun TwoDriveApp(
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
     TwoDriveBackground(modifier = modifier) {
+        // The Files screen owns the offline snackbar: it shows only when a sync actually failed.
         val snackbarHostState = remember { SnackbarHostState() }
-
-        val isOffline by appState.isOffline.collectAsStateWithLifecycle()
-
-        // If user is not connected to the internet show a snack bar to inform them.
-        val notConnectedMessage = stringResource(R.string.not_connected)
-        LaunchedEffect(isOffline) {
-            if (isOffline) {
-                snackbarHostState.showSnackbar(
-                    message = notConnectedMessage,
-                    duration = Indefinite,
-                )
-            }
-        }
 
         TwoDriveApp(
             appState = appState,

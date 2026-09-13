@@ -23,6 +23,7 @@ import codes.fixmy.twodrive.core.testing.data.driveItemsTestData
 import codes.fixmy.twodrive.core.testing.repository.TestDriveItemsRepository
 import codes.fixmy.twodrive.core.testing.repository.TestUserDataRepository
 import codes.fixmy.twodrive.core.testing.util.MainDispatcherRule
+import codes.fixmy.twodrive.core.testing.util.TestNetworkMonitor
 import codes.fixmy.twodrive.core.testing.util.TestSyncManager
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -32,7 +33,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class FilesViewModelTest {
 
@@ -42,6 +45,7 @@ class FilesViewModelTest {
     private val driveItemsRepository = TestDriveItemsRepository()
     private val userDataRepository = TestUserDataRepository()
     private val syncManager = TestSyncManager()
+    private val networkMonitor = TestNetworkMonitor()
 
     private lateinit var viewModel: FilesViewModel
 
@@ -51,6 +55,7 @@ class FilesViewModelTest {
             driveItemsRepository = driveItemsRepository,
             userDataRepository = userDataRepository,
             syncManager = syncManager,
+            networkMonitor = networkMonitor,
             folderId = null,
         )
     }
@@ -135,6 +140,7 @@ class FilesViewModelTest {
             driveItemsRepository = driveItemsRepository,
             userDataRepository = userDataRepository,
             syncManager = syncManager,
+            networkMonitor = networkMonitor,
             folderId = "f-documents",
         )
         backgroundScope.launch(UnconfinedTestDispatcher()) { subfolderViewModel.uiState.collect() }
@@ -144,5 +150,40 @@ class FilesViewModelTest {
         val state = assertIs<FilesUiState.Success>(subfolderViewModel.uiState.value)
         assertEquals("Documents", state.folder?.name)
         assertEquals(listOf("Apartment lease.pdf", "Meeting notes.txt"), state.items.map { it.name })
+    }
+
+    @Test
+    fun offlineOnlyWhenTheLastSyncFailedWithoutAConnection() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.isOffline.collect() }
+        assertFalse(viewModel.isOffline.value)
+
+        networkMonitor.setConnected(false)
+        assertFalse(viewModel.isOffline.value)
+
+        syncManager.setLastSyncFailed(true)
+        assertTrue(viewModel.isOffline.value)
+
+        networkMonitor.setConnected(true)
+        assertFalse(viewModel.isOffline.value)
+    }
+
+    @Test
+    fun syncFailureWhileOnlineIsNotReportedAsOffline() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.isOffline.collect() }
+
+        syncManager.setLastSyncFailed(true)
+
+        assertFalse(viewModel.isOffline.value)
+    }
+
+    @Test
+    fun reconnectingRequestsAnotherSync() = runTest {
+        assertEquals(1, syncManager.requestSyncCount)
+
+        networkMonitor.setConnected(false)
+        assertEquals(1, syncManager.requestSyncCount)
+
+        networkMonitor.setConnected(true)
+        assertEquals(2, syncManager.requestSyncCount)
     }
 }

@@ -25,6 +25,7 @@ import codes.fixmy.twodrive.core.model.data.ViewMode
 import codes.fixmy.twodrive.core.screenshottesting.captureMultiDevice
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils.matchesCheck
 import com.google.android.apps.common.testing.accessibility.framework.checks.SpeakableTextPresentCheck
+import com.google.android.apps.common.testing.accessibility.framework.checks.TouchTargetSizeCheck
 import dagger.hilt.android.testing.HiltTestApplication
 import kotlinx.datetime.LocalDate
 import org.junit.Before
@@ -149,6 +150,7 @@ class FilesScreenScreenshotTests {
                             sortOrder = SortOrder.NAME_ASCENDING,
                             viewMode = ViewMode.LIST,
                         ),
+                        isOffline = false,
                         onBackClick = {},
                         onFolderClick = {},
                         onFileClick = {},
@@ -184,11 +186,47 @@ class FilesScreenScreenshotTests {
         }
     }
 
+    @Test
+    fun filesScreen_emptyFolderTiles() {
+        composeTestRule.captureMultiDevice("FilesScreenEmptyTiles") {
+            FilesScreenContent(
+                FilesUiState.Success(
+                    folder = null,
+                    items = emptyList(),
+                    sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = ViewMode.TILE,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun filesScreen_offline() {
+        composeTestRule.captureMultiDevice(
+            "FilesScreenOffline",
+            // The snackbar floats over the list, so a row's "⋯" button can be left with a 1dp
+            // uncovered sliver that ATF measures as an undersized touch target; covering a row with
+            // a transient snackbar is not an accessibility defect.
+            accessibilitySuppressions = matchesCheck(TouchTargetSizeCheck::class.java),
+        ) {
+            FilesScreenContent(
+                FilesUiState.Success(
+                    folder = null,
+                    items = demoDriveChildren(),
+                    sortOrder = SortOrder.NAME_ASCENDING,
+                    viewMode = ViewMode.LIST,
+                ),
+                isOffline = true,
+            )
+        }
+    }
+
     @androidx.compose.runtime.Composable
     private fun FilesScreenContent(
         uiState: FilesUiState,
         selectedTab: FilesTab = FilesTab.MY_FILES,
         homeUiState: HomeUiState = HomeUiState.Loading,
+        isOffline: Boolean = false,
     ) {
         TwoDriveTheme {
             TwoDriveBackground {
@@ -196,6 +234,7 @@ class FilesScreenScreenshotTests {
                     uiState = uiState,
                     homeUiState = homeUiState,
                     selectedTab = selectedTab,
+                    isOffline = isOffline,
                     onTabClick = {},
                     onFolderClick = {},
                     onFileClick = {},

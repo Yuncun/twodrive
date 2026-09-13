@@ -32,6 +32,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
+import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.ViewMode
 import kotlinx.datetime.LocalDate
@@ -64,18 +65,21 @@ class FilesScreenTest {
     private fun setContent(
         viewMode: ViewMode = ViewMode.LIST,
         startTab: FilesTab = FilesTab.MY_FILES,
+        items: List<DriveItem> = demoDriveChildren(),
+        isOffline: Boolean = false,
     ) {
         composeTestRule.setContent {
             var selectedTab by remember { mutableStateOf(startTab) }
             FilesScreen(
                 uiState = FilesUiState.Success(
                     folder = null,
-                    items = demoDriveChildren(),
+                    items = items,
                     sortOrder = SortOrder.NAME_ASCENDING,
                     viewMode = viewMode,
                 ),
                 homeUiState = HomeUiState.Success(recentFiles = demoDriveRecentFiles()),
                 selectedTab = selectedTab,
+                isOffline = isOffline,
                 onTabClick = { selectedTab = it },
                 onFolderClick = { folderClicks.add(it.id) },
                 onFileClick = {},
@@ -237,5 +241,31 @@ class FilesScreenTest {
 
         composeTestRule.onNodeWithText("Search your files").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription("Add items").assertIsDisplayed()
+    }
+
+    @Test
+    fun emptyFolderShowsTheEmptyCardInListView() {
+        setContent(items = emptyList())
+        composeTestRule.onNodeWithText("This folder is empty").assertIsDisplayed()
+    }
+
+    @Test
+    fun emptyFolderShowsTheEmptyCardInTileView() {
+        setContent(items = emptyList(), viewMode = ViewMode.TILE)
+        composeTestRule.onNodeWithText("This folder is empty").assertIsDisplayed()
+    }
+
+    @Test
+    fun offlineShowsTheSnackbar() {
+        setContent(isOffline = true)
+
+        composeTestRule.onNodeWithText("You’re offline. Showing files saved on this device.").assertIsDisplayed()
+    }
+
+    @Test
+    fun onlineShowsNoSnackbar() {
+        setContent(isOffline = false)
+
+        composeTestRule.onNodeWithText("You’re offline. Showing files saved on this device.").assertDoesNotExist()
     }
 }
