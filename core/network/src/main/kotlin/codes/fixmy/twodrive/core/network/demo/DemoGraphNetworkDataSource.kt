@@ -25,11 +25,14 @@ import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
+import codes.fixmy.twodrive.core.network.model.NetworkFolderFacet
+import codes.fixmy.twodrive.core.network.model.NetworkParentReference
 import codes.fixmy.twodrive.core.network.model.NetworkThumbnail
 import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSet
 import codes.fixmy.twodrive.core.network.model.NetworkUser
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -37,17 +40,24 @@ import java.io.BufferedReader
 import java.io.DataInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
+import java.util.concurrent.CopyOnWriteArrayList
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
- * [GraphNetworkDataSource] implementation that serves a static drive from local JSON assets, so
- * the demo flavor and JVM tests run without a Microsoft account or network.
+ * [GraphNetworkDataSource] implementation that serves a drive from local JSON assets, so the
+ * demo flavor and JVM tests run without a Microsoft account or network. Folders created with
+ * [createFolder] are appended in memory and last as long as the process; a singleton keeps every
+ * caller looking at the same drive.
  */
+@Singleton
 class DemoGraphNetworkDataSource @Inject constructor(
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     private val networkJson: Json,
     private val assets: DemoAssetManager = JvmUnitTestDemoAssetManager,
 ) : GraphNetworkDataSource {
+
+    private val createdItems = CopyOnWriteArrayList<NetworkDriveItem>()
 
     override suspend fun getMe(): NetworkUser = getDataFromJsonFile(ME_ASSET)
 
@@ -60,7 +70,8 @@ class DemoGraphNetworkDataSource @Inject constructor(
     }
 
     override suspend fun getDelta(deltaLink: String?): NetworkDriveItemPage {
-        // The demo drive never changes, so a delta query after the first one is always empty.
+        // Only createFolder changes the demo drive, and it hands the new folder straight to the
+        // caller, so a delta query after the first one is always empty.
         val items = if (deltaLink == null) allItems() else emptyList()
         return NetworkDriveItemPage(value = items, deltaLink = DEMO_DELTA_LINK)
     }
@@ -84,6 +95,26 @@ class DemoGraphNetworkDataSource @Inject constructor(
             listOf(NetworkThumbnailSet(small = thumbnail, medium = thumbnail, large = thumbnail))
         }
 
+    /** Appends the folder in memory, renaming it the way Graph's `rename` conflict behavior does. */
+    override suspend fun createFolder(parentId: String?, name: String): NetworkDriveItem {
+        val items = allItems()
+        val parent = parentId ?: items.first { it.isRoot }.id
+        val takenNames = items.filter { it.parentReference?.id == parent }.map { it.name }.toSet()
+        val freeName = generateSequence(1) { it + 1 }
+            .map { "$name $it" }
+            .let { sequenceOf(name) + it }
+            .first { it !in takenNames }
+        val folder = NetworkDriveItem(
+            id = "$CREATED_FOLDER_ID_PREFIX${createdItems.size + 1}",
+            name = freeName,
+            lastModifiedDateTime = Clock.System.now().toString(),
+            folder = NetworkFolderFacet(childCount = 0),
+            parentReference = NetworkParentReference(id = parent),
+        )
+        createdItems += folder
+        return folder
+    }
+
     /** Reads width and height from a PNG's IHDR chunk, which always follows the 8-byte signature. */
     private fun pngDimensions(input: InputStream): Pair<Int, Int> = DataInputStream(input).run {
         skipBytes(PNG_IHDR_WIDTH_OFFSET)
@@ -91,7 +122,7 @@ class DemoGraphNetworkDataSource @Inject constructor(
     }
 
     private suspend fun allItems(): List<NetworkDriveItem> =
-        getDataFromJsonFile<NetworkDriveItemPage>(ITEMS_ASSET).value
+        getDataFromJsonFile<NetworkDriveItemPage>(ITEMS_ASSET).value + createdItems
 
     /**
      * Get data from the given JSON [fileName].
@@ -121,6 +152,7 @@ class DemoGraphNetworkDataSource @Inject constructor(
         private const val THUMBNAILS_DIR = "thumbnails"
         private const val ANDROID_ASSET_URL = "file:///android_asset/"
         private const val PNG_IHDR_WIDTH_OFFSET = 16
+        private const val CREATED_FOLDER_ID_PREFIX = "demo-created-folder-"
         const val DEMO_DELTA_LINK = "demo://delta/latest"
     }
 }

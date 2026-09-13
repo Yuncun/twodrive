@@ -18,8 +18,11 @@ package codes.fixmy.twodrive.core.network.retrofit
 
 import androidx.tracing.trace
 import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
+import codes.fixmy.twodrive.core.network.model.NetworkCreateFolderRequest
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
+import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
+import codes.fixmy.twodrive.core.network.model.NetworkFolderFacet
 import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSet
 import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSetPage
 import codes.fixmy.twodrive.core.network.model.NetworkUser
@@ -28,7 +31,9 @@ import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Url
 import javax.inject.Inject
@@ -59,6 +64,15 @@ internal interface RetrofitGraphApi {
 
     @GET("me/drive/items/{itemId}/thumbnails")
     suspend fun getThumbnails(@Path("itemId") itemId: String): NetworkThumbnailSetPage
+
+    @POST("me/drive/root/children")
+    suspend fun createRootFolder(@Body request: NetworkCreateFolderRequest): NetworkDriveItem
+
+    @POST("me/drive/items/{itemId}/children")
+    suspend fun createFolder(
+        @Path("itemId") itemId: String,
+        @Body request: NetworkCreateFolderRequest,
+    ): NetworkDriveItem
 }
 
 const val GRAPH_BASE_URL = "https://graph.microsoft.com/v1.0/"
@@ -105,4 +119,17 @@ class RetrofitGraphNetwork @Inject constructor(
 
     override suspend fun getThumbnails(itemId: String): List<NetworkThumbnailSet> =
         networkApi.getThumbnails(itemId).value
+
+    override suspend fun createFolder(parentId: String?, name: String): NetworkDriveItem {
+        val request = NetworkCreateFolderRequest(
+            name = name,
+            folder = NetworkFolderFacet(),
+            conflictBehavior = "rename",
+        )
+        return if (parentId == null) {
+            networkApi.createRootFolder(request)
+        } else {
+            networkApi.createFolder(parentId, request)
+        }
+    }
 }

@@ -85,3 +85,15 @@ data class NetworkDriveItemPage(
     @SerialName("@odata.nextLink") val nextLink: String? = null,
     @SerialName("@odata.deltaLink") val deltaLink: String? = null,
 )
+
+/**
+ * Body of a create-folder request. The empty `folder` facet makes the new item a folder, and
+ * `rename` lets Graph pick a free name instead of failing with 409 Conflict. The properties have
+ * no defaults because the app's Json instance does not encode default values.
+ */
+@Serializable
+data class NetworkCreateFolderRequest(
+    val name: String,
+    val folder: NetworkFolderFacet,
+    @SerialName("@microsoft.graph.conflictBehavior") val conflictBehavior: String,
+)

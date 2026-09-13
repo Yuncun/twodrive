@@ -49,4 +49,22 @@ interface DriveItemsRepository {
      * false when it failed (e.g. no network); it never throws.
      */
     suspend fun sync(): Boolean
+
+    /**
+     * Creates a folder called [name] in [parentId], or in the drive root when [parentId] is null,
+     * and stores it locally so folder listings show it at once. It never throws.
+     */
+    suspend fun createFolder(parentId: String?, name: String): CreateFolderResult
+}
+
+/** The outcome of [DriveItemsRepository.createFolder]. */
+sealed interface CreateFolderResult {
+    /** Graph created [folder], possibly under a different name when the requested one was taken. */
+    data class Created(val folder: DriveItem) : CreateFolderResult
+
+    /** Graph refused with 507 Insufficient Storage: the account is over its quota. */
+    data object StorageFull : CreateFolderResult
+
+    /** Any other failure, such as no connection. */
+    data object Failed : CreateFolderResult
 }

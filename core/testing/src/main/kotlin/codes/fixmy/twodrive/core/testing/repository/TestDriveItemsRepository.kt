@@ -16,11 +16,13 @@
 
 package codes.fixmy.twodrive.core.testing.repository
 
+import codes.fixmy.twodrive.core.data.repository.CreateFolderResult
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.model.data.DriveItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Instant
 
 class TestDriveItemsRepository : DriveItemsRepository {
 
@@ -48,6 +50,34 @@ class TestDriveItemsRepository : DriveItemsRepository {
     override suspend fun sync(): Boolean {
         syncCount++
         return true
+    }
+
+    /** The (parentId, name) of every createFolder call, in order. */
+    val createdFolders = mutableListOf<Pair<String?, String>>()
+
+    /** What the next createFolder call returns; null creates a folder and appends it to the items. */
+    var createFolderResult: CreateFolderResult? = null
+
+    override suspend fun createFolder(parentId: String?, name: String): CreateFolderResult {
+        createdFolders += parentId to name
+        createFolderResult?.let { return it }
+        val items = driveItemsFlow.replayCache.firstOrNull().orEmpty()
+        val folder = DriveItem(
+            id = "created-${createdFolders.size}",
+            name = name,
+            isFolder = true,
+            isRoot = false,
+            size = 0,
+            lastModified = Instant.DISTANT_PAST,
+            mimeType = null,
+            parentId = parentId ?: items.firstOrNull { it.isRoot }?.id,
+            webUrl = null,
+            thumbnailUrl = null,
+            childCount = 0,
+            isShared = false,
+        )
+        driveItemsFlow.tryEmit(items + folder)
+        return CreateFolderResult.Created(folder)
     }
 
     /**
