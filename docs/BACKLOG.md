@@ -97,14 +97,14 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
 - [x] M2.5 (3ad118f) Error handling: 429 Retry-After backoff, offline snackbar, empty folder state.
 
 ## Milestone 3 — file actions
-- [ ] M3.1 Open file: download to cache with progress, then `ACTION_VIEW` via FileProvider (system viewer).
-- [ ] M3.2 Item bottom sheet (12-item-more-options.png): Share / Delete tiles, Rename, Move, Details rows (Make available offline hidden).
+- [x] M3.1 (5510fa8) Open file: download to cache with progress, then `ACTION_VIEW` via FileProvider (system viewer).
+- [x] M3.2 (d55fd7e) Item bottom sheet (12-item-more-options.png): Share / Delete tiles, Rename, Move, Details rows (Make available offline hidden).
   spec details:
   - O: M3.2 the item sheet is content-height (skipPartiallyExpanded), never a half peek: 36.6x3.8dp drag handle, a centred 72dp thumbnail, centred name (~16sp) and "size · date" (~14sp grey), an 80dp row of action tiles, then 48.4dp rows with 24dp icons at 16dp and labels at 56dp — docs/ux-reference/spec/item-bottom-sheet.md
   - O: M3.2 Delete is an action tile beside Share, not a list row, and carries no destructive styling; the tiles are grey 8dp-radius surfaces 80dp tall that split the width — two tiles for a folder (Share, Delete), three for a file (Share, Delete, Download)
   - O: M3.2 the action set depends on the source list as well as the item: Home ▸ Recent files drops Delete, Move and Copy and offers Download and Comment instead, while My files offers the full set — model the actions per (item, source), not per item
   - O: M3.2 the sheet has no "Open" or "Open with" entry: tapping the row is the only way to open a file, so M3.1 must not rely on a sheet action
-- [ ] M3.3 Create folder from "+" menu (21-add-items-menu.png).
+- [x] M3.3 (bce1e25) Create folder from "+" menu (21-add-items-menu.png).
   spec details:
   - O: M3.3 there is no captured reference for the add menu: docs/ux-reference/21-add-items-menu.png is mis-named and actually shows the item bottom sheet for the folder "Email attachments" (a duplicate of 12-item-more-options.png). Rename or replace it, and design the add menu from M3 rather than from that file
   - O: M3.3/M3.6 on an over-quota account the "+" FAB never opens a menu — it replaces the screen with a full-bleed "Your OneDrive will be frozen" page (illustration, title, body naming the account, a "Learn more" link, and bottom-pinned "Upgrade" / "Go to OneDrive" buttons). TwoDrive should keep the user on the list and surface quota refusals as a snackbar or a disabled FAB instead — docs/ux-reference/spec/add-menu.md
