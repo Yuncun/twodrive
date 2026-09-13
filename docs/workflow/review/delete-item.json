@@ -24,9 +24,9 @@
     },
     {
       "file": "docs/workflow/flows/delete-item/04-delete-persists.yaml",
-      "line": 37,
+      "line": 38,
       "blocking": false,
-      "summary": "The brief asked for .maestro/delete-item/; the branch instead edits the test-plan flow committed on main (a file outside likely_files). The wait is justified; the merge step should treat docs/workflow/flows as the device proof."
+      "summary": "Flow change judged not weakened: the only edit adds assertVisible id files:tabs after the relaunch, before the childOf tap on My files; every original step and assertion (Deleted Music snackbar, 20 s wait for it to go, Music absent after the tab switch and after relaunch with Documents visible so the list has loaded) is unchanged, so it adds a check rather than removing one. The brief asked for .maestro/delete-item/; the merge step should treat docs/workflow/flows as the device proof."
     },
     {
       "file": "feature/files/impl/src/test/screenshots/",
