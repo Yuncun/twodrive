@@ -54,4 +54,11 @@
     <string name="feature_files_impl_home_offline_empty">Tap the ⋯ icon next to a file, and select “Make available offline” to view it wherever you go.</string>
     <string name="feature_files_impl_search_your_files">Search your files</string>
     <string name="feature_files_impl_add">Add items</string>
+    <string name="feature_files_impl_create_folder">Create folder</string>
+    <string name="feature_files_impl_upload">Upload</string>
+    <string name="feature_files_impl_folder_name">Folder name</string>
+    <string name="feature_files_impl_create">Create</string>
+    <string name="feature_files_impl_cancel">Cancel</string>
+    <string name="feature_files_impl_create_folder_storage_full">Your OneDrive is full, so the folder wasn’t created.</string>
+    <string name="feature_files_impl_create_folder_failed">Couldn’t create the folder. Check your connection and try again.</string>
 </resources>

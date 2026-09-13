@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import codes.fixmy.twodrive.core.common.result.Result
 import codes.fixmy.twodrive.core.common.result.asResult
+import codes.fixmy.twodrive.core.data.repository.CreateFolderResult
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.data.repository.UserDataRepository
 import codes.fixmy.twodrive.core.data.util.NetworkMonitor
@@ -135,6 +136,30 @@ class FilesViewModel @AssistedInject constructor(
 
     fun setViewMode(viewMode: ViewMode) {
         viewModelScope.launch { userDataRepository.setViewMode(viewMode) }
+    }
+
+    private val _createFolderError = MutableStateFlow<CreateFolderError?>(null)
+
+    /** Why the last create-folder request failed, until the screen reports it as shown. */
+    val createFolderError: StateFlow<CreateFolderError?> = _createFolderError.asStateFlow()
+
+    /**
+     * Creates a folder called [name] in this screen's folder. On success Room already lists the
+     * new folder, so there is nothing else to show.
+     */
+    fun createFolder(name: String) {
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            _createFolderError.value = when (driveItemsRepository.createFolder(folderId, name.trim())) {
+                is CreateFolderResult.Created -> null
+                CreateFolderResult.StorageFull -> CreateFolderError.STORAGE_FULL
+                CreateFolderResult.Failed -> CreateFolderError.FAILED
+            }
+        }
+    }
+
+    fun createFolderErrorShown() {
+        _createFolderError.value = null
     }
 
     @AssistedFactory

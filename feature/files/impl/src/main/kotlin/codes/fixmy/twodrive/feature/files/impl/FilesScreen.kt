@@ -60,6 +60,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -115,6 +116,7 @@ fun FilesScreen(
         // The pivot row belongs to the drive root; pushed folders show only their list.
         val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
         val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
+        val createFolderError by viewModel.createFolderError.collectAsStateWithLifecycle()
         FilesScreen(
             uiState = uiState,
             homeUiState = homeUiState,
@@ -130,6 +132,9 @@ fun FilesScreen(
             onSortOrderChange = viewModel::setSortOrder,
             onViewModeChange = viewModel::setViewMode,
             modifier = modifier,
+            createFolderError = createFolderError,
+            onCreateFolder = viewModel::createFolder,
+            onCreateFolderErrorShown = viewModel::createFolderErrorShown,
         )
     } else {
         FolderScreen(
@@ -161,8 +166,12 @@ internal fun FilesScreen(
     onSortOrderChange: (SortOrder) -> Unit,
     onViewModeChange: (ViewMode) -> Unit,
     modifier: Modifier = Modifier,
+    createFolderError: CreateFolderError? = null,
+    onCreateFolder: (String) -> Unit = {},
+    onCreateFolderErrorShown: () -> Unit = {},
     today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
+    var addItemsSheetVisible by rememberSaveable { mutableStateOf(false) }
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             FilesTabRow(selectedTab = selectedTab, onTabClick = onTabClick)
@@ -206,9 +215,15 @@ internal fun FilesScreen(
         }
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
             OfflineSnackbarHost(isOffline = isOffline)
-            FilesFloatingLayer()
+            CreateFolderErrorSnackbarHost(error = createFolderError, onShown = onCreateFolderErrorShown)
+            FilesFloatingLayer(onAddClick = { addItemsSheetVisible = true })
         }
     }
+    AddItems(
+        sheetVisible = addItemsSheetVisible,
+        onSheetDismiss = { addItemsSheetVisible = false },
+        onCreateFolder = onCreateFolder,
+    )
 }
 
 /**
@@ -1116,12 +1131,15 @@ private fun EmptySectionCard(
 /**
  * The search pill and "+" FAB that float over every Files pivot and never scroll away
  * (docs/ux-reference/spec/files-home.md). Both are placeholders: the pill opens search with
- * M4.1 and the FAB opens the add menu with M3.3/M3.6. Unlike the observed OneDrive build,
+ * M4.1. The FAB opens the add menu (M3.3). Unlike the observed OneDrive build,
  * whose pill is mislabelled "Search your photos", the pill's accessible text is exactly its
  * visible label.
  */
 @Composable
-private fun FilesFloatingLayer(modifier: Modifier = Modifier) {
+private fun FilesFloatingLayer(
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -1159,8 +1177,7 @@ private fun FilesFloatingLayer(modifier: Modifier = Modifier) {
         }
         Spacer(modifier = Modifier.width(16.dp))
         FloatingActionButton(
-            // Opens the add menu once M3.3 builds it.
-            onClick = {},
+            onClick = onAddClick,
             modifier = Modifier.testTag("files:add"),
         ) {
             Icon(
