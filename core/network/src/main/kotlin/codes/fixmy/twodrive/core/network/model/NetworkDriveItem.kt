@@ -25,14 +25,16 @@ import kotlinx.serialization.json.JsonObject
  * [driveItem](https://learn.microsoft.com/graph/api/resources/driveitem).
  *
  * Facets (`file`, `folder`, `root`, `deleted`, `shared`) are present only when they apply, which
- * is how Graph tells a file from a folder, or a shared item from a private one.
+ * is how Graph tells a file from a folder, or a shared item from a private one. A delta feed may
+ * report a deleted item with little more than its `id` and `deleted` facet, so every other
+ * property is optional.
  */
 @Serializable
 data class NetworkDriveItem(
     val id: String,
-    val name: String,
+    val name: String = "",
     val size: Long = 0,
-    val lastModifiedDateTime: String,
+    val lastModifiedDateTime: String? = null,
     val webUrl: String? = null,
     val file: NetworkFileFacet? = null,
     val folder: NetworkFolderFacet? = null,
