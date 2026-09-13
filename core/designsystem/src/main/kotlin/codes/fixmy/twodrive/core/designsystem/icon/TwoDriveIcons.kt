@@ -17,18 +17,24 @@
 package codes.fixmy.twodrive.core.designsystem.icon
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.outlined.CloudOff
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.DriveFileRenameOutline
+import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.OfflinePin
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
@@ -73,8 +79,11 @@ object TwoDriveIcons {
     val Cancel = Icons.Rounded.Cancel
     val Check = Icons.Rounded.Check
     val Close = Icons.Rounded.Close
+    val Delete = Icons.Outlined.Delete
+    val Details = Icons.Outlined.Info
     val Cloud = Icons.Outlined.Cloud
     val Document = Icons.Rounded.Description
+    val Download = Icons.Outlined.FileDownload
     val File = Icons.AutoMirrored.Rounded.InsertDriveFile
     val Folder = Icons.Rounded.Folder
     val FolderBorder = Icons.Outlined.Folder
@@ -89,6 +98,7 @@ object TwoDriveIcons {
     val LockBorder = Icons.Outlined.Lock
     val MoreHoriz = Icons.Rounded.MoreHoriz
     val MoreVert = Icons.Rounded.MoreVert
+    val Move = Icons.AutoMirrored.Outlined.DriveFileMove
     val Offline = Icons.Outlined.CloudOff
     val OfflinePin = Icons.Rounded.OfflinePin
     val OfflinePinBorder = Icons.Outlined.OfflinePin
@@ -98,8 +108,10 @@ object TwoDriveIcons {
     val Person = Icons.Rounded.Person
     val PersonBorder = Icons.Outlined.Person
     val Presentation = Icons.Rounded.Slideshow
+    val Rename = Icons.Outlined.DriveFileRenameOutline
     val Search = Icons.Rounded.Search
     val Settings = Icons.Rounded.Settings
+    val Share = Icons.Outlined.Share
     val SignOut = Icons.AutoMirrored.Outlined.Logout
     val Spreadsheet = Icons.Rounded.TableChart
     val SyncProblem = Icons.Outlined.SyncProblem
