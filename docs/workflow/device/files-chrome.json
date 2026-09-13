@@ -1,0 +1,44 @@
+{
+  "item": "files-chrome",
+  "tested_sha": "d5a331ce831b4250ff6ebd381177023f291dfe2a",
+  "round": 1,
+  "final": true,
+  "flows": [
+    {
+      "flow": "docs/workflow/flows/files-chrome/01-five-tabs-visible.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/files-chrome/01-five-tabs-visible.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/files-chrome/02-tabs-show-content.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/files-chrome/02-tabs-show-content.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/files-chrome/03-avatar-initials.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/files-chrome/03-avatar-initials.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/files-chrome/04-avatar-opens-drawer.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/files-chrome/04-avatar-opens-drawer.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/files-chrome/05-chrome-stays-across-tabs.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/files-chrome/05-chrome-stays-across-tabs.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/files-chrome/06-folder-hides-chrome.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/files-chrome/06-folder-hides-chrome.png",
+      "output": ""
+    }
+  ]
+}
