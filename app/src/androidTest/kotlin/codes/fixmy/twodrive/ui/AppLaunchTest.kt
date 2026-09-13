@@ -18,8 +18,10 @@ package codes.fixmy.twodrive.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import codes.fixmy.twodrive.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -50,5 +52,18 @@ class AppLaunchTest {
             composeTestRule.onAllNodes(androidx.compose.ui.test.hasText("Documents")).fetchSemanticsNodes().isNotEmpty()
         }
         composeTestRule.onNodeWithText("Documents").assertIsDisplayed()
+    }
+
+    /** The avatar opens the drawer with the demo account and its over-quota storage footer. */
+    @Test
+    fun accountIcon_opensDrawerWithDemoQuota() {
+        composeTestRule.onNodeWithContentDescription("Open account drawer").performClick()
+        composeTestRule.waitUntil(timeoutMillis = 10_000) {
+            composeTestRule.onAllNodes(
+                androidx.compose.ui.test.hasContentDescription("Microsoft storage, 100.3 GB used of 100 GB (100%)"),
+            ).fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onNodeWithText("demo@example.com").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
     }
 }
