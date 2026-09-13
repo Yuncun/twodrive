@@ -47,6 +47,18 @@ class TestDriveItemDao : DriveItemDao {
 
     override suspend fun getAllIds(): List<String> = entities.value.keys.toList()
 
+    override suspend fun getDriveItemWithDescendants(id: String): List<DriveItemEntity> {
+        val all = entities.value
+        val subtree = all[id]?.let { mutableListOf(it) } ?: return emptyList()
+        var level = subtree.toList()
+        while (level.isNotEmpty()) {
+            val parentIds = level.map { it.id }.toSet()
+            level = all.values.filter { it.parentId in parentIds }
+            subtree += level
+        }
+        return subtree
+    }
+
     override suspend fun upsertDriveItems(entities: List<DriveItemEntity>) =
         this.entities.update { it + entities.associateBy(DriveItemEntity::id) }
 

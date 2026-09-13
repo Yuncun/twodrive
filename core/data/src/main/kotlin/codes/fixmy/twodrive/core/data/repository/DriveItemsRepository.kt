@@ -55,6 +55,21 @@ interface DriveItemsRepository {
      * and stores it locally so folder listings show it at once. It never throws.
      */
     suspend fun createFolder(parentId: String?, name: String): CreateFolderResult
+
+    /**
+     * Deletes item [id], and everything inside it when it is a folder. The local copies go first
+     * so every listing drops them at once; when Graph refuses, they are put back. It never throws.
+     */
+    suspend fun deleteItem(id: String): DeleteResult
+}
+
+/** The outcome of [DriveItemsRepository.deleteItem]. */
+enum class DeleteResult {
+    /** Graph moved the item to the recycle bin. */
+    DELETED,
+
+    /** The request failed, such as for no connection, and the local copies are back. */
+    FAILED,
 }
 
 /** The outcome of [DriveItemsRepository.createFolder]. */

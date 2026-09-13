@@ -21,6 +21,7 @@ import androidx.lifecycle.viewModelScope
 import codes.fixmy.twodrive.core.common.result.Result
 import codes.fixmy.twodrive.core.common.result.asResult
 import codes.fixmy.twodrive.core.data.repository.CreateFolderResult
+import codes.fixmy.twodrive.core.data.repository.DeleteResult
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.data.repository.UserDataRepository
 import codes.fixmy.twodrive.core.data.util.NetworkMonitor
@@ -33,6 +34,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -41,9 +43,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = FilesViewModel.Factory::class)
@@ -60,14 +65,32 @@ class FilesViewModel @AssistedInject constructor(
     /** The selected pivot tab. OneDrive lands on My files (docs/ux-reference/spec/my-files-list.md). */
     val selectedTab: StateFlow<FilesTab> = _selectedTab.asStateFlow()
 
+    private val _pendingDelete = MutableStateFlow<DriveItem?>(null)
+
+    /**
+     * The item the user just deleted, while its Undo snackbar is up. It is hidden from the lists,
+     * but nothing is sent to Graph until [deleteUndoWindowEnded].
+     */
+    val pendingDelete: StateFlow<DriveItem?> = _pendingDelete.asStateFlow()
+
+    /** Items whose undo window has ended and whose delete request is still running. */
+    private val deletingItems = MutableStateFlow(emptySet<DriveItem>())
+
+    /** Everything to keep off screen: the pending delete and the ones in flight. */
+    private val hiddenItems = combine(_pendingDelete, deletingItems) { pending, deleting ->
+        if (pending == null) deleting else deleting + pending
+    }
+
     val uiState: StateFlow<FilesUiState> = combine(
         folderId?.let(driveItemsRepository::getDriveItem) ?: flowOf(null),
         driveItemsRepository.getChildren(folderId),
         userDataRepository.userData,
-    ) { folder, items, userData ->
+        hiddenItems,
+    ) { folder, items, userData, hidden ->
+        val hiddenIds = hidden.mapTo(mutableSetOf(), DriveItem::id)
         FilesUiState.Success(
             folder = folder,
-            items = items.sortedBy(userData.sortOrder),
+            items = items.filterNot { it.id in hiddenIds }.sortedBy(userData.sortOrder),
             sortOrder = userData.sortOrder,
             viewMode = userData.viewMode,
         )
@@ -90,9 +113,17 @@ class FilesViewModel @AssistedInject constructor(
      * The Home pivot. OneDrive's Recent files section renders six rows
      * (docs/ux-reference/spec/files-home.md).
      */
-    val homeUiState: StateFlow<HomeUiState> = driveItemsRepository
-        .getRecentFiles(RECENT_FILES_COUNT)
-        .map<List<DriveItem>, HomeUiState>(HomeUiState::Success)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val homeUiState: StateFlow<HomeUiState> = combine(
+        driveItemsRepository.getRecentFiles(RECENT_FILES_COUNT),
+        hiddenItems,
+    ) { recentFiles, hidden -> recentFiles to hidden.mapTo(mutableSetOf(), DriveItem::id) }
+        .mapLatest<Pair<List<DriveItem>, Set<String>>, HomeUiState> { (recentFiles, hiddenIds) ->
+            // A deleted folder takes its files out of Recent files too, before Room forgets them.
+            HomeUiState.Success(
+                if (hiddenIds.isEmpty()) recentFiles else recentFiles.filterNot { isInside(it, hiddenIds) },
+            )
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -160,6 +191,54 @@ class FilesViewModel @AssistedInject constructor(
 
     fun createFolderErrorShown() {
         _createFolderError.value = null
+    }
+
+    private val _deleteError = MutableStateFlow<DriveItem?>(null)
+
+    /** The item whose delete request failed, until the screen reports the error as shown. */
+    val deleteError: StateFlow<DriveItem?> = _deleteError.asStateFlow()
+
+    /**
+     * Hides [item] and opens its undo window. A delete still waiting in its window is sent first,
+     * since its snackbar gives way to this one.
+     */
+    fun deleteItem(item: DriveItem) {
+        deleteUndoWindowEnded()
+        _pendingDelete.value = item
+    }
+
+    /** Cancels the pending delete; the item shows again in its sorted place. */
+    fun undoDelete() {
+        _pendingDelete.value = null
+    }
+
+    /**
+     * Sends the pending delete once its snackbar has gone without Undo. On failure the repository
+     * has put the rows back, and [deleteError] names the item.
+     */
+    fun deleteUndoWindowEnded() {
+        val item = _pendingDelete.value ?: return
+        _pendingDelete.value = null
+        deletingItems.update { it + item }
+        viewModelScope.launch {
+            val result = driveItemsRepository.deleteItem(item.id)
+            deletingItems.update { it - item }
+            if (result == DeleteResult.FAILED) _deleteError.value = item
+        }
+    }
+
+    fun deleteErrorShown() {
+        _deleteError.value = null
+    }
+
+    /** Whether [item] is one of [ids] or lies somewhere inside one of them. */
+    private suspend fun isInside(item: DriveItem, ids: Set<String>): Boolean {
+        var current: DriveItem? = item
+        while (current != null) {
+            if (current.id in ids) return true
+            current = current.parentId?.let { driveItemsRepository.getDriveItem(it).first() }
+        }
+        return false
     }
 
     @AssistedFactory

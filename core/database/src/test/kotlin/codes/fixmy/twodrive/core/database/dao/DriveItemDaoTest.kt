@@ -172,6 +172,24 @@ class DriveItemDaoTest {
     }
 
     @Test
+    fun getDriveItemWithDescendantsReadsTheWholeSubtree() = runTest {
+        dao.upsertDriveItems(testDriveTree)
+        dao.upsertDriveItems(
+            listOf(
+                testDriveItem(id = "folder-archive", parentId = "folder-documents", isFolder = true),
+                testDriveItem(id = "file-old-notes", parentId = "folder-archive"),
+            ),
+        )
+
+        assertEquals(
+            setOf("folder-documents", "file-resume", "folder-archive", "file-old-notes"),
+            dao.getDriveItemWithDescendants("folder-documents").map { it.id }.toSet(),
+        )
+        assertEquals(listOf("file-budget"), dao.getDriveItemWithDescendants("file-budget").map { it.id })
+        assertEquals(emptyList(), dao.getDriveItemWithDescendants("no-such-id"))
+    }
+
+    @Test
     fun getAllIdsListsEveryCachedRow() = runTest {
         dao.upsertDriveItems(testDriveTree)
 

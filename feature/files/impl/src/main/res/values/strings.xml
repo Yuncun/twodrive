@@ -67,4 +67,7 @@
     <string name="feature_files_impl_cancel">Cancel</string>
     <string name="feature_files_impl_create_folder_storage_full">Your OneDrive is full, so the folder wasn’t created.</string>
     <string name="feature_files_impl_create_folder_failed">Couldn’t create the folder. Check your connection and try again.</string>
+    <string name="feature_files_impl_deleted">Deleted %1$s</string>
+    <string name="feature_files_impl_undo">Undo</string>
+    <string name="feature_files_impl_delete_failed">Couldn’t delete %1$s</string>
 </resources>

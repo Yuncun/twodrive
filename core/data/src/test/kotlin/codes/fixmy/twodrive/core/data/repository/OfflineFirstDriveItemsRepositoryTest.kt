@@ -203,6 +203,32 @@ class OfflineFirstDriveItemsRepositoryTest {
         assertEquals(CreateFolderResult.Failed, subject.createFolder(parentId = null, name = "Trips"))
     }
 
+    @Test
+    fun deletedFolderLeavesTheCacheWithEverythingInside() = testScope.runTest {
+        dao.upsertDriveItems(
+            listOf(root(), folder("docs", "Documents"), file("a", "a.txt", parent = "docs"), file("b", "b.txt"))
+                .map { it.asEntity() },
+        )
+
+        assertEquals(DeleteResult.DELETED, subject.deleteItem("docs"))
+
+        assertEquals(listOf("docs"), network.deletedItems)
+        assertEquals(setOf("root", "b"), dao.getAllIds().toSet())
+        assertEquals(listOf("b.txt"), subject.getRecentFiles(limit = 6).first().map { it.name })
+    }
+
+    @Test
+    fun failedDeletePutsTheCachedItemsBack() = testScope.runTest {
+        val cached = listOf(root(), folder("docs", "Documents"), file("a", "a.txt", parent = "docs")).map { it.asEntity() }
+        dao.upsertDriveItems(cached)
+        network.failDeleteItemWith = IOException("offline")
+
+        assertEquals(DeleteResult.FAILED, subject.deleteItem("docs"))
+
+        assertEquals(cached.map { it.id }.toSet(), dao.getAllIds().toSet())
+        assertEquals(listOf("a.txt"), subject.getChildren("docs").first().map { it.name })
+    }
+
     private fun root() = NetworkDriveItem(
         id = "root",
         name = "root",
