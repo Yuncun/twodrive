@@ -18,7 +18,10 @@ package codes.fixmy.twodrive.core.data.testdoubles
 
 import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
+import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
+import codes.fixmy.twodrive.core.network.model.NetworkFolderFacet
+import codes.fixmy.twodrive.core.network.model.NetworkParentReference
 import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSet
 import codes.fixmy.twodrive.core.network.model.NetworkUser
 import okhttp3.MediaType.Companion.toMediaType
@@ -67,4 +70,20 @@ class TestGraphNetworkDataSource : GraphNetworkDataSource {
     }
 
     override suspend fun getThumbnails(itemId: String): List<NetworkThumbnailSet> = emptyList()
+
+    /** The (parentId, name) of every createFolder call, in order. */
+    val createdFolders = mutableListOf<Pair<String?, String>>()
+    var failCreateFolderWith: Exception? = null
+
+    override suspend fun createFolder(parentId: String?, name: String): NetworkDriveItem {
+        failCreateFolderWith?.let { throw it }
+        createdFolders += parentId to name
+        return NetworkDriveItem(
+            id = "created-${createdFolders.size}",
+            name = name,
+            lastModifiedDateTime = "2026-08-01T00:00:00Z",
+            folder = NetworkFolderFacet(childCount = 0),
+            parentReference = NetworkParentReference(id = parentId ?: "root"),
+        )
+    }
 }

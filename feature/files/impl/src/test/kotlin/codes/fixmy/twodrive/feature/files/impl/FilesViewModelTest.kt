@@ -16,6 +16,7 @@
 
 package codes.fixmy.twodrive.feature.files.impl
 
+import codes.fixmy.twodrive.core.data.repository.CreateFolderResult
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.UserData
 import codes.fixmy.twodrive.core.model.data.ViewMode
@@ -35,6 +36,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class FilesViewModelTest {
@@ -174,6 +176,54 @@ class FilesViewModelTest {
         syncManager.setLastSyncFailed(true)
 
         assertFalse(viewModel.isOffline.value)
+    }
+
+    @Test
+    fun createdFolderGoesToThisScreensFolderAndIsListed() = runTest {
+        val subfolderViewModel = FilesViewModel(
+            driveItemsRepository = driveItemsRepository,
+            userDataRepository = userDataRepository,
+            syncManager = syncManager,
+            networkMonitor = networkMonitor,
+            folderId = "f-documents",
+        )
+        backgroundScope.launch(UnconfinedTestDispatcher()) { subfolderViewModel.uiState.collect() }
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING, viewMode = ViewMode.LIST))
+
+        subfolderViewModel.createFolder("  Trips ")
+
+        assertEquals(listOf<Pair<String?, String>>("f-documents" to "Trips"), driveItemsRepository.createdFolders)
+        val state = assertIs<FilesUiState.Success>(subfolderViewModel.uiState.value)
+        assertEquals("Trips", state.items.first().name)
+        assertNull(subfolderViewModel.createFolderError.value)
+    }
+
+    @Test
+    fun blankFolderNameIsNotSent() = runTest {
+        viewModel.createFolder("   ")
+
+        assertTrue(driveItemsRepository.createdFolders.isEmpty())
+    }
+
+    @Test
+    fun storageFullIsReportedUntilShown() = runTest {
+        driveItemsRepository.createFolderResult = CreateFolderResult.StorageFull
+
+        viewModel.createFolder("Trips")
+
+        assertEquals(CreateFolderError.STORAGE_FULL, viewModel.createFolderError.value)
+        viewModel.createFolderErrorShown()
+        assertNull(viewModel.createFolderError.value)
+    }
+
+    @Test
+    fun otherCreateFolderFailuresAreReported() = runTest {
+        driveItemsRepository.createFolderResult = CreateFolderResult.Failed
+
+        viewModel.createFolder("Trips")
+
+        assertEquals(CreateFolderError.FAILED, viewModel.createFolderError.value)
     }
 
     @Test

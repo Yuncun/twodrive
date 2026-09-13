@@ -17,6 +17,7 @@
 package codes.fixmy.twodrive.core.network
 
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
+import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
 import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSet
 import codes.fixmy.twodrive.core.network.model.NetworkUser
@@ -49,4 +50,11 @@ interface GraphNetworkDataSource {
      * The thumbnail renditions of [itemId]; empty when Graph cannot render the item.
      */
     suspend fun getThumbnails(itemId: String): List<NetworkThumbnailSet>
+
+    /**
+     * Creates a folder called [name] in [parentId], or in the drive root when [parentId] is null,
+     * and returns it. A name already taken in that folder gets a number appended by Graph
+     * rather than failing.
+     */
+    suspend fun createFolder(parentId: String?, name: String): NetworkDriveItem
 }

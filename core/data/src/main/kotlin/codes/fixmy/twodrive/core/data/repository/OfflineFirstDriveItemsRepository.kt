@@ -26,6 +26,7 @@ import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
+import codes.fixmy.twodrive.core.network.retrofit.InsufficientStorageMonitor.Companion.HTTP_INSUFFICIENT_STORAGE
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -70,6 +71,23 @@ internal class OfflineFirstDriveItemsRepository @Inject constructor(
             }
         }.isSuccess
     }
+
+    override suspend fun createFolder(parentId: String?, name: String): CreateFolderResult =
+        trace("DriveItems.createFolder") {
+            try {
+                val entity = network.createFolder(parentId, name).asEntity()
+                driveItemDao.upsertDriveItems(listOf(entity))
+                CreateFolderResult.Created(entity.asExternalModel())
+            } catch (cancellationException: CancellationException) {
+                throw cancellationException
+            } catch (e: HttpException) {
+                Log.i("DriveItems", "Graph refused to create folder", e)
+                if (e.code() == HTTP_INSUFFICIENT_STORAGE) CreateFolderResult.StorageFull else CreateFolderResult.Failed
+            } catch (e: Exception) {
+                Log.i("DriveItems", "Failed to create folder", e)
+                CreateFolderResult.Failed
+            }
+        }
 
     /**
      * Applies every page from [startLink] (a full enumeration when null) and only then stores

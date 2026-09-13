@@ -17,6 +17,7 @@
 package codes.fixmy.twodrive.core.data.repository
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import codes.fixmy.twodrive.core.data.model.asEntity
 import codes.fixmy.twodrive.core.data.testdoubles.TestDriveItemDao
 import codes.fixmy.twodrive.core.data.testdoubles.TestGraphNetworkDataSource
 import codes.fixmy.twodrive.core.datastore.TwoDrivePreferencesDataSource
@@ -31,13 +32,18 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import retrofit2.HttpException
+import retrofit2.Response
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class OfflineFirstDriveItemsRepositoryTest {
@@ -157,6 +163,44 @@ class OfflineFirstDriveItemsRepositoryTest {
         network.failDeltaWith = 500
 
         assertFalse(subject.sync())
+    }
+
+    @Test
+    fun createdFolderIsStoredSoItsParentListsItAtOnce() = testScope.runTest {
+        dao.upsertDriveItems(listOf(root().asEntity(), folder("f-docs", "Documents").asEntity()))
+
+        val result = subject.createFolder(parentId = "f-docs", name = "Trips")
+
+        val created = assertIs<CreateFolderResult.Created>(result).folder
+        assertEquals("Trips", created.name)
+        assertTrue(created.isFolder)
+        assertEquals(listOf<Pair<String?, String>>("f-docs" to "Trips"), network.createdFolders)
+        assertEquals(listOf(created), subject.getChildren("f-docs").first())
+    }
+
+    @Test
+    fun createdRootFolderIsListedInTheRoot() = testScope.runTest {
+        dao.upsertDriveItems(listOf(root().asEntity()))
+
+        subject.createFolder(parentId = null, name = "Trips")
+
+        assertEquals(listOf("Trips"), subject.getChildren(null).first().map { it.name })
+    }
+
+    @Test
+    fun insufficientStorageIsReportedAsStorageFull() = testScope.runTest {
+        network.failCreateFolderWith =
+            HttpException(Response.error<Any>(507, "".toResponseBody("text/plain".toMediaType())))
+
+        assertEquals(CreateFolderResult.StorageFull, subject.createFolder(parentId = null, name = "Trips"))
+        assertTrue(dao.getAllIds().isEmpty())
+    }
+
+    @Test
+    fun otherCreateFolderFailuresAreReportedWithoutThrowing() = testScope.runTest {
+        network.failCreateFolderWith = IOException("offline")
+
+        assertEquals(CreateFolderResult.Failed, subject.createFolder(parentId = null, name = "Trips"))
     }
 
     private fun root() = NetworkDriveItem(

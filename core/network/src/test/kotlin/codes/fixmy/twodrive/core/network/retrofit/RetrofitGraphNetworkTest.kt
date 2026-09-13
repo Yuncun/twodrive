@@ -113,6 +113,39 @@ class RetrofitGraphNetworkTest {
         assertEquals(emptyList(), subject.getThumbnails("4E1A2B3C5D6F7A8B!110"))
     }
 
+    @Test
+    fun createFolderPostsNameFolderFacetAndRenameToTheParentsChildren() = runTest {
+        server.enqueue(
+            MockResponse().setResponseCode(201).setBody(
+                """
+                {"id": "new", "name": "Trips 1", "folder": {"childCount": 0},
+                 "parentReference": {"id": "abc"}}
+                """.trimIndent(),
+            ),
+        )
+
+        val folder = subject.createFolder(parentId = "abc", name = "Trips")
+
+        val request = server.takeRequest()
+        assertEquals("POST", request.method)
+        assertEquals("/v1.0/me/drive/items/abc/children", request.path)
+        assertEquals(
+            """{"name":"Trips","folder":{},"@microsoft.graph.conflictBehavior":"rename"}""",
+            request.body.readUtf8(),
+        )
+        assertEquals("Trips 1", folder.name)
+        assertTrue(folder.isFolder)
+    }
+
+    @Test
+    fun createFolderAtTheRootUsesTheRootPath() = runTest {
+        server.enqueue(MockResponse().setResponseCode(201).setBody("""{"id": "new", "folder": {}}"""))
+
+        subject.createFolder(parentId = null, name = "Trips")
+
+        assertEquals("/v1.0/me/drive/root/children", server.takeRequest().path)
+    }
+
     private fun fixture(name: String): String =
         requireNotNull(javaClass.classLoader?.getResource(name)) { "Missing fixture $name" }.readText()
 }

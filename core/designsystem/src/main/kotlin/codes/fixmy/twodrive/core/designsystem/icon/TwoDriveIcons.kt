@@ -43,6 +43,7 @@ import androidx.compose.material.icons.rounded.Audiotrack
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.GridView
@@ -63,6 +64,7 @@ import androidx.compose.material.icons.rounded.Slideshow
 import androidx.compose.material.icons.rounded.TableChart
 import androidx.compose.material.icons.rounded.TextSnippet
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.ViewDay
 import androidx.compose.material.icons.rounded.ViewList
@@ -82,6 +84,7 @@ object TwoDriveIcons {
     val Delete = Icons.Outlined.Delete
     val Details = Icons.Outlined.Info
     val Cloud = Icons.Outlined.Cloud
+    val CreateNewFolder = Icons.Rounded.CreateNewFolder
     val Document = Icons.Rounded.Description
     val Download = Icons.Outlined.FileDownload
     val File = Icons.AutoMirrored.Rounded.InsertDriveFile
@@ -117,6 +120,7 @@ object TwoDriveIcons {
     val SyncProblem = Icons.Outlined.SyncProblem
     val Text = Icons.Rounded.TextSnippet
     val Tune = Icons.Rounded.Tune
+    val Upload = Icons.Rounded.Upload
     val Video = Icons.Rounded.Videocam
     val ViewDay = Icons.Rounded.ViewDay
     val ViewList = Icons.Rounded.ViewList

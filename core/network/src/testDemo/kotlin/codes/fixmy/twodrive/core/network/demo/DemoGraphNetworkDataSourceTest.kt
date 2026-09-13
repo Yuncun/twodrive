@@ -58,6 +58,27 @@ class DemoGraphNetworkDataSourceTest {
     }
 
     @Test
+    fun createdFolderIsAppendedToItsParentWithAFreeName() = runTest(testDispatcher) {
+        val first = subject.createFolder(parentId = "f-documents", name = "Trips")
+        val second = subject.createFolder(parentId = "f-documents", name = "Trips")
+
+        assertEquals("Trips", first.name)
+        assertEquals("Trips 1", second.name)
+        assertTrue(second.isFolder)
+        assertEquals(
+            listOf(first.id, second.id),
+            subject.getChildren("f-documents").value.filter { it.isFolder }.map { it.id }.takeLast(2),
+        )
+    }
+
+    @Test
+    fun createdFolderWithoutAParentLandsInTheRoot() = runTest(testDispatcher) {
+        val folder = subject.createFolder(parentId = null, name = "Trips")
+
+        assertEquals(folder, subject.getChildren(itemId = null).value.last())
+    }
+
+    @Test
     fun secondDeltaIsEmpty() = runTest(testDispatcher) {
         val page = subject.getDelta(deltaLink = DemoGraphNetworkDataSource.DEMO_DELTA_LINK)
         assertTrue(page.value.isEmpty())

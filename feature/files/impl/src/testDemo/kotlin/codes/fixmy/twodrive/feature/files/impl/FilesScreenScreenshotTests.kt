@@ -274,6 +274,17 @@ class FilesScreenScreenshotTests {
         }
     }
 
+    @Test
+    fun addItemsSheet() {
+        composeTestRule.captureMultiDevice("AddItemsSheet") {
+            TwoDriveTheme {
+                TwoDriveBackground {
+                    AddItemsSheetContent(onCreateFolderClick = {})
+                }
+            }
+        }
+    }
+
     @androidx.compose.runtime.Composable
     private fun FilesScreenContent(
         uiState: FilesUiState,
