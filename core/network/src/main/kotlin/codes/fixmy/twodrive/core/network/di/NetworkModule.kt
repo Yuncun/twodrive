@@ -19,13 +19,17 @@ package codes.fixmy.twodrive.core.network.di
 import android.content.Context
 import androidx.tracing.trace
 import codes.fixmy.twodrive.core.network.BuildConfig
+import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
 import codes.fixmy.twodrive.core.network.demo.DemoAssetManager
 import codes.fixmy.twodrive.core.network.retrofit.BearerTokenInterceptor
 import codes.fixmy.twodrive.core.network.retrofit.GRAPH_BASE_URL
 import codes.fixmy.twodrive.core.network.retrofit.GRAPH_BASE_URL_NAME
 import codes.fixmy.twodrive.core.network.retrofit.InsufficientStorageMonitor
 import codes.fixmy.twodrive.core.network.retrofit.RetryAfterInterceptor
+import codes.fixmy.twodrive.core.network.thumbnail.DriveItemThumbnailFetcher
 import coil.ImageLoader
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import coil.util.DebugLogger
 import dagger.Module
 import dagger.Provides
@@ -85,7 +89,13 @@ internal object NetworkModule {
 
     /**
      * Coil calls `applicationContext.newImageLoader()` during initialisation to obtain an
-     * ImageLoader; thumbnails are fetched through the same authenticated OkHttp client.
+     * ImageLoader. Drive items load their thumbnails through [DriveItemThumbnailFetcher]: the
+     * Graph call that returns the thumbnail URL goes through the authenticated Retrofit client,
+     * while the download itself uses a client without [BearerTokenInterceptor], because Graph's
+     * thumbnail URLs are pre-authenticated links on other hosts that must not see the token.
+     *
+     * Graph serves thumbnails with headers that forbid caching; the URLs expire anyway and the
+     * fetcher keys the disk cache by item and modification time, so cache headers are ignored.
      *
      * @see <a href="https://github.com/coil-kt/coil/blob/main/coil-singleton/src/main/java/coil/Coil.kt">Coil</a>
      */
@@ -93,11 +103,27 @@ internal object NetworkModule {
     @Singleton
     fun imageLoader(
         // We specifically request dagger.Lazy here, so that it's not instantiated from Dagger.
-        okHttpCallFactory: dagger.Lazy<Call.Factory>,
+        network: dagger.Lazy<GraphNetworkDataSource>,
         @ApplicationContext application: Context,
     ): ImageLoader = trace("TwoDriveImageLoader") {
         ImageLoader.Builder(application)
-            .callFactory { okHttpCallFactory.get() }
+            .callFactory { OkHttpClient() }
+            .memoryCache {
+                MemoryCache.Builder(application)
+                    .maxSizePercent(IMAGE_MEMORY_CACHE_PERCENT)
+                    .build()
+            }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(application.cacheDir.resolve(IMAGE_DISK_CACHE_DIR))
+                    .maxSizeBytes(IMAGE_DISK_CACHE_BYTES)
+                    .build()
+            }
+            .respectCacheHeaders(false)
+            .components {
+                add(DriveItemThumbnailFetcher.Factory(network))
+                add(DriveItemThumbnailFetcher.Keyer)
+            }
             .apply {
                 if (BuildConfig.DEBUG) {
                     logger(DebugLogger())
@@ -106,3 +132,7 @@ internal object NetworkModule {
             .build()
     }
 }
+
+private const val IMAGE_MEMORY_CACHE_PERCENT = 0.25
+private const val IMAGE_DISK_CACHE_DIR = "image_cache"
+private const val IMAGE_DISK_CACHE_BYTES = 128L * 1024 * 1024

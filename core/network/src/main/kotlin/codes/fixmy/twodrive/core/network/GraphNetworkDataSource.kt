@@ -18,6 +18,7 @@ package codes.fixmy.twodrive.core.network
 
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
+import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSet
 import codes.fixmy.twodrive.core.network.model.NetworkUser
 
 /**
@@ -43,4 +44,9 @@ interface GraphNetworkDataSource {
      * Fetches a continuation page given by an `@odata.nextLink`.
      */
     suspend fun getPage(url: String): NetworkDriveItemPage
+
+    /**
+     * The thumbnail renditions of [itemId]; empty when Graph cannot render the item.
+     */
+    suspend fun getThumbnails(itemId: String): List<NetworkThumbnailSet>
 }

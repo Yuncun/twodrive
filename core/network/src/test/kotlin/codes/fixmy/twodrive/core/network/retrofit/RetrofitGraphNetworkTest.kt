@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class RetrofitGraphNetworkTest {
 
@@ -91,4 +92,27 @@ class RetrofitGraphNetworkTest {
 
         assertEquals("/v1.0/me/drive/items/abc/children", server.takeRequest().path)
     }
+
+    @Test
+    fun thumbnailsUseTheItemsPathAndParseEveryRendition() = runTest {
+        server.enqueue(MockResponse().setBody(fixture("thumbnails.json")))
+
+        val sets = subject.getThumbnails("4E1A2B3C5D6F7A8B!105")
+
+        assertEquals("/v1.0/me/drive/items/4E1A2B3C5D6F7A8B!105/thumbnails", server.takeRequest().path)
+        val set = sets.single()
+        assertEquals(96, set.small?.width)
+        assertEquals(132, set.medium?.height)
+        assertTrue(set.large!!.url!!.startsWith("https://public.bn.files.1drv.com/"))
+    }
+
+    @Test
+    fun itemsGraphCannotRenderHaveNoThumbnails() = runTest {
+        server.enqueue(MockResponse().setBody(fixture("thumbnails-none.json")))
+
+        assertEquals(emptyList(), subject.getThumbnails("4E1A2B3C5D6F7A8B!110"))
+    }
+
+    private fun fixture(name: String): String =
+        requireNotNull(javaClass.classLoader?.getResource(name)) { "Missing fixture $name" }.readText()
 }

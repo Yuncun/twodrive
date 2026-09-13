@@ -20,6 +20,8 @@ import androidx.tracing.trace
 import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
+import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSet
+import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSetPage
 import codes.fixmy.twodrive.core.network.model.NetworkUser
 import kotlinx.serialization.json.Json
 import okhttp3.Call
@@ -54,6 +56,9 @@ internal interface RetrofitGraphApi {
 
     @GET
     suspend fun getPage(@Url url: String): NetworkDriveItemPage
+
+    @GET("me/drive/items/{itemId}/thumbnails")
+    suspend fun getThumbnails(@Path("itemId") itemId: String): NetworkThumbnailSetPage
 }
 
 const val GRAPH_BASE_URL = "https://graph.microsoft.com/v1.0/"
@@ -97,4 +102,7 @@ class RetrofitGraphNetwork @Inject constructor(
         if (deltaLink == null) networkApi.getRootDelta() else networkApi.getPage(deltaLink)
 
     override suspend fun getPage(url: String): NetworkDriveItemPage = networkApi.getPage(url)
+
+    override suspend fun getThumbnails(itemId: String): List<NetworkThumbnailSet> =
+        networkApi.getThumbnails(itemId).value
 }

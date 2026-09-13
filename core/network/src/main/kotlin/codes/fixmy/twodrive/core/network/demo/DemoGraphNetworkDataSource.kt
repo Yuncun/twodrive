@@ -25,6 +25,8 @@ import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItem
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
+import codes.fixmy.twodrive.core.network.model.NetworkThumbnail
+import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSet
 import codes.fixmy.twodrive.core.network.model.NetworkUser
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -32,6 +34,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import java.io.BufferedReader
+import java.io.DataInputStream
+import java.io.FileNotFoundException
+import java.io.InputStream
 import javax.inject.Inject
 
 /**
@@ -63,6 +68,28 @@ class DemoGraphNetworkDataSource @Inject constructor(
     override suspend fun getPage(url: String): NetworkDriveItemPage =
         error("The demo drive fits in a single page; no continuation for $url")
 
+    /**
+     * Serves the placeholder PNG bundled as `thumbnails/<itemId>.png`, or no thumbnail when the
+     * demo drive bundles none for the item. The one rendition stands in for all three sizes.
+     */
+    override suspend fun getThumbnails(itemId: String): List<NetworkThumbnailSet> =
+        withContext(ioDispatcher) {
+            val fileName = "$THUMBNAILS_DIR/$itemId.png"
+            val (width, height) = try {
+                assets.open(fileName).use(::pngDimensions)
+            } catch (_: FileNotFoundException) {
+                return@withContext emptyList()
+            }
+            val thumbnail = NetworkThumbnail(url = "$ANDROID_ASSET_URL$fileName", width = width, height = height)
+            listOf(NetworkThumbnailSet(small = thumbnail, medium = thumbnail, large = thumbnail))
+        }
+
+    /** Reads width and height from a PNG's IHDR chunk, which always follows the 8-byte signature. */
+    private fun pngDimensions(input: InputStream): Pair<Int, Int> = DataInputStream(input).run {
+        skipBytes(PNG_IHDR_WIDTH_OFFSET)
+        readInt() to readInt()
+    }
+
     private suspend fun allItems(): List<NetworkDriveItem> =
         getDataFromJsonFile<NetworkDriveItemPage>(ITEMS_ASSET).value
 
@@ -91,6 +118,9 @@ class DemoGraphNetworkDataSource @Inject constructor(
         private const val ME_ASSET = "me.json"
         private const val DRIVE_ASSET = "drive.json"
         private const val ITEMS_ASSET = "items.json"
+        private const val THUMBNAILS_DIR = "thumbnails"
+        private const val ANDROID_ASSET_URL = "file:///android_asset/"
+        private const val PNG_IHDR_WIDTH_OFFSET = 16
         const val DEMO_DELTA_LINK = "demo://delta/latest"
     }
 }

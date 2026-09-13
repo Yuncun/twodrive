@@ -1,15 +1,17 @@
 # Microsoft Graph response fixtures
 
 JSON bodies that unit tests serve from MockWebServer in place of `graph.microsoft.com`. Tests load
-them as test resources (see `core/data/build.gradle.kts`) and replace the
-`https://graph.microsoft.com/v1.0/` prefix in `@odata.nextLink` / `@odata.deltaLink` with the
-local server's URL.
+them as test resources (see `core/data/build.gradle.kts` and `core/network/build.gradle.kts`) and
+replace the `https://graph.microsoft.com/v1.0/` prefix in `@odata.nextLink` / `@odata.deltaLink`, or
+the `https://public.bn.files.1drv.com/` thumbnail download host, with the local server's URL.
 
 | File | Graph call | What it exercises |
 |------|------------|-------------------|
 | `delta-initial-page-1.json` | `GET /me/drive/root/delta` | first page of a full enumeration, ends in `@odata.nextLink` |
 | `delta-initial-page-2.json` | the `nextLink` above | last page, ends in `@odata.deltaLink` |
 | `delta-incremental.json` | the `deltaLink` above | rename, move, new file, deleted folder (entry only, no children), deleted file with no `name` or timestamps |
+| `thumbnails.json` | `GET /me/drive/items/{id}/thumbnails` | one thumbnail set with `small` / `medium` / `large` renditions on a pre-authenticated download host |
+| `thumbnails-none.json` | the same, for an item Graph cannot render | an empty `value` |
 | `error-410-resync-required.json` | an expired `deltaLink` | `410 Gone` with `resyncRequired` |
 | `error-503-service-unavailable.json` | any | a server error sync cannot recover from |
 
@@ -24,6 +26,9 @@ the documented Graph v1.0 shapes for a OneDrive personal drive:
 - [driveItem resource](https://learn.microsoft.com/graph/api/resources/driveitem?view=graph-rest-1.0):
   the property set (`cTag`, `eTag`, `fileSystemInfo`, `file.hashes`, `folder.view`,
   `specialFolder`, `photo`, `parentReference.driveType`).
+- [List thumbnails](https://learn.microsoft.com/graph/api/driveitem-list-thumbnails?view=graph-rest-1.0)
+  and [thumbnailSet](https://learn.microsoft.com/graph/api/resources/thumbnailset?view=graph-rest-1.0):
+  the three renditions and their `url`, `width` and `height`.
 - [Error responses](https://learn.microsoft.com/graph/errors): the `error` / `innerError` body.
 
 Ids use the personal-drive `<DRIVEID>!<n>` form. Replace a fixture with a real, scrubbed response

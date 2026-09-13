@@ -26,6 +26,8 @@ android {
     }
     namespace = "codes.fixmy.twodrive.core.network"
     testOptions.unitTests.isIncludeAndroidResources = true
+    // Graph response bodies that MockWebServer tests serve, shared with docs readers.
+    sourceSets.getByName("test").resources.srcDir(rootProject.file("docs/graph-fixtures"))
 }
 
 dependencies {
@@ -42,4 +44,5 @@ dependencies {
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.robolectric)
 }

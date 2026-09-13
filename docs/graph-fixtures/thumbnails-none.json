@@ -1,0 +1,4 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('demo%40example.com')/drive/items('4E1A2B3C5D6F7A8B%21110')/thumbnails",
+  "value": []
+}

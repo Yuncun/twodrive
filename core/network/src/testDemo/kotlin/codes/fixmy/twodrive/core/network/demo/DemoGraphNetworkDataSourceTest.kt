@@ -69,4 +69,18 @@ class DemoGraphNetworkDataSourceTest {
         assertEquals("personal", subject.getDrive().driveType)
         assertEquals("demo@example.com", subject.getMe().userPrincipalName)
     }
+
+    @Test
+    fun thumbnailsPointAtTheBundledPlaceholderAsset() = runTest(testDispatcher) {
+        val set = subject.getThumbnails("i-beach").single()
+
+        assertEquals("file:///android_asset/thumbnails/i-beach.png", set.medium?.url)
+        assertEquals(176, set.medium?.width)
+        assertEquals(132, set.medium?.height)
+    }
+
+    @Test
+    fun itemsWithoutABundledThumbnailHaveNone() = runTest(testDispatcher) {
+        assertTrue(subject.getThumbnails("i-song").isEmpty())
+    }
 }

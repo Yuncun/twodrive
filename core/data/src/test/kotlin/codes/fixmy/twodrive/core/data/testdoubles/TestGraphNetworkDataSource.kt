@@ -19,6 +19,7 @@ package codes.fixmy.twodrive.core.data.testdoubles
 import codes.fixmy.twodrive.core.network.GraphNetworkDataSource
 import codes.fixmy.twodrive.core.network.model.NetworkDrive
 import codes.fixmy.twodrive.core.network.model.NetworkDriveItemPage
+import codes.fixmy.twodrive.core.network.model.NetworkThumbnailSet
 import codes.fixmy.twodrive.core.network.model.NetworkUser
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -64,4 +65,6 @@ class TestGraphNetworkDataSource : GraphNetworkDataSource {
         requestedLinks += url
         return pages.getValue(url)
     }
+
+    override suspend fun getThumbnails(itemId: String): List<NetworkThumbnailSet> = emptyList()
 }
