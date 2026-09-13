@@ -112,6 +112,8 @@ fun FilesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isOffline by viewModel.isOffline.collectAsStateWithLifecycle()
+    val pendingDelete by viewModel.pendingDelete.collectAsStateWithLifecycle()
+    val deleteError by viewModel.deleteError.collectAsStateWithLifecycle()
     // The item whose "⋯" was tapped and the list it was tapped in; non-null while its sheet is open.
     var sheetTarget by remember { mutableStateOf<Pair<DriveItem, ItemSource>?>(null) }
     sheetTarget?.let { (item, source) ->
@@ -120,8 +122,10 @@ fun FilesScreen(
             source = source,
             today = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
             onDismissRequest = { sheetTarget = null },
-            // Rename, Delete, Move, Share and Details plug in here with M3.4, M3.5, M3.7 and M3.8.
-            onAction = { _, _ -> },
+            // Rename, Move, Share and Details plug in here with M3.4b, M3.5, M3.7 and M3.8.
+            onAction = { action, target ->
+                if (action == ItemAction.DELETE) viewModel.deleteItem(target)
+            },
         )
     }
     if (viewModel.folderId == null) {
@@ -149,6 +153,11 @@ fun FilesScreen(
             createFolderError = createFolderError,
             onCreateFolder = viewModel::createFolder,
             onCreateFolderErrorShown = viewModel::createFolderErrorShown,
+            pendingDelete = pendingDelete,
+            deleteError = deleteError,
+            onUndoDelete = viewModel::undoDelete,
+            onDeleteUndoWindowEnd = viewModel::deleteUndoWindowEnded,
+            onDeleteErrorShown = viewModel::deleteErrorShown,
         )
     } else {
         FolderScreen(
@@ -162,6 +171,11 @@ fun FilesScreen(
             onSortOrderChange = viewModel::setSortOrder,
             onViewModeChange = viewModel::setViewMode,
             modifier = modifier,
+            pendingDelete = pendingDelete,
+            deleteError = deleteError,
+            onUndoDelete = viewModel::undoDelete,
+            onDeleteUndoWindowEnd = viewModel::deleteUndoWindowEnded,
+            onDeleteErrorShown = viewModel::deleteErrorShown,
         )
     }
 }
@@ -183,6 +197,11 @@ internal fun FilesScreen(
     createFolderError: CreateFolderError? = null,
     onCreateFolder: (String) -> Unit = {},
     onCreateFolderErrorShown: () -> Unit = {},
+    pendingDelete: DriveItem? = null,
+    deleteError: DriveItem? = null,
+    onUndoDelete: () -> Unit = {},
+    onDeleteUndoWindowEnd: () -> Unit = {},
+    onDeleteErrorShown: () -> Unit = {},
     today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
     var addItemsSheetVisible by rememberSaveable { mutableStateOf(false) }
@@ -230,6 +249,13 @@ internal fun FilesScreen(
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
             OfflineSnackbarHost(isOffline = isOffline)
             CreateFolderErrorSnackbarHost(error = createFolderError, onShown = onCreateFolderErrorShown)
+            DeleteSnackbarHost(
+                pendingDelete = pendingDelete,
+                deleteError = deleteError,
+                onUndo = onUndoDelete,
+                onUndoWindowEnd = onDeleteUndoWindowEnd,
+                onErrorShown = onDeleteErrorShown,
+            )
             FilesFloatingLayer(onAddClick = { addItemsSheetVisible = true })
         }
     }
@@ -259,6 +285,11 @@ internal fun FolderScreen(
     onSortOrderChange: (SortOrder) -> Unit,
     onViewModeChange: (ViewMode) -> Unit,
     modifier: Modifier = Modifier,
+    pendingDelete: DriveItem? = null,
+    deleteError: DriveItem? = null,
+    onUndoDelete: () -> Unit = {},
+    onDeleteUndoWindowEnd: () -> Unit = {},
+    onDeleteErrorShown: () -> Unit = {},
     today: LocalDate = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -297,7 +328,16 @@ internal fun FolderScreen(
                 onViewModeChange = onViewModeChange,
             )
         }
-        OfflineSnackbarHost(isOffline = isOffline, modifier = Modifier.align(Alignment.BottomCenter))
+        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+            OfflineSnackbarHost(isOffline = isOffline)
+            DeleteSnackbarHost(
+                pendingDelete = pendingDelete,
+                deleteError = deleteError,
+                onUndo = onUndoDelete,
+                onUndoWindowEnd = onDeleteUndoWindowEnd,
+                onErrorShown = onDeleteErrorShown,
+            )
+        }
     }
 }
 

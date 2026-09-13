@@ -34,6 +34,9 @@ appId: codes.fixmy.twodrive.demo.debug
 - assertNotVisible: "Music"
 - stopApp
 - launchApp
+# Wait for the tab row: a childOf tap straight after launchApp does not wait for its parent.
+- assertVisible:
+    id: "files:tabs"
 - tapOn:
     text: "My files"
     childOf:

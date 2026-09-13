@@ -89,6 +89,15 @@ class TestGraphNetworkDataSource : GraphNetworkDataSource {
         )
     }
 
+    /** The id of every deleteItem call, in order. */
+    val deletedItems = mutableListOf<String>()
+    var failDeleteItemWith: Exception? = null
+
+    override suspend fun deleteItem(itemId: String) {
+        failDeleteItemWith?.let { throw it }
+        deletedItems += itemId
+    }
+
     /** File bytes by item id; a missing id fails like a download that cannot complete. */
     val contents = mutableMapOf<String, ByteArray>()
     val contentRequests = mutableListOf<String>()

@@ -41,6 +41,7 @@ import java.io.BufferedReader
 import java.io.DataInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -48,8 +49,8 @@ import javax.inject.Singleton
 /**
  * [GraphNetworkDataSource] implementation that serves a drive from local JSON assets, so the
  * demo flavor and JVM tests run without a Microsoft account or network. Folders created with
- * [createFolder] are appended in memory and last as long as the process; a singleton keeps every
- * caller looking at the same drive.
+ * [createFolder] and items removed with [deleteItem] are kept in memory and last as long as the
+ * process; a singleton keeps every caller looking at the same drive.
  */
 @Singleton
 class DemoGraphNetworkDataSource @Inject constructor(
@@ -59,6 +60,8 @@ class DemoGraphNetworkDataSource @Inject constructor(
 ) : GraphNetworkDataSource {
 
     private val createdItems = CopyOnWriteArrayList<NetworkDriveItem>()
+
+    private val deletedIds: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     override suspend fun getMe(): NetworkUser = getDataFromJsonFile(ME_ASSET)
 
@@ -71,8 +74,8 @@ class DemoGraphNetworkDataSource @Inject constructor(
     }
 
     override suspend fun getDelta(deltaLink: String?): NetworkDriveItemPage {
-        // Only createFolder changes the demo drive, and it hands the new folder straight to the
-        // caller, so a delta query after the first one is always empty.
+        // Only createFolder and deleteItem change the demo drive, and their callers apply the
+        // change to the cache themselves, so a delta query after the first one is always empty.
         val items = if (deltaLink == null) allItems() else emptyList()
         return NetworkDriveItemPage(value = items, deltaLink = DEMO_DELTA_LINK)
     }
@@ -125,14 +128,26 @@ class DemoGraphNetworkDataSource @Inject constructor(
         NetworkContent(length = bytes.size.toLong(), stream = bytes.inputStream())
     }
 
+    /** Forgets [itemId] and, through [allItems], everything inside it. */
+    override suspend fun deleteItem(itemId: String) {
+        if (allItems().none { it.id == itemId }) throw FileNotFoundException("No demo item $itemId")
+        deletedIds += itemId
+    }
+
     /** Reads width and height from a PNG's IHDR chunk, which always follows the 8-byte signature. */
     private fun pngDimensions(input: InputStream): Pair<Int, Int> = DataInputStream(input).run {
         skipBytes(PNG_IHDR_WIDTH_OFFSET)
         readInt() to readInt()
     }
 
-    private suspend fun allItems(): List<NetworkDriveItem> =
-        getDataFromJsonFile<NetworkDriveItemPage>(ITEMS_ASSET).value + createdItems
+    /** The bundled and created items, minus deleted ones and everything inside a deleted folder. */
+    private suspend fun allItems(): List<NetworkDriveItem> {
+        val items = getDataFromJsonFile<NetworkDriveItemPage>(ITEMS_ASSET).value + createdItems
+        val parentIds = items.associate { it.id to it.parentReference?.id }
+        return items.filterNot { item ->
+            generateSequence(item.id, parentIds::get).any { it in deletedIds }
+        }
+    }
 
     /**
      * Get data from the given JSON [fileName].

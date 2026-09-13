@@ -36,6 +36,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -83,6 +84,10 @@ internal interface RetrofitGraphApi {
     @Streaming
     @GET("me/drive/items/{itemId}/content")
     suspend fun getContent(@Path("itemId") itemId: String): Response<ResponseBody>
+
+    /** Answers 204 No Content. */
+    @DELETE("me/drive/items/{itemId}")
+    suspend fun deleteItem(@Path("itemId") itemId: String)
 
     @Streaming
     @GET
@@ -172,6 +177,8 @@ class RetrofitGraphNetwork @Inject constructor(
         }
         return NetworkContent(length = body.contentLength(), stream = body.byteStream())
     }
+
+    override suspend fun deleteItem(itemId: String) = networkApi.deleteItem(itemId)
 }
 
 private fun api(networkJson: Json, callFactory: dagger.Lazy<Call.Factory>, baseUrl: String): RetrofitGraphApi =

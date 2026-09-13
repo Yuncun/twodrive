@@ -177,6 +177,26 @@ class RetrofitGraphNetworkTest {
         assertEquals(404, error.code())
     }
 
+    @Test
+    fun deleteItemSendsDeleteToTheItemPath() = runTest {
+        server.enqueue(MockResponse().setResponseCode(204))
+
+        subject.deleteItem("abc")
+
+        val request = server.takeRequest()
+        assertEquals("DELETE", request.method)
+        assertEquals("/v1.0/me/drive/items/abc", request.path)
+    }
+
+    @Test
+    fun deleteItemFailureIsAnHttpException() = runTest {
+        server.enqueue(MockResponse().setResponseCode(404))
+
+        val error = assertFailsWith<HttpException> { subject.deleteItem("gone") }
+
+        assertEquals(404, error.code())
+    }
+
     private fun fixture(name: String): String =
         requireNotNull(javaClass.classLoader?.getResource(name)) { "Missing fixture $name" }.readText()
 }

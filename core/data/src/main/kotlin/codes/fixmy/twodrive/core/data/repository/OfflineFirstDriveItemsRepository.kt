@@ -89,6 +89,22 @@ internal class OfflineFirstDriveItemsRepository @Inject constructor(
             }
         }
 
+    override suspend fun deleteItem(id: String): DeleteResult = trace("DriveItems.deleteItem") {
+        val removed = driveItemDao.getDriveItemWithDescendants(id)
+        driveItemDao.deleteDriveItems(listOf(id))
+        try {
+            network.deleteItem(id)
+            DeleteResult.DELETED
+        } catch (cancellationException: CancellationException) {
+            driveItemDao.upsertDriveItems(removed)
+            throw cancellationException
+        } catch (e: Exception) {
+            Log.i("DriveItems", "Failed to delete item", e)
+            driveItemDao.upsertDriveItems(removed)
+            DeleteResult.FAILED
+        }
+    }
+
     /**
      * Applies every page from [startLink] (a full enumeration when null) and only then stores
      * the final `@odata.deltaLink`, so a sync that fails part-way resumes from the last

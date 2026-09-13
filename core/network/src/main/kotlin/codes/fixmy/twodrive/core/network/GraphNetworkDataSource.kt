@@ -63,4 +63,9 @@ interface GraphNetworkDataSource {
      * Opens the bytes of file [itemId] for reading. The caller must close the returned content.
      */
     suspend fun getContent(itemId: String): NetworkContent
+
+    /**
+     * Moves [itemId], and everything inside it when it is a folder, to the drive's recycle bin.
+     */
+    suspend fun deleteItem(itemId: String)
 }

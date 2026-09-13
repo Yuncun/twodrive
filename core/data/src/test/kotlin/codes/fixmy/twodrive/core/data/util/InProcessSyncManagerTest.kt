@@ -17,6 +17,7 @@
 package codes.fixmy.twodrive.core.data.util
 
 import codes.fixmy.twodrive.core.data.repository.CreateFolderResult
+import codes.fixmy.twodrive.core.data.repository.DeleteResult
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.model.data.DriveItem
 import kotlinx.coroutines.CompletableDeferred
@@ -103,4 +104,6 @@ private class RecordingDriveItemsRepository : DriveItemsRepository {
 
     override suspend fun createFolder(parentId: String?, name: String): CreateFolderResult =
         CreateFolderResult.Failed
+
+    override suspend fun deleteItem(id: String): DeleteResult = DeleteResult.FAILED
 }

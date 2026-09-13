@@ -24,6 +24,7 @@ import org.junit.Test
 import java.io.FileNotFoundException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -78,6 +79,22 @@ class DemoGraphNetworkDataSourceTest {
         val folder = subject.createFolder(parentId = null, name = "Trips")
 
         assertEquals(folder, subject.getChildren(itemId = null).value.last())
+    }
+
+    @Test
+    fun deletedFolderIsForgottenWithEverythingInside() = runTest(testDispatcher) {
+        subject.deleteItem("f-documents")
+
+        val ids = subject.getDelta(deltaLink = null).value.map { it.id }
+        assertFalse("f-documents" in ids)
+        assertFalse("i-notes" in ids)
+        assertTrue("i-resume" in ids)
+        assertFalse(subject.getChildren(itemId = null).value.any { it.name == "Documents" })
+    }
+
+    @Test
+    fun deletingAnUnknownItemFails() = runTest(testDispatcher) {
+        assertFailsWith<FileNotFoundException> { subject.deleteItem("no-such-item") }
     }
 
     @Test

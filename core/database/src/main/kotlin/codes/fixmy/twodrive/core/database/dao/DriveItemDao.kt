@@ -58,6 +58,19 @@ interface DriveItemDao {
     @Query("SELECT id FROM drive_items")
     suspend fun getAllIds(): List<String>
 
+    /** [id] and every cached descendant of it, in no particular order. */
+    @Query(
+        """
+        WITH RECURSIVE subtree(id) AS (
+            SELECT id FROM drive_items WHERE id = :id
+            UNION
+            SELECT drive_items.id FROM drive_items JOIN subtree ON drive_items.parent_id = subtree.id
+        )
+        SELECT * FROM drive_items WHERE id IN (SELECT id FROM subtree)
+        """,
+    )
+    suspend fun getDriveItemWithDescendants(id: String): List<DriveItemEntity>
+
     @Upsert
     suspend fun upsertDriveItems(entities: List<DriveItemEntity>)
 

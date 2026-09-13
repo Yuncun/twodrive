@@ -17,6 +17,7 @@
 package codes.fixmy.twodrive.core.testing.repository
 
 import codes.fixmy.twodrive.core.data.repository.CreateFolderResult
+import codes.fixmy.twodrive.core.data.repository.DeleteResult
 import codes.fixmy.twodrive.core.data.repository.DriveItemsRepository
 import codes.fixmy.twodrive.core.model.data.DriveItem
 import kotlinx.coroutines.flow.Flow
@@ -78,6 +79,22 @@ class TestDriveItemsRepository : DriveItemsRepository {
         )
         driveItemsFlow.tryEmit(items + folder)
         return CreateFolderResult.Created(folder)
+    }
+
+    /** The id of every deleteItem call, in order. */
+    val deletedItems = mutableListOf<String>()
+
+    /** What the next deleteItem call returns; [DeleteResult.DELETED] also drops the item and its descendants. */
+    var deleteResult: DeleteResult = DeleteResult.DELETED
+
+    override suspend fun deleteItem(id: String): DeleteResult {
+        deletedItems += id
+        if (deleteResult == DeleteResult.DELETED) {
+            val items = driveItemsFlow.replayCache.firstOrNull().orEmpty()
+            val parentIds = items.associate { it.id to it.parentId }
+            driveItemsFlow.tryEmit(items.filterNot { item -> generateSequence(item.id, parentIds::get).any { it == id } })
+        }
+        return deleteResult
     }
 
     /**

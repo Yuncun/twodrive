@@ -17,6 +17,7 @@
 package codes.fixmy.twodrive.feature.files.impl
 
 import codes.fixmy.twodrive.core.data.repository.CreateFolderResult
+import codes.fixmy.twodrive.core.data.repository.DeleteResult
 import codes.fixmy.twodrive.core.model.data.SortOrder
 import codes.fixmy.twodrive.core.model.data.UserData
 import codes.fixmy.twodrive.core.model.data.ViewMode
@@ -225,6 +226,90 @@ class FilesViewModelTest {
 
         assertEquals(CreateFolderError.FAILED, viewModel.createFolderError.value)
     }
+
+    @Test
+    fun deletedItemIsHiddenAtOnceAndSentOnlyWhenTheUndoWindowEnds() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING, viewMode = ViewMode.LIST))
+        val resume = driveItemsTestData.first { it.id == "i-resume" }
+
+        viewModel.deleteItem(resume)
+
+        assertEquals(resume, viewModel.pendingDelete.value)
+        assertFalse(rootNames().contains("Resume 2026.docx"))
+        assertTrue(driveItemsRepository.deletedItems.isEmpty())
+
+        viewModel.deleteUndoWindowEnded()
+
+        assertNull(viewModel.pendingDelete.value)
+        assertEquals(listOf("i-resume"), driveItemsRepository.deletedItems)
+        assertEquals(listOf("Documents", "Beach sunset.jpg", "Video tour.mp4"), rootNames())
+        assertNull(viewModel.deleteError.value)
+    }
+
+    @Test
+    fun undoRestoresTheRowAndSendsNothing() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING, viewMode = ViewMode.LIST))
+
+        viewModel.deleteItem(driveItemsTestData.first { it.id == "i-beach" })
+        viewModel.undoDelete()
+        viewModel.deleteUndoWindowEnded()
+
+        assertNull(viewModel.pendingDelete.value)
+        assertTrue(driveItemsRepository.deletedItems.isEmpty())
+        assertEquals(listOf("Documents", "Beach sunset.jpg", "Resume 2026.docx", "Video tour.mp4"), rootNames())
+    }
+
+    @Test
+    fun aSecondDeleteSendsTheFirstStraightAway() = runTest {
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+
+        viewModel.deleteItem(driveItemsTestData.first { it.id == "i-beach" })
+        viewModel.deleteItem(driveItemsTestData.first { it.id == "i-video" })
+
+        assertEquals(listOf("i-beach"), driveItemsRepository.deletedItems)
+        assertEquals("i-video", viewModel.pendingDelete.value?.id)
+    }
+
+    @Test
+    fun failedDeleteShowsTheRowAgainAndReportsTheItem() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.uiState.collect() }
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+        userDataRepository.setUserData(UserData(sortOrder = SortOrder.NAME_ASCENDING, viewMode = ViewMode.LIST))
+        driveItemsRepository.deleteResult = DeleteResult.FAILED
+        val resume = driveItemsTestData.first { it.id == "i-resume" }
+
+        viewModel.deleteItem(resume)
+        viewModel.deleteUndoWindowEnded()
+
+        assertEquals(resume, viewModel.deleteError.value)
+        assertTrue(rootNames().contains("Resume 2026.docx"))
+        viewModel.deleteErrorShown()
+        assertNull(viewModel.deleteError.value)
+    }
+
+    @Test
+    fun pendingFolderDeleteHidesItsFilesFromRecentFiles() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher()) { viewModel.homeUiState.collect() }
+        driveItemsRepository.sendDriveItems(driveItemsTestData)
+
+        viewModel.deleteItem(driveItemsTestData.first { it.id == "f-documents" })
+
+        val recentIds = assertIs<HomeUiState.Success>(viewModel.homeUiState.value).recentFiles.map { it.id }
+        assertFalse("i-notes" in recentIds)
+        assertFalse("i-lease" in recentIds)
+        assertTrue("i-resume" in recentIds)
+
+        viewModel.undoDelete()
+
+        val restoredIds = assertIs<HomeUiState.Success>(viewModel.homeUiState.value).recentFiles.map { it.id }
+        assertTrue("i-notes" in restoredIds)
+    }
+
+    private fun rootNames() = assertIs<FilesUiState.Success>(viewModel.uiState.value).items.map { it.name }
 
     @Test
     fun reconnectingRequestsAnotherSync() = runTest {
