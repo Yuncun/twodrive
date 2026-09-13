@@ -55,6 +55,9 @@ interface DriveItemDao {
     )
     fun getRecentFiles(limit: Int): Flow<List<DriveItemEntity>>
 
+    @Query("SELECT id FROM drive_items")
+    suspend fun getAllIds(): List<String>
+
     @Upsert
     suspend fun upsertDriveItems(entities: List<DriveItemEntity>)
 

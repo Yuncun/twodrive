@@ -32,8 +32,8 @@ import javax.inject.Singleton
  * concurrent and repeated requests are no-ops while a sync is running or after one succeeded,
  * and only a failed attempt (e.g. offline at launch) lets a later request retry.
  *
- * M2.2 (delta sync milestone) may replace this with a WorkManager-backed sync module like
- * NiA's `sync:work`, which adds retry with backoff and survives the process.
+ * A WorkManager-backed module like NiA's `sync:work` would add retry with backoff and survive
+ * the process; until then a failed sync retries on the next request.
  */
 @Singleton
 internal class InProcessSyncManager @Inject constructor(

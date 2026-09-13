@@ -45,6 +45,8 @@ class TestDriveItemDao : DriveItemDao {
         all.values.filterNot { it.isFolder }.sortedByDescending { it.lastModified }.take(limit)
     }
 
+    override suspend fun getAllIds(): List<String> = entities.value.keys.toList()
+
     override suspend fun upsertDriveItems(entities: List<DriveItemEntity>) =
         this.entities.update { it + entities.associateBy(DriveItemEntity::id) }
 

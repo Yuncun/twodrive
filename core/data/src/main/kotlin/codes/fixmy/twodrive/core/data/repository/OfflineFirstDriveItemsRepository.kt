@@ -59,11 +59,10 @@ internal class OfflineFirstDriveItemsRepository @Inject constructor(
             try {
                 applyDelta(deltaLink)
             } catch (e: HttpException) {
-                // Graph replies 410 Gone when a delta token has expired: drop the cache and
-                // start over.
+                // Graph replies 410 Gone (resyncRequired) when a delta token has expired: start
+                // over with a full enumeration, which sweeps whatever it no longer lists.
                 if (e.code() == HTTP_GONE && deltaLink != null) {
                     preferences.setDeltaLink(null)
-                    driveItemDao.deleteAll()
                     applyDelta(null)
                 } else {
                     throw e
@@ -72,17 +71,28 @@ internal class OfflineFirstDriveItemsRepository @Inject constructor(
         }.isSuccess
     }
 
+    /**
+     * Applies every page from [startLink] (a full enumeration when null) and only then stores
+     * the final `@odata.deltaLink`, so a sync that fails part-way resumes from the last
+     * complete position. A full enumeration lists live items only and never reports deletes,
+     * so cached rows it did not list are swept once the last page has arrived.
+     */
     private suspend fun applyDelta(startLink: String?) {
+        val fullEnumeration = startLink == null
+        val listedIds = mutableSetOf<String>()
         var page: NetworkDriveItemPage = network.getDelta(startLink)
         while (true) {
             apply(page.value)
-            val next = page.nextLink
-            if (next == null) {
-                preferences.setDeltaLink(page.deltaLink)
-                return
-            }
+            if (fullEnumeration) page.value.filterNot { it.isDeleted }.mapTo(listedIds) { it.id }
+            val next = page.nextLink ?: break
             page = network.getPage(next)
         }
+        if (fullEnumeration) {
+            (driveItemDao.getAllIds() - listedIds)
+                .chunked(SQLITE_MAX_BOUND_ARGS)
+                .forEach { driveItemDao.deleteDriveItems(it) }
+        }
+        preferences.setDeltaLink(page.deltaLink)
     }
 
     private suspend fun apply(items: List<NetworkDriveItem>) {
@@ -91,6 +101,9 @@ internal class OfflineFirstDriveItemsRepository @Inject constructor(
         if (live.isNotEmpty()) driveItemDao.upsertDriveItems(live.map { it.asEntity() })
     }
 }
+
+/** SQLite before 3.32 (Android 11 and older) binds at most 999 arguments per statement. */
+private const val SQLITE_MAX_BOUND_ARGS = 999
 
 /**
  * Like [runCatching], but re-throws cancellation so a cancelled coroutine is not mistaken for

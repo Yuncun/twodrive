@@ -172,6 +172,13 @@ class DriveItemDaoTest {
     }
 
     @Test
+    fun getAllIdsListsEveryCachedRow() = runTest {
+        dao.upsertDriveItems(testDriveTree)
+
+        assertEquals(testDriveTree.map { it.id }.toSet(), dao.getAllIds().toSet())
+    }
+
+    @Test
     fun deleteAllEmptiesTheTable() = runTest {
         dao.upsertDriveItems(testDriveTree)
 
