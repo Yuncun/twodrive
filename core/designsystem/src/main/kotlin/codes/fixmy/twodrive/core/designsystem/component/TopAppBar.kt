@@ -32,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import codes.fixmy.twodrive.core.designsystem.icon.TwoDriveIcons
 import codes.fixmy.twodrive.core.designsystem.theme.TwoDriveTheme
@@ -49,15 +51,53 @@ fun TwoDriveTopAppBar(
     onNavigationClick: () -> Unit = {},
     onActionClick: () -> Unit = {},
 ) {
+    TwoDriveTopAppBar(
+        titleRes = titleRes,
+        navigationIcon = {
+            Icon(
+                imageVector = navigationIcon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        navigationIconContentDescription = navigationIconContentDescription,
+        modifier = modifier,
+        actionIcon = actionIcon,
+        actionIconContentDescription = actionIconContentDescription,
+        colors = colors,
+        onNavigationClick = onNavigationClick,
+        onActionClick = onActionClick,
+    )
+}
+
+/**
+ * TwoDrive top app bar whose navigation button shows any content, such as an account avatar.
+ * [navigationIconContentDescription] describes the button, so [navigationIcon] should not add
+ * its own content description.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TwoDriveTopAppBar(
+    @StringRes titleRes: Int,
+    navigationIcon: @Composable () -> Unit,
+    navigationIconContentDescription: String,
+    modifier: Modifier = Modifier,
+    actionIcon: ImageVector? = null,
+    actionIconContentDescription: String? = null,
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    onNavigationClick: () -> Unit = {},
+    onActionClick: () -> Unit = {},
+) {
     CenterAlignedTopAppBar(
         title = { Text(text = stringResource(id = titleRes)) },
         navigationIcon = {
-            IconButton(onClick = onNavigationClick) {
-                Icon(
-                    imageVector = navigationIcon,
-                    contentDescription = navigationIconContentDescription,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+            IconButton(
+                onClick = onNavigationClick,
+                modifier = Modifier.semantics {
+                    contentDescription = navigationIconContentDescription
+                },
+            ) {
+                navigationIcon()
             }
         },
         actions = {

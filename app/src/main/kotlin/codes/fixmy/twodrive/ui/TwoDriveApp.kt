@@ -55,6 +55,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,7 +65,6 @@ import codes.fixmy.twodrive.R
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveBackground
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveNavigationSuiteScaffold
 import codes.fixmy.twodrive.core.designsystem.component.TwoDriveTopAppBar
-import codes.fixmy.twodrive.core.designsystem.icon.TwoDriveIcons
 import codes.fixmy.twodrive.core.model.data.DriveItem
 import codes.fixmy.twodrive.core.model.data.UserProfile
 import codes.fixmy.twodrive.core.navigation.Navigator
@@ -221,7 +221,7 @@ internal fun TwoDriveApp(
 
                         TwoDriveTopAppBar(
                             titleRes = destination.titleTextId,
-                            navigationIcon = TwoDriveIcons.Person,
+                            navigationIcon = { AccountAvatar(displayName = profile.displayName, size = 40.dp) },
                             navigationIconContentDescription = stringResource(
                                 id = R.string.top_app_bar_navigation_icon_description,
                             ),

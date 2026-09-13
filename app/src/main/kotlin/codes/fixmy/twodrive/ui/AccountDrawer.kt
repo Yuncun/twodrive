@@ -137,21 +137,13 @@ private fun AccountSwitcher(profile: UserProfile) {
             .clearAndSetSemantics { contentDescription = tileDescription },
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
+        AccountAvatar(
+            displayName = profile.displayName,
+            size = 48.dp,
             modifier = Modifier
-                .size(56.dp)
                 .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                .padding(4.dp)
-                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = TwoDriveIcons.Person,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(32.dp),
-            )
-        }
+                .padding(4.dp),
+        )
         Text(
             text = stringResource(R.string.account_drawer_personal),
             style = MaterialTheme.typography.bodyLarge,
