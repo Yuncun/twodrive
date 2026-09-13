@@ -21,6 +21,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -34,7 +35,8 @@ import codes.fixmy.twodrive.core.model.data.DriveItem
  * Offers Undo while [pendingDelete] waits in its undo window, then reports a delete that Graph
  * refused. Undo calls [onUndo]; the snackbar timing out or being swiped away calls
  * [onUndoWindowEnd], which sends the delete. A new pending delete cancels the old snackbar
- * without either callback, because the view model has already sent the old delete.
+ * without either callback, because the view model has already sent the old delete. Leaving
+ * composition (popping the screen) also calls [onUndoWindowEnd], so the delete is not dropped.
  */
 @Composable
 internal fun DeleteSnackbarHost(
@@ -64,6 +66,9 @@ internal fun DeleteSnackbarHost(
                 SnackbarResult.Dismissed -> currentOnUndoWindowEnd()
             }
         }
+    }
+    DisposableEffect(Unit) {
+        onDispose { currentOnUndoWindowEnd() }
     }
     LaunchedEffect(deleteError) {
         if (errorMessage != null) {
