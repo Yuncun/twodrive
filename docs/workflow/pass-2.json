@@ -1,0 +1,66 @@
+{
+  "items": [
+    {
+      "id": "M3.4a",
+      "slug": "delete-item",
+      "brief": "Implement Delete from the item bottom sheet (the first half of backlog M3.4 'Rename + Delete'; Rename stays open as M3.4b). Gap: gaps.json 'Delete from item bottom sheet' (no DELETE endpoint in RetrofitGraphNetwork.kt, no delete action in FilesViewModel). Reference: docs/ux-reference/12-item-more-options.png shows the grey Delete tile beside Share; the sheet already renders it (ItemBottomSheet.kt) and FilesScreen.kt line ~124 still passes onAction = { _, _ -> }. Build: (1) network: add suspend fun deleteItem(itemId: String) to GraphNetworkDataSource; RetrofitGraphNetwork sends DELETE me/drive/items/{id} (204 No Content); DemoGraphNetworkDataSource keeps a deleted-id set that allItems() filters out together with descendants, so the demo drive forgets the item for the rest of the process; update core/data's TestGraphNetworkDataSource. (2) data: DriveItemsRepository.deleteItem(id): DeleteResult; OfflineFirstDriveItemsRepository removes the item and its descendants from Room first (DriveItemDao.deleteDriveItems already sweeps descendants with a recursive CTE), then calls the network; on network failure it re-inserts the cached entities and returns a failure. Update core/testing TestDriveItemsRepository. (3) ViewModel: FilesViewModel.deleteItem(item) hides the item optimistically and exposes a pendingDelete StateFlow (item + undo); the DELETE request is sent only when the undo window ends (snackbar dismissed or timed out); undoItem() cancels it and restores the rows; a failed request restores the rows and surfaces an error. Unit-test both paths with a test dispatcher. (4) UI: in FilesScreen.kt route ItemAction.DELETE to the ViewModel for both the root (My files) and pushed-folder screens, and add a snackbar host (new file DeleteSnackbarHost.kt, pattern of CreateFolderErrorSnackbarHost) showing 'Deleted <name>' with an Undo action; error text 'Couldn't delete <name>' from strings.xml. Home > Recent files keeps offering no Delete (itemActions already drops it). Keep all changes out of Tabs.kt, TopAppBar.kt, TwoDriveApp.kt and AccountDrawer.kt, and do not re-record any existing PNG under feature/files/impl/src/test/screenshots (the parallel files-chrome item re-records those); put new screenshot cases in a new test file with a DeleteSnackbar* prefix. Prove on a device with the demo flavor: ./gradlew :app:installDemoDebug (app id codes.fixmy.twodrive.demo.debug, emulator-5554 is the Pixel_9 AVD), then ~/.maestro/bin/maestro test .maestro/delete-item/ (create that folder; testTagsAsResourceId is on, so files:list / files:home ids work as Maestro id selectors). Do not edit docs/BACKLOG.md: the merge step ticks M3.4a and adds M3.4b Rename; put that wording in your result post. Never copy OneDrive's full-screen frozen-account page for a 507; a snackbar keeps the user on the list.",
+      "screenshot": "docs/ux-reference/12-item-more-options.png",
+      "likely_files": [
+        "core/network/src/main/kotlin/codes/fixmy/twodrive/core/network/GraphNetworkDataSource.kt",
+        "core/network/src/main/kotlin/codes/fixmy/twodrive/core/network/retrofit/RetrofitGraphNetwork.kt",
+        "core/network/src/main/kotlin/codes/fixmy/twodrive/core/network/demo/DemoGraphNetworkDataSource.kt",
+        "core/network/src/test/kotlin/codes/fixmy/twodrive/core/network/retrofit/RetrofitGraphNetworkTest.kt",
+        "core/network/src/testDemo/kotlin/codes/fixmy/twodrive/core/network/demo/DemoGraphNetworkDataSourceTest.kt",
+        "core/data/src/main/kotlin/codes/fixmy/twodrive/core/data/repository/DriveItemsRepository.kt",
+        "core/data/src/main/kotlin/codes/fixmy/twodrive/core/data/repository/OfflineFirstDriveItemsRepository.kt",
+        "core/data/src/test/kotlin/codes/fixmy/twodrive/core/data/repository/OfflineFirstDriveItemsRepositoryTest.kt",
+        "core/data/src/test/kotlin/codes/fixmy/twodrive/core/data/testdoubles/TestGraphNetworkDataSource.kt",
+        "core/testing/src/main/kotlin/codes/fixmy/twodrive/core/testing/repository/TestDriveItemsRepository.kt",
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesViewModel.kt",
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesScreen.kt",
+        "feature/files/impl/src/main/kotlin/codes/fixmy/twodrive/feature/files/impl/DeleteSnackbarHost.kt",
+        "feature/files/impl/src/main/res/values/strings.xml",
+        "feature/files/impl/src/test/kotlin/codes/fixmy/twodrive/feature/files/impl/FilesViewModelTest.kt",
+        "feature/files/impl/src/testDemo/kotlin/codes/fixmy/twodrive/feature/files/impl/DeleteItemFlowTest.kt",
+        "feature/files/impl/src/testDemo/kotlin/codes/fixmy/twodrive/feature/files/impl/DeleteSnackbarScreenshotTests.kt",
+        ".maestro/delete-item/delete-item.yaml"
+      ],
+      "behaviours": [
+        "Tapping the ... button on a My files row and then the Delete tile removes that row from the list immediately.",
+        "A snackbar reading 'Deleted <name>' with an Undo action appears after the row disappears.",
+        "Tapping Undo puts the row back in the list at its sorted position.",
+        "When the snackbar goes away without Undo, the item stays gone after switching tabs and after relaunching the app.",
+        "Deleting a folder from My files also removes the files inside it from Home > Recent files.",
+        "The item sheet opened from Home > Recent files still shows no Delete tile."
+      ]
+    },
+    {
+      "id": "M1.8",
+      "slug": "files-chrome",
+      "brief": "Fix the Files-screen chrome that mismatches.json flags on four of six screens (files-home, my-files, vault, offline): 'no avatar + Photos|Files top bar' and 'tab row stops at two-thirds width'. Reference: docs/ux-reference/10-files-root.png (also 11-myfiles.png) and docs/ux-reference/spec/files-home.md sections 1-2. This is the unchecked backlog item 'App chrome and secondary tab row' (three O: M1.3 sub-bullets); give it the id M1.8; do not edit docs/BACKLOG.md yourself (the merge step ticks it and adds the sub-bullets below from your result post). Note the compare PNGs were cropped composable captures: an app bar with a Person icon already exists in TwoDriveApp.kt (TwoDriveTopAppBar, navigationIcon = TwoDriveIcons.Person), so do not rebuild it; change it. Build: (1) Pivot row: in core/designsystem Tabs.kt switch TwoDriveTabRow from ScrollableTabRow to the fixed-width Material 3 TabRow (five equal cells spanning the full width, per the spec's 82.3dp cells on a 411dp screen), keep the 3dp primary indicator, transparent container and the existing icon-over-label TwoDriveTab; FilesScreen.kt is owned by the parallel delete-item item, so the row's call site there must stay untouched (FilesTabRow already passes icons and labels). (2) Avatar: add a shared AccountAvatar composable in app/ui (new file AccountAvatar.kt: a round primaryContainer circle with the user's initials from UserProfile.displayName in primary, falling back to the Person glyph when the name is blank) and use it both in AccountDrawer.kt's AccountSwitcher (56dp, keeps the 2dp ring) and as the navigation slot of the Files top bar at 40dp inside a 48dp IconButton whose contentDescription stays 'Open account drawer'; extend TwoDriveTopAppBar with a navigationIcon composable-slot overload (keep the ImageVector overload) so TwoDriveApp.kt passes the avatar. (3) Title slot: TwoDrive has no Photos mode, so the Photos|Files pill is not reproduced; keep the centred 'Files' title and state that decision in your result post for the M1.8 backlog line. (4) Re-record the affected Roborazzi PNGs: feature/files/impl/src/test/screenshots/FilesScreen*.png (the row widens) and app/src/test/screenshots/AccountDrawer*.png if the initials change the tile; add an app screenshot test for the top bar (new file FilesTopAppBarScreenshotTests.kt) and a unit test for the initials helper. Out of scope, deliberately: the round solid-blue + FAB (a two-line change in FilesScreen.kt's FilesFloatingLayer, containerColor = primary and CircleShape) is deferred because that file belongs to delete-item in this pass; ask for it as an unchecked sub-bullet under M1.8 in your result post. Prove on a device with the demo flavor: ./gradlew :app:installDemoDebug (app id codes.fixmy.twodrive.demo.debug, emulator-5554 is the Pixel_9 AVD), then ~/.maestro/bin/maestro test .maestro/files-chrome/ (create that folder; testTagsAsResourceId is on, so files:tabs and TwoDriveNavItem ids work as Maestro id selectors).",
+      "screenshot": "docs/ux-reference/10-files-root.png",
+      "likely_files": [
+        "core/designsystem/src/main/kotlin/codes/fixmy/twodrive/core/designsystem/component/Tabs.kt",
+        "core/designsystem/src/main/kotlin/codes/fixmy/twodrive/core/designsystem/component/TopAppBar.kt",
+        "app/src/main/kotlin/codes/fixmy/twodrive/ui/AccountAvatar.kt",
+        "app/src/main/kotlin/codes/fixmy/twodrive/ui/AccountDrawer.kt",
+        "app/src/main/kotlin/codes/fixmy/twodrive/ui/TwoDriveApp.kt",
+        "app/src/main/res/values/strings.xml",
+        "app/src/test/kotlin/codes/fixmy/twodrive/AccountAvatarTest.kt",
+        "app/src/testDemo/kotlin/codes/fixmy/twodrive/ui/FilesTopAppBarScreenshotTests.kt",
+        "app/src/testDemo/kotlin/codes/fixmy/twodrive/ui/AccountDrawerScreenshotTests.kt",
+        "app/src/test/screenshots/",
+        "feature/files/impl/src/test/screenshots/",
+        ".maestro/files-chrome/files-chrome.yaml"
+      ],
+      "behaviours": [
+        "On the Files root, all five pivot tabs Home, My files, Shared, Vault and Offline are visible at once with no horizontal scrolling.",
+        "Tapping each pivot tab selects it and shows that tab's content (My files list, or the Shared, Vault and Offline empty states).",
+        "The top bar shows a round account avatar with the signed-in user's initials at the left edge.",
+        "Tapping the avatar opens the account drawer, which shows the same account's email.",
+        "The avatar and the pivot row stay in place while switching tabs.",
+        "Opening a folder shows the back arrow and folder title with no avatar and no pivot row."
+      ]
+    }
+  ]
+}
