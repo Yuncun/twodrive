@@ -1,0 +1,38 @@
+[
+  {
+    "screen": "files-home",
+    "reference": "docs/workflow/compare/files-home/10-files-root.png",
+    "app_png": "docs/workflow/compare/files-home/FilesScreenHomeTabThumbnails_foldable.png",
+    "why": "No avatar + Photos|Files segmented top bar above the tab row; tab row stops at two-thirds width; + FAB is a pale tonal square instead of a round solid-blue button; video rows lack the duration prefix in the meta line."
+  },
+  {
+    "screen": "my-files",
+    "reference": "docs/workflow/compare/my-files/11-myfiles.png",
+    "app_png": "docs/workflow/compare/my-files/FilesScreenRoot_foldable.png",
+    "why": "No avatar + Photos|Files segmented top bar above the tab row; tab row stops at two-thirds width; + FAB is a pale tonal square instead of a round solid-blue button (list rows and sort chip match)."
+  },
+  {
+    "screen": "item-bottom-sheet",
+    "reference": "docs/workflow/compare/item-bottom-sheet/12-item-more-options.png",
+    "app_png": "docs/workflow/compare/item-bottom-sheet/ItemBottomSheetFolder_foldable.png",
+    "why": "Missing the 'Make available offline' switch row between the tiles and Rename; file variant adds a third Download tile and recent-file variant drops Delete and Move, whereas the reference always shows exactly Share/Delete tiles then four rows."
+  },
+  {
+    "screen": "folder",
+    "reference": "docs/workflow/compare/folder/15-folder-contents.png",
+    "app_png": "docs/workflow/compare/folder/FolderScreenThumbnails_foldable.png",
+    "why": "Folder title is left-aligned regular weight instead of centered bold; the bottom search pill and + FAB are absent."
+  },
+  {
+    "screen": "vault",
+    "reference": "docs/workflow/compare/vault/17-vault.png",
+    "app_png": "docs/workflow/compare/vault/FilesScreenVaultTab_foldable.png",
+    "why": "No avatar + Photos|Files segmented top bar; tab row stops at two-thirds width; + FAB styled as a pale tonal square (empty-state copy differs by design: 'not available in TwoDrive')."
+  },
+  {
+    "screen": "offline",
+    "reference": "docs/workflow/compare/offline/18-offline.png",
+    "app_png": "docs/workflow/compare/offline/FilesScreenOfflineTab_foldable.png",
+    "why": "No avatar + Photos|Files segmented top bar; tab row stops at two-thirds width; + FAB styled as a pale tonal square (empty-state title and body copy match)."
+  }
+]
