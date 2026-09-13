@@ -94,7 +94,7 @@ Scope reminder (frozen 2026-08-29): personal Microsoft accounts only; Files tab 
   - O: M2.4 the quota block is a fixed footer that never scrolls: 24dp icon + "Microsoft storage" + "100.3 GB used of 100 GB (100%)" + a determinate bar + a full-width 273x52dp filled "View Plan" button. Over quota the icon, the used amount (bold) and the bar all turn red-orange #D83B01 and that is the only signal the account is full — no dialog and no snackbar anywhere else
   - O: M2.4 Sign out is an ordinary drawer row: same 24dp grey icon, same 56dp label, no red tint and no separator above it
   - O: M2.4 the drawer reserves a banner slot between the email row and the link list (24dp icon + title + body + a small outlined button); TwoDrive should use it for offline and sync-error notices rather than inventing a new surface
-- [ ] M2.5 Error handling: 429 Retry-After backoff, offline snackbar, empty folder state.
+- [x] M2.5 (3ad118f) Error handling: 429 Retry-After backoff, offline snackbar, empty folder state.
 
 ## Milestone 3 — file actions
 - [ ] M3.1 Open file: download to cache with progress, then `ACTION_VIEW` via FileProvider (system viewer).
