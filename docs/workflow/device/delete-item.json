@@ -1,0 +1,44 @@
+{
+  "item": "delete-item",
+  "tested_sha": "df7fc17409d05183a71cd567b5b82370495c35f2",
+  "round": 0,
+  "final": true,
+  "flows": [
+    {
+      "flow": "docs/workflow/flows/delete-item/01-delete-removes-row.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/delete-item/01-delete-removes-row.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/delete-item/02-deleted-snackbar-undo.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/delete-item/02-deleted-snackbar-undo.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/delete-item/03-undo-restores-row.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/delete-item/03-undo-restores-row.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/delete-item/04-delete-persists.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/delete-item/04-delete-persists.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/delete-item/05-delete-folder-clears-recents.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/delete-item/05-delete-folder-clears-recents.png",
+      "output": ""
+    },
+    {
+      "flow": "docs/workflow/flows/delete-item/06-home-recent-sheet-no-delete.yaml",
+      "status": "pass",
+      "screenshot": "docs/workflow/device/delete-item/06-home-recent-sheet-no-delete.png",
+      "output": ""
+    }
+  ]
+}
